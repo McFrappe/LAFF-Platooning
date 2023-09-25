@@ -12,3 +12,22 @@ The objective is to autonomously drive vehicles in a platoon in an energy effici
 
 This project will be carried out using a set of robotic cars that can be controlled with microcontrollers. The microcontrollers will be programmed to utilize sensors such as an ultrasonic sensor for distance measurement, and a light sensor to detect a line that will be acting as a rail for the vehicles to follow.
 
+## Setup
+
+Get ROS in a docker container to run on a computer:
+```zsh
+docker run --privileged --mount type=bind,source=$(pwd),destination=/workspace -it osrf/ros:noetic-desktop-full
+```
+
+We have also prepared a set of raspberry Pis that will act as the nodes places on vehicles.
+Connect to the Pis (ROS nodes) through ssh.
+
+### Laff-v1
+```zsh
+ssh laff@192.168.212.214
+```
+
+### Laff-v2
+```zsh
+ssh laff@192.168.212.214
+```
