@@ -24,7 +24,7 @@ Connect to the Pis (ROS nodes) through ssh.
 
 ### Laff-v1
 ```zsh
-ssh laff@192.168.212.214
+ssh laff@192.168.212.135
 ```
 
 ### Laff-v2
