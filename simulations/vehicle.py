@@ -10,9 +10,12 @@ class Vehicle:
     # step: how often speed and distance should update
     # position: starts with 0 and increases in next step if speed > 0
     # all update methods should be called each step (iteration of the loop)
+
     t_c = 10  # number of steps for period of communication
     min_distance = 9  # number of steps for period of communication
     max_speed = 100
+    max_acceleration = 4 # speed / step (same as deceleration)
+    max_deceleration = 5 # speed / step
 
     def __init__(self, order) -> None:
         self.speed = 0  # initially it the vehicle stands still
@@ -38,7 +41,8 @@ class Vehicle:
             # else remain constant speed
         else: 
             distance_from_min = (self.distance - self.min_distance)
-            self.speed = max(int(self.speed + (self.speed/10 + distance_from_min)/2), 0)  # some margin so we aim to be just close to the distance 
+            desired_speed = self.speed + (self.speed/10 + distance_from_min)/2  # some margin so we aim to be just close to the distance 
+            self.speed = self.calculate_valid_speed(desired_speed)
 
         return self.speed
 
@@ -49,8 +53,27 @@ class Vehicle:
 
     # This should be called each step
     def update_distance(self, position_of_vehicle_in_front):
-        self.distance = position_of_vehicle_in_front - self.position
+        is_leader = self.order == 0
+
+        if is_leader:
+            self.distance = 0
+        else:
+            self.distance = position_of_vehicle_in_front - self.position
+
         return self.distance
+
+    def calculate_valid_speed(self, desired_speed):
+        # Calculate valid top speed
+        allowed_speed = min(max(int(desired_speed), 0), 100)
+
+        # Calculate valid acceleration
+        speed_up  = allowed_speed - self.speed > 0
+        if speed_up:
+            speed = self.speed + min(allowed_speed - self.speed, self.max_acceleration)
+        else:
+            speed = self.speed - min(self.speed - allowed_speed, self.max_deceleration)
+
+        return speed
 
     def get_current_speed(self):
         return self.speed
