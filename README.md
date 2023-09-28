@@ -15,6 +15,14 @@ This project will be carried out using a set of robotic cars that can be control
 ## Setup
 
 Get ROS in a docker container to run on a computer:
+
+```zsh
+docker pull ros
+docker pull osrf/ros:noetic-desktop-full
+```
+
+Then run the container with the following command:
+
 ```zsh
 docker run --privileged --mount type=bind,source=$(pwd),destination=/workspace -it osrf/ros:noetic-desktop-full
 ```
