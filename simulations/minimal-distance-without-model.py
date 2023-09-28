@@ -27,6 +27,8 @@ def velocity_for_leader(current_position, v_current, d_start_decreasing_v):
 
 
 def simulate(num_steps):
+    # acceleration truck: 0-100 km/h 40s
+    #  
     # Currently only for 2 cars
     # v_a, v_b
     # d_ab
@@ -82,4 +84,4 @@ def simulate(num_steps):
 
 
 if __name__ == "__main__":
-    simulate(1000)
+    simulate(100)
