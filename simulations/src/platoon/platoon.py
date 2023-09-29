@@ -1,4 +1,4 @@
-from vehicle import Vehicle
+from src.vehicle.vehicle import Vehicle
 import numpy as np
 
 
