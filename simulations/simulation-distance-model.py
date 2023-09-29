@@ -20,7 +20,7 @@ def plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_pa
     plt.savefig(download_path)
 
 def plot_speed(data, num_vehicles):
-    x_label_text = 'Steps (h)'
+    x_label_text = 'Steps (10ms)'
     y_label_text = 'Speed (km/h)'
     title_text = 'Speed of vehicles'
     download_path = 'plots/speeds-with-distance-model.png'
@@ -28,16 +28,16 @@ def plot_speed(data, num_vehicles):
     plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_path)
 
 def plot_position(data, num_vehicles):
-    x_label_text = 'Steps (h)'
-    y_label_text = 'Position (km)'
+    x_label_text = 'Steps (10ms)'
+    y_label_text = 'Position (m)'
     title_text = 'Position of vehicles'
     download_path = 'plots/position-with-distance-model.png'
 
     plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_path)
 
 def plot_distances(data, num_vehicles):
-    x_label_text = 'Steps (h)'
-    y_label_text = 'Distance (km)'
+    x_label_text = 'Steps (10ms)'
+    y_label_text = 'Distance (m)'
     title_text = 'Distance to vehicle in front'
     download_path = 'plots/distances-with-distance-model.png'
 
@@ -46,16 +46,21 @@ def plot_distances(data, num_vehicles):
 def simulate(num_steps, num_vehicles):
     p = Platoon(num_vehicles)  # all vehicles are standing still in an imaginary position of 0
 
+    # Each step is 10ms
     for s in range(num_steps):
         p.run(s)
 
-    speeds = p.get_speeds()
-    positions = p.get_positions()
-    distances = p.get_distances()
+    # Truck 0-100km/h takes ~20s
+    # 20s/(10ms->0.01s) = 2000 steps
+    # 100/2000 = 0.05 km/h gain per step (acceleration)
+    speeds = p.get_speeds() # km/h
+    # ((10ms/3600000)->h) * km/h = km => km/1000 = m
+    positions = p.get_positions() # position is in meters (position 1 is 1m)
+    distances = p.get_distances() # distance is in meters
 
     plot_speed(speeds, num_vehicles)
     plot_position(positions, num_vehicles)
     plot_distances(distances, num_vehicles)
 
 if __name__ == "__main__":
-    simulate(100, 8)
+    simulate(10000, 2)

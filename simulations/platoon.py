@@ -10,12 +10,13 @@ class Platoon:
         self.positions = []
         self.distances = []
 
+        self.new_vehicle_last(order=0, init_speed=40, init_position=100, init_distance=0)
         # initiate all vehicles and add them to an array
-        for order in range(num_vehicles):
-            self.new_vehicle_last(order)
+        for i in range(num_vehicles-1):
+            self.new_vehicle_last(order=i+1, init_speed=20, init_position=80, init_distance=20)
 
-    def new_vehicle_last(self, order):
-        self.vehicles.append(Vehicle(order))
+    def new_vehicle_last(self, order, init_speed, init_position, init_distance):
+        self.vehicles.append(Vehicle(order, init_speed, init_position, init_distance))
 
     # should be called each step
     def run(self, step):

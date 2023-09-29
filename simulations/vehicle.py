@@ -11,21 +11,19 @@ class Vehicle:
     # position: starts with 0 and increases in next step if speed > 0
     # all update methods should be called each step (iteration of the loop)
 
-    t_c = 10  # number of steps for period of communication
-    min_distance = 9  # number of steps for period of communication
-    max_speed = 100
-    max_acceleration = 4 # speed / step (same as deceleration)
-    max_deceleration = 5 # speed / step
+    t_c = 10  # number of steps for period of communication (100ms) (should be constant)
+    min_distance = 9  # (m) (should depend on speed)
+    max_speed = 100 # (km/h) (should be constant)
+    max_acceleration = 0.05 # speed (km/h) / step (should be constant)
+    max_deceleration = 0.2 # speed (km/h) / step (should be constant)
 
-    def __init__(self, order) -> None:
-        self.speed = 0  # initially it the vehicle stands still
+    def __init__(self, order, inti_speed=0, inti_position=0, inti_distance=0) -> None:
+        self.speed = inti_speed  # initially it the vehicle stands still
         self.speed_old = 0  # updates each period t_c
-        self.position = 0   
-        self.distance = 0
+        self.position = inti_position  # all vehicles are at the same position in the beginning  
+        self.distance = inti_distance  
         self.order = order
-
-    def set_order(self, order) -> None:
-        self.order = order
+        self.sum_distance_errors = 0
 
     # This should be called each step
     def update_speed(self, step):
@@ -34,21 +32,34 @@ class Vehicle:
 
         # TODO: what to do with float as speed
         if is_leader:
-            if self.speed < self.max_speed:
-                self.speed = self.speed+1
-            elif step > 60: # TODO: should change to when it actually should start slowing down
-                self.speed = self.speed-1
+            #if self.speed < self.max_speed:
+            #    self.speed = self.speed + self.max_acceleration/2
+            #elif step > 60: # TODO: should change to when it actually should start slowing down
+            #    self.speed = self.speed - self.max_acceleration/2
             # else remain constant speed
+            pass
         else: 
-            distance_from_min = (self.distance - self.min_distance)
-            desired_speed = self.speed + (self.speed/10 + distance_from_min)/2  # some margin so we aim to be just close to the distance 
+            # FIXME: wrong unint
+            # Need to calculate what the speed error is. We have the distance we should be at thats the error we should use
+            # we can calculate the speed of the vehicle in front since we have our own. Then we have we can calculate the speed error
+            # so ( (((our speed km/h)+(diff new speed km/h) = (new speed km/h))/(step h) = (new relative position km)) - ((in front speed km/h)/(step h) + (distance km) = (new relative position of leader km)) = (desired distance km)
+            distance_from_min = (self.distance - self.min_distance) # (m)
+            # diff_speed (with sign) 
+            kp = 0.5#0.45-0.1 
+            ki = 0 # 0.00000001 #0.45-0.1 
+            integral = 10 * self.sum_distance_errors # 10 ms for each step * (sum of all distance_errors) area
+            fs = kp * distance_from_min + ki * integral
+            desired_speed = self.speed + fs
             self.speed = self.calculate_valid_speed(desired_speed)
 
         return self.speed
 
     # This should be called each step
     def update_position(self):
-        self.position = self.position + self.speed
+        speed_ms = self.speed/3.6
+        distance_traveled_per_step = speed_ms/100
+        self.position = self.position + distance_traveled_per_step
+
         return self.position
 
     # This should be called each step
@@ -59,6 +70,8 @@ class Vehicle:
             self.distance = 0
         else:
             self.distance = position_of_vehicle_in_front - self.position
+        
+        self.sum_distance_errors = self.sum_distance_errors + (self.distance-self.min_distance)
 
         return self.distance
 
