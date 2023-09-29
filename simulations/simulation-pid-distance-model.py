@@ -1,8 +1,8 @@
-from src.platoon.platoon import Platoon
+from src.platoon.platoon_pid_distance import PlatoonPidDistance
 from src.common.plot import plot_speed, plot_position, plot_distances
 
 def simulate(num_steps, num_vehicles):
-    p = Platoon(num_vehicles)  # all vehicles are standing still in an imaginary position of 0
+    p = PlatoonPidDistance(num_vehicles)  # all vehicles are standing still in an imaginary position of 0
 
     # Each step is 10ms
     for s in range(num_steps):
@@ -16,9 +16,9 @@ def simulate(num_steps, num_vehicles):
     positions = p.get_positions() # position is in meters (position 1 is 1m)
     distances = p.get_distances() # distance is in meters
 
-    plot_speed(speeds, num_vehicles)
-    plot_position(positions, num_vehicles)
-    plot_distances(distances, num_vehicles)
+    plot_speed(speeds, num_vehicles, 'plots/speeds-with-pid-distance-model.png')
+    plot_position(positions, num_vehicles, 'plots/position-with-pid-distance-model.png')
+    plot_distances(distances, num_vehicles, 'plots/distances-with-pid-distance-model.png')
 
 if __name__ == "__main__":
-    simulate(10000, 4)
+    simulate(10000, 2)

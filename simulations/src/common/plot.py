@@ -18,27 +18,23 @@ def plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_pa
     plt.title(title_text)
     plt.savefig(download_path)
 
-def plot_speed(data, num_vehicles):
+def plot_speed(data, num_vehicles, download_path):
     x_label_text = 'Steps (10ms)'
     y_label_text = 'Speed (km/h)'
     title_text = 'Speed of vehicles'
-    download_path = 'plots/speeds-with-distance-model.png'
 
     plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_path)
 
-def plot_position(data, num_vehicles):
+def plot_position(data, num_vehicles, download_path):
     x_label_text = 'Steps (10ms)'
     y_label_text = 'Position (m)'
     title_text = 'Position of vehicles'
-    download_path = 'plots/position-with-distance-model.png'
 
     plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_path)
 
-def plot_distances(data, num_vehicles):
+def plot_distances(data, num_vehicles, download_path):
     x_label_text = 'Steps (10ms)'
     y_label_text = 'Distance (m)'
     title_text = 'Distance to vehicle in front'
-    download_path = 'plots/distances-with-distance-model.png'
 
     plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_path)
-
