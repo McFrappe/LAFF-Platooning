@@ -14,9 +14,9 @@ class L298NPinConfig:
         :param in4: GPIO pin number for IN4.
         :param enb: GPIO pin number for ENB.
         """
-        self.ena = ena
-        self.in1 = in1
-        self.in2 = in2
-        self.in3 = in3
-        self.in4 = in4
-        self.enb = enb
+        self.ENA = ena
+        self.IN1 = in1
+        self.IN2 = in2
+        self.IN3 = in3
+        self.IN4 = in4
+        self.ENB = enb
