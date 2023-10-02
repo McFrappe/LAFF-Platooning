@@ -5,7 +5,7 @@ import common
 from l298n_pin_config import L298NPinConfig
 
 class L298NDriver:
-    def __init__(self, name, config: L298NPinConfig, max_speed=common.MAX_SPEED_MOTOR):
+    def __init__(self, name, config: L298NPinConfig, max_speed=common.MAX_SPEED_MOTOR) -> None:
         """
         Init communication, set default settings, ...
         """
@@ -16,7 +16,10 @@ class L298NDriver:
 
         self.setup_pins()
 
-    def setup_pins(self):
+    def setup_pins(self) -> None:
+        """
+        Setup the pins for the L298N driver.
+        """
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.config.IN1, GPIO.OUT)
         GPIO.setup(self.config.IN2, GPIO.OUT)
@@ -34,7 +37,7 @@ class L298NDriver:
 
         self.set_direction(common.DIR_FORWARD)
 
-    def set_speed(self, speed: int):
+    def set_speed(self, speed: int) -> None:
         """
         Give a speed that the motor will try to reach.
         """
@@ -42,7 +45,10 @@ class L298NDriver:
         self.pwm_a.ChangeDutyCycle(self.current_speed)
         self.pwm_b.ChangeDutyCycle(self.current_speed)
 
-    def set_direction(self, direction: int):
+    def set_direction(self, direction: int) -> None:
+        """
+        Set the direction of the motor.
+        """
         if direction == common.DIR_FORWARD:
             GPIO.output(self.config.IN1, 0)
             GPIO.output(self.config.IN2, 1)
@@ -54,17 +60,17 @@ class L298NDriver:
             GPIO.output(self.config.IN3, 1)
             GPIO.output(self.config.IN4, 0)
 
-    def get_speed(self):
+    def get_speed(self) -> int:
         """
         Return current speed of the motor
         """
         return self.current_speed
 
-    def get_status(self):
+    def get_status(self) -> dict[str, int]:
         """
         Get hardware information from the motor
         """
         return {
-            "name": self.name,
-            'current_speed': self.current_speed,
+            "name":             self.name,
+            'current_speed':    self.current_speed,
         }
