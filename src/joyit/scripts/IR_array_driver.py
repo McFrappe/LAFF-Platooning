@@ -1,6 +1,4 @@
-import RPi.GPIO as GPIO
-
-__updated__ = "2023-10-02 11:31:22"
+import gpio_wrapper as GPIO
 
 class IRArrayDriver:
     """
@@ -76,7 +74,7 @@ class IRArrayDriver:
         """
         return self.__pin_right_value
 
-    def get_all_values(self) -> dict[str, int]:
+    def get_all_values(self):
         """
         Get all the values stored from last digital read of the IR sensors.
         """
@@ -105,4 +103,10 @@ class IRArrayDriver:
         Update the values of the IR sensors.
         """
         self.__read_array_sensors()
+
+    def cleanup(self):
+        """
+        Cleanup the GPIO pins.
+        """
+        GPIO.cleanup()
     #endregion

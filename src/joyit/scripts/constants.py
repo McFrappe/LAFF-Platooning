@@ -1,4 +1,5 @@
-##### Motors are connected to the following GPIO pins #####
+
+# region Motors are connected to the following GPIO pins
 # Left Motors
 GPIO13_PWM1 = 33
 GPIO19_PWM1 = 35
@@ -16,11 +17,13 @@ GPIO27 = 13
 GPIO22 = 15
 GPIO23 = 16
 GPIO24 = 18
+# endregion
 
-##### IR array is connected to the following GPIO pins #####
+# region IR array is connected to the following GPIO pins
 GPIO10 = 19
 GPIO21 = 21
 GPIO11 = 23
+# endregion
 
 ##### Misc values #####
 MAX_SPEED_MOTOR = 100

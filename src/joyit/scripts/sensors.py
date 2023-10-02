@@ -1,15 +1,15 @@
+#!/usr/bin/env python3
 import rospy
 
 from std_srvs.srv import Trigger
 
-import common
-from sensors.IR_array_driver import IRArrayDriver
-
+import constants
+from IR_array_driver import IRArrayDriver
 
 class SensorController:
     def __init__(self):
         self.ir_controller = IRArrayDriver(
-            common.GPIO10, common.GPIO21, common.GPIO11)
+            constants.GPIO10, constants.GPIO21, constants.GPIO11)
         self.setup_service()
 
     def setup_service(self):
@@ -104,6 +104,7 @@ class SensorController:
 if __name__ == "__main__":
     rospy.init_node("sensor_node")
     sensor_controller = SensorController()
+    rospy.on_shutdown(sensor_controller.ir_controller.cleanup)
 
     rospy.loginfo("Sensor Controller started.")
     rospy.spin()

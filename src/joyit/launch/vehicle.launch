@@ -1,0 +1,4 @@
+<launch>
+    <node name="motor_node" pkg="joyit" type="motors.py" respawn="true" />
+    <node name="sensor_node" pkg="joyit" type="sensors.py" respawn="true" />
+</launch>

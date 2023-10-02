@@ -159,7 +159,13 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
+  scripts/constants.py
+  scripts/sensors.py
   scripts/motors.py
+  scripts/IR_array_driver.py
+  scripts/L298N_driver.py
+  scripts/L298N_pin_config.py
+  scripts/gpio_wrapper.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

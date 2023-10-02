@@ -1,29 +1,35 @@
+#!/usr/bin/env python3
 import rospy
 
 from std_msgs.msg import Int32
 from std_srvs.srv import Trigger
 
-import common
-from l298n_driver import L298NDriver
-from l298n_pin_config import L298NPinConfig
+try:
+    import RPi.GPIO as GPIO
+except:
+    import Mock.GPIO as GPIO
+
+import constants
+from L298N_driver import L298NDriver
+from L298N_pin_config import L298NPinConfig
 
 class MovementController:
     def __init__(self):
         left_pin_config = L298NPinConfig(
-            ena=common.GPIO13_PWM1,
-            in1=common.GPIO2,
-            in2=common.GPIO3,
-            in3=common.GPIO4,
-            in4=common.GPIO14,
-            enb=common.GPIO19_PWM1
+            ena=constants.GPIO13_PWM1,
+            in1=constants.GPIO2,
+            in2=constants.GPIO3,
+            in3=constants.GPIO4,
+            in4=constants.GPIO14,
+            enb=constants.GPIO19_PWM1
         )
         right_pin_config = L298NPinConfig(
-            ena=common.GPIO12_PWM0,
-            in1=common.GPIO17,
-            in2=common.GPIO27,
-            in3=common.GPIO22,
-            in4=common.GPIO23,
-            enb=common.GPIO18_PWM0
+            ena=constants.GPIO12_PWM0,
+            in1=constants.GPIO17,
+            in2=constants.GPIO27,
+            in3=constants.GPIO22,
+            in4=constants.GPIO23,
+            enb=constants.GPIO18_PWM0
         )
 
         self.left_controller = L298NDriver(
@@ -76,6 +82,8 @@ class MovementController:
     def stop(self):
         self.left_controller.set_speed(0)
         self.right_controller.set_speed(0)
+        self.left_controller.cleanup()
+        self.right_controller.cleanup()
 
 if __name__ == "__main__":
     rospy.init_node("motor_node")
@@ -88,3 +96,4 @@ if __name__ == "__main__":
 
     rospy.loginfo("Motor driver is now started, ready to get commands.")
     rospy.spin()
+    GPIO.cleanup()
