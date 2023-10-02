@@ -26,11 +26,11 @@ class MovementController:
             enb=constants.GPIO18_PWM0
         )
 
-        self.left_controller = L298NDriver(
+        self.left_driver = L298NDriver(
             name="Left",
             config=left_pin_config
         )
-        self.right_controller = L298NDriver(
+        self.right_driver = L298NDriver(
             name="Right",
             config=right_pin_config
         )
@@ -47,21 +47,21 @@ class MovementController:
 
     def callback_speed(self, msg: Int32):
         self.speed = msg.data
-        self.left_controller.set_speed(self.speed)
-        self.right_controller.set_speed(self.speed)
+        self.left_driver.set_speed(self.speed)
+        self.right_driver.set_speed(self.speed)
 
     def callback_direction(self, msg: Int32):
         self.direction = msg.data
-        self.left_controller.set_direction(self.direction)
-        self.right_controller.set_direction(self.direction)
+        self.left_driver.set_direction(self.direction)
+        self.right_driver.set_direction(self.direction)
 
     def turn_left(self):
         """
         Turn the robot left. If amount of turn not specified, turn at max speed registered for the motor.
         param: amount: int, between 0 and 100
         """
-        self.left_controller.set_speed(0)
-        self.right_controller.set_speed(self.speed)
+        self.left_driver.set_speed(0)
+        self.right_driver.set_speed(self.speed)
         return {"success": True, "message": "Vehicle is turning left"}
 
     def turn_right(self):
@@ -69,15 +69,15 @@ class MovementController:
         Turn the robot right. If amount of turn not specified, turn at max speed registered for the motor.
         param: amount: int, between 0 and 100
         """
-        self.left_controller.set_speed(self.speed)
-        self.right_controller.set_speed(0)
+        self.left_driver.set_speed(self.speed)
+        self.right_driver.set_speed(0)
         return { "success": True, "message": "Vehicle is turning right" }
 
     def stop(self):
-        self.left_controller.set_speed(0)
-        self.right_controller.set_speed(0)
-        self.left_controller.cleanup()
-        self.right_controller.cleanup()
+        self.left_driver.set_speed(0)
+        self.right_driver.set_speed(0)
+        self.left_driver.cleanup()
+        self.right_driver.cleanup()
 
 if __name__ == "__main__":
     rospy.init_node("motor_node")
@@ -85,8 +85,8 @@ if __name__ == "__main__":
     rospy.on_shutdown(movement_controller.stop)
 
     rospy.loginfo("Movement Controller is now intialized.")
-    rospy.loginfo(f"Status of {movement_controller.left_controller.name} is {movement_controller.left_controller.get_status()}")
-    rospy.loginfo(f"Status of {movement_controller.right_controller.name} is {movement_controller.right_controller.get_status()}")
+    rospy.loginfo(f"Status of {movement_controller.left_driver.name} is {movement_controller.left_driver.get_status()}")
+    rospy.loginfo(f"Status of {movement_controller.right_driver.name} is {movement_controller.right_driver.get_status()}")
 
-    rospy.loginfo("Motor driver is now started, ready to get commands.")
+    rospy.loginfo("Motor node started.")
     rospy.spin()

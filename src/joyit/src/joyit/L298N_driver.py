@@ -1,8 +1,12 @@
 import rospy
 
-from . import constants
-from . import gpio_wrapper as GPIO
-from .L298N_pin_config import L298NPinConfig
+try:
+    import RPi.GPIO as GPIO
+except:
+    import Mock.GPIO as GPIO
+
+import joyit.constants as constants
+from joyit.L298N_pin_config import L298NPinConfig
 
 class L298NDriver:
     def __init__(self,

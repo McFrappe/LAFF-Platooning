@@ -1,12 +1,14 @@
-from . import gpio_wrapper as GPIO
+try:
+    import RPi.GPIO as GPIO
+except:
+    import Mock.GPIO as GPIO
 
 class IRArrayDriver:
-    """
-    Class for IR array driver. The IR array driver is a device that has 3 IR sensors on it. The array is used to detect a line on the ground for instance.
-    """
     def __init__(self, data_pin_left: int, data_pin_middle: int, data_pin_right: int) -> None:
         """
-        Constructor for IR array driver. The IR array driver is a device that has 3 IR sensors on it. The array is used to detect a line on the ground for instance.
+        Constructor for IR array driver.
+        The IR array driver is a device that has 3 IR sensors on it.
+        The array is used to detect a line on the ground for instance.
         """
         self.pin_left   = data_pin_left
         self.pin_middle = data_pin_middle
@@ -24,6 +26,7 @@ class IRArrayDriver:
         """
         Setup the pins for the IR array driver.
         """
+        GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.pin_left, GPIO.IN)
         GPIO.setup(self.pin_middle, GPIO.IN)
         GPIO.setup(self.pin_right, GPIO.IN)
@@ -32,27 +35,27 @@ class IRArrayDriver:
         """
         Perform a digital read on ALL IR sensors.
         """
-        self.__pin_left_value   = GPIO.DigitalRead(self.pin_left)
-        self.__pin_middle_value = GPIO.DigitalRead(self.pin_middle)
-        self.__pin_right_value  = GPIO.DigitalRead(self.pin_right)
+        self.__pin_left_value   = GPIO.input(self.pin_left)
+        self.__pin_middle_value = GPIO.input(self.pin_middle)
+        self.__pin_right_value  = GPIO.input(self.pin_right)
 
     def __read_left_sensor(self) -> None:
         """
         Perform a digital read on the LEFT IR sensor.
         """
-        self.pin_left_value = GPIO.DigitalRead(self.pin_left)
+        self.pin_left_value = GPIO.input(self.pin_left)
 
     def __read_middle_sensor(self) -> None:
         """
         Perform a digital read on the MIDDLE IR sensor.
         """
-        self.pin_middle_value = GPIO.DigitalRead(self.pin_middle)
+        self.pin_middle_value = GPIO.input(self.pin_middle)
 
     def __read_right_sensor(self) -> None:
         """
         Perform a digital read on the RIGHT IR sensor.
         """
-        self.pin_right_value = GPIO.DigitalRead(self.pin_right)
+        self.pin_right_value = GPIO.input(self.pin_right)
     #endregion
 
     #region Public methods for IR array driver
