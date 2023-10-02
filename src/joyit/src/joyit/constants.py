@@ -1,4 +1,3 @@
-
 # region Motors are connected to the following GPIO pins
 # Left Motors
 GPIO13_PWM1 = 33

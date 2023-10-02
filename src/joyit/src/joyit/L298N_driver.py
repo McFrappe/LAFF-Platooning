@@ -1,8 +1,8 @@
 import rospy
-import gpio_wrapper as GPIO
 
-import constants
-from L298N_pin_config import L298NPinConfig
+from . import constants
+from . import gpio_wrapper as GPIO
+from .L298N_pin_config import L298NPinConfig
 
 class L298NDriver:
     def __init__(self,

@@ -4,14 +4,8 @@ import rospy
 from std_msgs.msg import Int32
 from std_srvs.srv import Trigger
 
-try:
-    import RPi.GPIO as GPIO
-except:
-    import Mock.GPIO as GPIO
-
-import constants
-from L298N_driver import L298NDriver
-from L298N_pin_config import L298NPinConfig
+import joyit.constants as constants
+from joyit.L298N_driver import L298NDriver, L298NPinConfig
 
 class MovementController:
     def __init__(self):
@@ -96,4 +90,3 @@ if __name__ == "__main__":
 
     rospy.loginfo("Motor driver is now started, ready to get commands.")
     rospy.spin()
-    GPIO.cleanup()

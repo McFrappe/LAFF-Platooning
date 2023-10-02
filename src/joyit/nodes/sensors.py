@@ -3,8 +3,8 @@ import rospy
 
 from std_srvs.srv import Trigger
 
-import constants
-from IR_array_driver import IRArrayDriver
+import joyit.constants as constants
+from joyit.IR_array_driver import IRArrayDriver
 
 class SensorController:
     def __init__(self):
@@ -98,6 +98,7 @@ class SensorController:
             status = False
 
         return {"success": status, "message": "Vehicle is slightly right of line"}
+
     # endregion
 
 

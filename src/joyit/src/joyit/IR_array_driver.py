@@ -1,4 +1,4 @@
-import gpio_wrapper as GPIO
+from . import gpio_wrapper as GPIO
 
 class IRArrayDriver:
     """
