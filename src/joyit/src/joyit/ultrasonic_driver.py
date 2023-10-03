@@ -1,5 +1,5 @@
-from time import time, sleep
 import rospy
+from time import time, sleep
 
 try:
     import RPi.GPIO as GPIO
@@ -11,6 +11,7 @@ class UltrasonicDriver:
         self.trigger_pin = trigger_pin
         self.echo_pin = echo_pin
         self.timeout = rospy.get_param("ULTRASONIC_TIMEOUT_LENGTH")
+        self.ping_length = rospy.get_param("ULTRASONIC_PING_PULSE_LENGTH")
 
         self.min_range = rospy.get_param("ULTRASONIC_MIN_RANGE")
         self.max_range = rospy.get_param("ULTRASONIC_MAX_RANGE")
@@ -25,10 +26,8 @@ class UltrasonicDriver:
         GPIO.output(self.trigger_pin, 0)
 
     def get_distance(self):
-        GPIO.output(self.trigger_pin, 1) # set trigger to HIGH
-
-        # set trigger after 0.01 ms to LOW
-        sleep(0.00001)
+        GPIO.output(self.trigger_pin, 1)
+        sleep(self.ping_length)
         GPIO.output(self.trigger_pin, 0)
 
         start_time = time()
