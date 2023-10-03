@@ -1,102 +1,29 @@
 #!/usr/bin/env python3
 import rospy
 
-from std_srvs.srv import Trigger
+from std_msgs.msg import UInt8MultiArray
 
 from joyit.IR_array_driver import IRArrayDriver
 
 class LineFollowerController:
     def __init__(self):
         self.driver = IRArrayDriver(
-            rospy.get_param("GPIO10"), rospy.get_param("GPIO21"), rospy.get_param("GPIO11"))
-        self.setup_service()
+            rospy.get_param("IR_LEFT"),
+            rospy.get_param("IR_MIDDLE"),
+            rospy.get_param("IR_RIGHT"))
 
-    def setup_service(self):
-        rospy.Service("vehicle_is_on_line", Trigger,
-                      self.is_on_line)
-        rospy.Service("vehicle_is_not_on_line", Trigger,
-                      self.is_not_on_line)
-        rospy.Service("vehicle_is_left_of_line", Trigger,
-                      self.is_left_of_line)
-        rospy.Service("vehicle_is_slightly_left_of_line", Trigger,
-                      self.is_left_of_line_slightly)
-        rospy.Service("vehicle_is_right_of_line", Trigger,
-                      self.is_right_of_line)
-        rospy.Service("vehicle_is_slightly_right_of_line", Trigger,
-                      self.is_right_of_line_slightly)
+        self.publisher = rospy.Publisher(
+            "vehicle/line_follower",
+            UInt8MultiArray,
+            queue_size=rospy.get_param("MESSAGE_QUEUE_SIZE"))
 
-    def is_on_line(self):
+        rospy.Timer(rospy.Duration(rospy.get_param("LINE_FOLLOWER_PUBLISH_PERIOD")), self.publish_line_position)
+
+    def publish_line_position(self, event):
         """
-        Check if the vehicle is on the line.
+        Publishes the current line position to the vehicle/line_follower topic.
         """
-        left, middle, right = self.driver.get_all_values()
-
-        if middle == 1 and left == 1 and right == 1:
-            status = True
-        else:
-            status = False
-
-        return {"success": status, "message": "Vehicle is on line"}
-
-    def is_not_on_line(self):
-        """
-        Check if the vehicle is not on the line.
-        """
-        left, middle, right = self.driver.get_all_values()
-        if middle == 0 and left == 0 and right == 0:
-            status = True
-        else:
-            status = False
-
-        return {"success": status, "message": "Vehicle is not on line"}
-
-    def is_left_of_line(self):
-        """
-        Check if the vehicle is left of the line.
-        """
-        left, middle, right = self.driver.get_all_values()
-        if left == 0 and middle == 0 and right == 1:
-            status = True
-        else:
-            status = False
-
-        return {"success": status, "message": "Vehicle is left of line"}
-
-    def is_right_of_line(self):
-        """
-        Check if the vehicle is right of the line.
-        """
-        left, middle, right = self.driver.get_all_values()
-        if left == 1 and middle == 0 and right == 0:
-            status = True
-        else:
-            status = False
-
-        return {"success": status, "message": "Vehicle is right of line"}
-
-    def is_left_of_line_slightly(self):
-        """
-        check if the vehicle is slightly left of the line.
-        """
-        left, middle, right = self.driver.get_all_values()
-        if left == 0 and middle == 1 and right == 1:
-            status = True
-        else:
-            status = False
-
-        return {"success": status, "message": "Vehicle is slightly left of line"}
-
-    def is_right_of_line_slightly(self):
-        """
-        check if the vehicle is slightly right of the line.
-        """
-        left, middle, right = self.driver.get_all_values()
-        if left == 1 and middle == 1 and right == 0:
-            status = True
-        else:
-            status = False
-
-        return {"success": status, "message": "Vehicle is slightly right of line"}
+        self.publisher.publish(UInt8MultiArray(data=self.driver.get_values()))
 
     def cleanup(self):
         """

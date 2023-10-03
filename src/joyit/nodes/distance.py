@@ -8,8 +8,8 @@ from joyit.ultrasonic_driver import UltrasonicDriver
 class DistanceController:
     def __init__(self):
         self.driver = UltrasonicDriver(
-            rospy.get_param("GPIO5"),
-            rospy.get_param("GPIO6"))
+            rospy.get_param("ULTRASONIC_TRIGGER"),
+            rospy.get_param("ULTRASONIC_ECHO"))
 
         self.distance_publisher = rospy.Publisher(
             "vehicle/distance",
