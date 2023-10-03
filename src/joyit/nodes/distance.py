@@ -3,24 +3,32 @@ import rospy
 
 from sensor_msgs.msg import Range
 
-import joyit.constants as constants
 from joyit.ultrasonic_driver import UltrasonicDriver
 
 class DistanceController:
     def __init__(self):
-        self.driver = UltrasonicDriver(constants.GPIO5, constants.GPIO6)
+        self.driver = UltrasonicDriver(
+            rospy.get_param("GPIO5"),
+            rospy.get_param("GPIO6"))
 
-        self.distance_publisher = rospy.Publisher("vehicle/distance", Range, queue_size=10)
-        self.relative_velocity_publisher = rospy.Publisher("vehicle/relative_velocity", Range, queue_size=10)
+        self.distance_publisher = rospy.Publisher(
+            "vehicle/distance",
+            Range,
+            queue_size=rospy.get_param("MESSAGE_QUEUE_SIZE"))
+        self.relative_velocity_publisher = rospy.Publisher(
+            "vehicle/relative_velocity",
+            Range,
+            queue_size=rospy.get_param("MESSAGE_QUEUE_SIZE"))
 
-        rospy.Timer(rospy.Duration(0.1), self.publish_current_distance)
-        rospy.Timer(rospy.Duration(0.1), self.publish_current_velocity)
+        rospy.Timer(rospy.Duration(rospy.get_param("DISTANCE_PUBLISH_PERIOD")), self.publish_current_distance)
+        rospy.Timer(rospy.Duration(
+                            rospy.get_param("RELATIVE_VELOCITY_PUBLISH_PERIOD")),
+                            self.publish_current_velocity)
 
-    def publish_current_distance(self, x):
+    def publish_current_distance(self, event):
         """
         Publishes the current distance to the vehicle/distance topic.
         """
-        print(x)
         distance = self.driver.get_distance()
 
         rospy.loginfo(f"Distance: {distance} cm")
@@ -36,11 +44,10 @@ class DistanceController:
 
         self.distance_publisher.publish(r)
 
-    def publish_current_velocity(self, x):
+    def publish_current_velocity(self, event):
         """
         Publishes the current relative velocity to the vehicle/relative_velocity topic.
         """
-        print(x)
         relative_velocity = self.driver.get_speed()
 
         rospy.loginfo(f"Speed: {relative_velocity} m/s")

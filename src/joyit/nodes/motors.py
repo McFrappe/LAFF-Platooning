@@ -4,25 +4,24 @@ import rospy
 from std_msgs.msg import Int32
 from std_srvs.srv import Trigger
 
-import joyit.constants as constants
 from joyit.L298N_driver import L298NDriver, L298NPinConfig
 
 class MovementController:
     def __init__(self):
         left_pin_config = L298NPinConfig(
-            ena=constants.GPIO13_PWM1,
-            in1=constants.GPIO2,
-            in2=constants.GPIO3,
-            in3=constants.GPIO4,
-            in4=constants.GPIO14,
-            enb=constants.GPIO19_PWM1)
+            ena=rospy.get_param("GPIO13_PWM1"),
+            in1=rospy.get_param("GPIO2"),
+            in2=rospy.get_param("GPIO3"),
+            in3=rospy.get_param("GPIO4"),
+            in4=rospy.get_param("GPIO14"),
+            enb=rospy.get_param("GPIO19_PWM1"))
         right_pin_config = L298NPinConfig(
-            ena=constants.GPIO12_PWM0,
-            in1=constants.GPIO17,
-            in2=constants.GPIO27,
-            in3=constants.GPIO22,
-            in4=constants.GPIO23,
-            enb=constants.GPIO18_PWM0)
+            ena=rospy.get_param("GPIO12_PWM0"),
+            in1=rospy.get_param("GPIO17"),
+            in2=rospy.get_param("GPIO27"),
+            in3=rospy.get_param("GPIO22"),
+            in4=rospy.get_param("GPIO23"),
+            enb=rospy.get_param("GPIO18_PWM0"))
 
         self.left_driver = L298NDriver(
             name="Left",

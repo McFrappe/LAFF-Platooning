@@ -5,14 +5,13 @@ try:
 except:
     import Mock.GPIO as GPIO
 
-import joyit.constants as constants
 from joyit.L298N_pin_config import L298NPinConfig
 
 class L298NDriver:
     def __init__(self,
                  name,
                  config: L298NPinConfig,
-                 max_speed=constants.MAX_SPEED_MOTOR) -> None:
+                 max_speed=rospy.get_param("MAX_SPEED_MOTOR")) -> None:
         """
         Init communication, set default settings, ...
         """
@@ -36,13 +35,13 @@ class L298NDriver:
         GPIO.setup(self.config.ENB, GPIO.OUT)
 
         # GPIO.PWM finds which channel is used by the pin number
-        self.pwm_a = GPIO.PWM(self.config.ENA, constants.PWM_FREQUENCY)
-        self.pwm_b = GPIO.PWM(self.config.ENB, constants.PWM_FREQUENCY)
+        self.pwm_a = GPIO.PWM(self.config.ENA, rospy.get_param("PWM_FREQUENCY"))
+        self.pwm_b = GPIO.PWM(self.config.ENB, rospy.get_param("PWM_FREQUENCY"))
 
         self.pwm_a.start(0)
         self.pwm_b.start(0)
 
-        self.set_direction(constants.DIR_FORWARD)
+        self.set_direction(rospy.get_param("DIR_FORWARD"))
 
     def set_speed(self, speed: int) -> None:
         """
@@ -56,12 +55,12 @@ class L298NDriver:
         """
         Set the direction of the motor.
         """
-        if direction == constants.DIR_FORWARD:
+        if direction == rospy.get_param("DIR_FORWARD"):
             GPIO.output(self.config.IN1, 0)
             GPIO.output(self.config.IN2, 1)
             GPIO.output(self.config.IN3, 0)
             GPIO.output(self.config.IN4, 1)
-        elif direction == constants.DIR_BACKWARD:
+        elif direction == rospy.get_param("DIR_BACKWARD"):
             GPIO.output(self.config.IN1, 1)
             GPIO.output(self.config.IN2, 0)
             GPIO.output(self.config.IN3, 1)

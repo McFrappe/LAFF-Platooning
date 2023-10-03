@@ -3,4 +3,52 @@
     <node name="line_follower_node" pkg="joyit" type="line_follower.py" respawn="true" />
     <node name="distance_node" pkg="joyit" type="distance.py" respawn="true" />
     <node name="platooning_node" pkg="joyit" type="platooning.py" respawn="true" />
+
+    <!-- Publisher periods -->
+    <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.1" />
+    <param name="RELATIVE_VELOCITY_PUBLISH_PERIOD" type="double" value="0.1" />
+    <param name="LINE_FOLLOWER_PUBLISH_PERIOD" type="double" value="0.1" />
+    <param name="PLATOONING_PERIOD" type="double" value="0.1" />
+
+    <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />
+    <param name="MESSAGE_QUEUE_SIZE" type="int" value="10" />
+
+    <!-- Left motors -->
+    <param name="GPIO13_PWM1" type="int" value="33" />
+    <param name="GPIO19_PWM1" type="int" value="35" />
+    <param name="GPIO2" type="int" value="3" />
+    <param name="GPIO3" type="int" value= "5" />
+    <param name="GPIO4" type="int" value="7" />
+    <param name="GPIO14" type="int" value="8" />
+    <param name="GPIO15" type="int" value="10" />
+
+    <!-- Right motors -->
+    <param name="GPIO12_PWM0" type="int" value="33" />
+    <param name="GPIO18_PWM0" type="int" value="35" />
+    <param name="GPIO17" type="int" value="11" />
+    <param name="GPIO27" type="int" value="13" />
+    <param name="GPIO22" type="int" value="15" />
+    <param name="GPIO23" type="int" value="16" />
+    <param name="GPIO24" type="int" value="18" />
+
+    <!-- IR -->
+    <param name="GPIO10" type="int" value="19" />
+    <param name="GPIO21" type="int" value="21" />
+    <param name="GPIO11" type="int" value="23" />
+
+    <!-- Ultrasonic -->
+    <param name="GPIO5" type="int" value="29" />
+    <param name="GPIO6" type="int" value="31" />
+
+    <!-- Misc -->
+    <param name="MAX_SPEED_MOTOR" type="int" value="100" />
+    <param name="PWM_FREQUENCY" type="int" value="50" />
+    <param name="DIR_FORWARD" type="int" value="1" />
+    <param name="DIR_BACKWARD" type="int" value="-1" />
+
+    <param name="ULTRASONIC_PING_PULSE_LENGTH" type="double" value="0.00001" />
+    <param name="ULTRASONIC_TIMEOUT_LENGTH" type="double" value="0.05" />
+    <param name="ULTRASONIC_MIN_RANGE" type="int" value="3" />
+    <param name="ULTRASONIC_MAX_RANGE" type="int" value="400" />
+    <param name="ULTRASONIC_FOV" type="double" value="0.26179938779915" />
 </launch>

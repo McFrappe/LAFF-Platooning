@@ -1,4 +1,4 @@
-import time
+from time import time, sleep
 import rospy
 
 try:
@@ -6,17 +6,15 @@ try:
 except:
     import Mock.GPIO as GPIO
 
-import joyit.constants as constants
-
 class UltrasonicDriver:
     def __init__(self, trigger_pin: int, echo_pin: int):
         self.trigger_pin = trigger_pin
         self.echo_pin = echo_pin
-        self.timeout = constants.ULTRASONIC_TIMEOUT_LENGTH
+        self.timeout = rospy.get_param("ULTRASONIC_TIMEOUT_LENGTH")
 
-        self.min_range = constants.ULTRASONIC_MIN_RANGE
-        self.max_range = constants.ULTRASONIC_MAX_RANGE
-        self.fov = constants.ULTRASONIC_FOV
+        self.min_range = rospy.get_param("ULTRASONIC_MIN_RANGE")
+        self.max_range = rospy.get_param("ULTRASONIC_MAX_RANGE")
+        self.fov = rospy.get_param("ULTRASONIC_FOV")
 
         self.__setup_pins()
 
@@ -30,20 +28,20 @@ class UltrasonicDriver:
         GPIO.output(self.trigger_pin, 1) # set trigger to HIGH
 
         # set trigger after 0.01 ms to LOW
-        time.sleep(0.00001)
+        sleep(0.00001)
         GPIO.output(self.trigger_pin, 0)
 
-        start_time = time.time()
-        arrival_time = time.time()
-        timeout_start = time.time()
+        start_time = time()
+        arrival_time = time()
+        timeout_start = time()
 
         while GPIO.input(self.echo_pin) == 0:
-            start_time = time.time()
+            start_time = time()
             if start_time - timeout_start > self.timeout:
                 return -1
 
         while GPIO.input(self.echo_pin) == 1:
-            arrival_time = time.time()
+            arrival_time = time()
             if start_time - timeout_start > self.timeout:
                 return -1
 

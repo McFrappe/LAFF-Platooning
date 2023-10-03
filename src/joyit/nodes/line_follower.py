@@ -3,13 +3,12 @@ import rospy
 
 from std_srvs.srv import Trigger
 
-import joyit.constants as constants
 from joyit.IR_array_driver import IRArrayDriver
 
 class LineFollowerController:
     def __init__(self):
         self.driver = IRArrayDriver(
-            constants.GPIO10, constants.GPIO21, constants.GPIO11)
+            rospy.get_param("GPIO10"), rospy.get_param("GPIO21"), rospy.get_param("GPIO11"))
         self.setup_service()
 
     def setup_service(self):
