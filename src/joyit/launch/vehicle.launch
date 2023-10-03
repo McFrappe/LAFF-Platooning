@@ -1,4 +1,5 @@
 <launch>
     <node name="motor_node" pkg="joyit" type="motors.py" respawn="true" />
-    <node name="sensor_node" pkg="joyit" type="sensors.py" respawn="true" />
+    <node name="line_follower_node" pkg="joyit" type="line_follower.py" respawn="true" />
+    <node name="distance_node" pkg="joyit" type="distance.py" respawn="true" />
 </launch>

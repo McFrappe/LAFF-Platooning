@@ -15,25 +15,21 @@ class MovementController:
             in2=constants.GPIO3,
             in3=constants.GPIO4,
             in4=constants.GPIO14,
-            enb=constants.GPIO19_PWM1
-        )
+            enb=constants.GPIO19_PWM1)
         right_pin_config = L298NPinConfig(
             ena=constants.GPIO12_PWM0,
             in1=constants.GPIO17,
             in2=constants.GPIO27,
             in3=constants.GPIO22,
             in4=constants.GPIO23,
-            enb=constants.GPIO18_PWM0
-        )
+            enb=constants.GPIO18_PWM0)
 
         self.left_driver = L298NDriver(
             name="Left",
-            config=left_pin_config
-        )
+            config=left_pin_config)
         self.right_driver = L298NDriver(
             name="Right",
-            config=right_pin_config
-        )
+            config=right_pin_config)
 
         self.speed = 0
         self.setup_service()

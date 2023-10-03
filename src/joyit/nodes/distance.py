@@ -18,6 +18,9 @@ class DistanceController:
         rospy.Timer(self.rate, self.publish_current_velocity)
 
     def publish_current_distance(self):
+        """
+        Publishes the current distance to the vehicle/distance topic.
+        """
         distance = self.driver.distance()
 
         rospy.loginfo(f"Distance: {distance} cm")
@@ -34,6 +37,9 @@ class DistanceController:
         self.distance_publisher.publish(r)
 
     def publish_current_velocity(self):
+        """
+        Publishes the current relative velocity to the vehicle/relative_velocity topic.
+        """
         relative_velocity = self.driver.speed()
 
         rospy.loginfo(f"Speed: {relative_velocity} m/s")
@@ -50,6 +56,9 @@ class DistanceController:
         self.relative_velocity_publisher.publish(r)
 
     def stop(self):
+        """
+        Stops the distance node.
+        """
         self.distance_publisher.unregister()
         self.relative_velocity_publisher.unregister()
         self.driver.cleanup()

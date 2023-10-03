@@ -26,12 +26,12 @@ class LineFollowerController:
         rospy.Service("vehicle_is_slightly_right_of_line", Trigger,
                       self.is_right_of_line_slightly)
 
-    # region Public methods for IR array driver
     def is_on_line(self):
         """
         Check if the vehicle is on the line.
         """
         left, middle, right = self.driver.get_all_values()
+
         if middle == 1 and left == 1 and right == 1:
             status = True
         else:
@@ -100,8 +100,10 @@ class LineFollowerController:
         return {"success": status, "message": "Vehicle is slightly right of line"}
 
     def cleanup(self):
+        """
+        Cleans up the GPIOs.
+        """
         self.driver.cleanup()
-    # endregion
 
 
 if __name__ == "__main__":
