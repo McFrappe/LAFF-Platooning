@@ -164,6 +164,7 @@ catkin_install_python(PROGRAMS
   nodes/line_follower.py
   nodes/motors.py
   nodes/distance.py
+  nodes/platooning.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

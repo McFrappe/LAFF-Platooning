@@ -62,15 +62,10 @@ class UltrasonicDriver:
         else:
             return -1
 
-    def speed(self):
-        start_time = time.time()
-
+    def get_speed(self):
         start_distance = self.get_distance() * 0.01     # to m conversion
         end_distance = self.get_distance() * 0.01       # to m conversion
-
-        end_time = time.time()
         speed = (end_distance - start_distance) / 1.0   # m/s
-
         return speed
 
     def cleanup(self):

@@ -35,8 +35,8 @@ class MovementController:
         self.setup_service()
 
     def setup_service(self):
-        rospy.Subscriber("vehicle_speed", Int32, self.callback_speed)
-        rospy.Subscriber("vehicle_direction", Int32, self.callback_direction)
+        rospy.Subscriber("vehicle/speed", Int32, self.callback_speed)
+        rospy.Subscriber("vehicle/direction", Int32, self.callback_direction)
 
         rospy.Service("vehicle_turn_left", Trigger, self.turn_left)
         rospy.Service("vehicle_turn_right", Trigger, self.turn_right)

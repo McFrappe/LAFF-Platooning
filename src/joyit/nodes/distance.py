@@ -13,15 +13,15 @@ class DistanceController:
         self.distance_publisher = rospy.Publisher("vehicle/distance", Range, queue_size=10)
         self.relative_velocity_publisher = rospy.Publisher("vehicle/relative_velocity", Range, queue_size=10)
 
-        self.rate = rospy.Rate(10) # 10hz
-        rospy.Timer(self.rate, self.publish_current_distance)
-        rospy.Timer(self.rate, self.publish_current_velocity)
+        rospy.Timer(rospy.Duration(0.1), self.publish_current_distance)
+        rospy.Timer(rospy.Duration(0.1), self.publish_current_velocity)
 
-    def publish_current_distance(self):
+    def publish_current_distance(self, x):
         """
         Publishes the current distance to the vehicle/distance topic.
         """
-        distance = self.driver.distance()
+        print(x)
+        distance = self.driver.get_distance()
 
         rospy.loginfo(f"Distance: {distance} cm")
 
@@ -36,11 +36,12 @@ class DistanceController:
 
         self.distance_publisher.publish(r)
 
-    def publish_current_velocity(self):
+    def publish_current_velocity(self, x):
         """
         Publishes the current relative velocity to the vehicle/relative_velocity topic.
         """
-        relative_velocity = self.driver.speed()
+        print(x)
+        relative_velocity = self.driver.get_speed()
 
         rospy.loginfo(f"Speed: {relative_velocity} m/s")
 
