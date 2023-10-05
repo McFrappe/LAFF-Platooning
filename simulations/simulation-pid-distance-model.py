@@ -21,4 +21,4 @@ def simulate(num_steps, num_vehicles):
     plot_distances(distances, num_vehicles, 'plots/distances-with-pid-distance-model.png')
 
 if __name__ == "__main__":
-    simulate(10000, 2)
+    simulate(10000, 10)
