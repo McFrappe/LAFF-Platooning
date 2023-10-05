@@ -47,6 +47,7 @@
     <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />
     <param name="MESSAGE_QUEUE_SIZE" type="int" value="10" />
 
+    <param name="ULTRASONIC_SAMPLES_PER_PUBLISH" type="int" value="5" />
     <param name="ULTRASONIC_PING_PULSE_LENGTH" type="double" value="0.00001" />
     <param name="ULTRASONIC_TIMEOUT_LENGTH" type="double" value="0.05" />
     <param name="ULTRASONIC_MIN_RANGE" type="int" value="3" />

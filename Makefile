@@ -4,10 +4,10 @@ install:
 	curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add
 	sudo apt update
 	sudo apt install ros-noetic-ros-base
-	echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-	source ~/.bashrc
 	sudo apt install python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
 	sudo pip install -r requirements.txt
+	echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+	source ~/.bashrc
 	sudo rosdep init
 	rosdep update
 
@@ -19,11 +19,11 @@ cat:
 	rm -rf build
 	catkin_make
 
-run:
-	source devel/setup.bash
+run: cat
+	. devel/setup.bash
 	roslaunch joyit vehicle.launch
 
-run_pi:
+run_pi: cat
 	sudo su
-	source devel/setup.bash
-	roslaunch joyit vehicle.launch
+	. devel/setup.bash
+	roslaunch joyit vehicle.launch --screen

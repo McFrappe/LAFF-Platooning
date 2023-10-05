@@ -7,6 +7,10 @@ from joyit.ultrasonic_driver import UltrasonicDriver
 
 class DistanceController:
     def __init__(self):
+        self.__current_reading = 0
+        self.__average_distance = 0.0
+        self.__readings_per_publish = rospy.get_param("ULTRASONIC_SAMPLES_PER_PUBLISH")
+
         self.driver = UltrasonicDriver(
             rospy.get_param("ULTRASONIC_TRIGGER"),
             rospy.get_param("ULTRASONIC_ECHO"))
@@ -15,60 +19,53 @@ class DistanceController:
             "vehicle/distance",
             Range,
             queue_size=rospy.get_param("MESSAGE_QUEUE_SIZE"))
-        self.relative_velocity_publisher = rospy.Publisher(
-            "vehicle/relative_velocity",
-            Range,
-            queue_size=rospy.get_param("MESSAGE_QUEUE_SIZE"))
 
-        rospy.Timer(rospy.Duration(rospy.get_param("DISTANCE_PUBLISH_PERIOD")), self.publish_current_distance)
-        rospy.Timer(rospy.Duration(
-                            rospy.get_param("RELATIVE_VELOCITY_PUBLISH_PERIOD")),
-                            self.publish_current_velocity)
+        rospy.Timer(rospy.Duration(rospy.get_param("DISTANCE_PUBLISH_PERIOD") / self.__readings_per_publish),
+                    self.publish_current_distance)
+
+    def create_range_message(self, distance):
+        """
+        Creates a Range message with the given distance value.
+        """
+        range_msg = Range()
+        range_msg.header.stamp = rospy.Time.now()
+        range_msg.header.frame_id = "/base_link"
+        range_msg.radiation_type = Range.ULTRASOUND
+        range_msg.field_of_view = self.driver.fov
+        range_msg.min_range = self.driver.min_range
+        range_msg.max_range = self.driver.max_range
+        range_msg.range = distance
+        return range_msg
+
+    def reset_reading_state(self):
+        """
+        Resets the current reading state to start a new set of readings.
+        """
+        self.__current_reading = 0
+        self.__average_distance = 0
 
     def publish_current_distance(self, event):
         """
         Publishes the current distance to the vehicle/distance topic.
         """
-        distance = self.driver.get_distance()
+        if self.__current_reading <= self.__readings_per_publish:
+            self.__average_distance += self.driver.get_distance()
+            self.__current_reading += 1
+            return
 
-        rospy.loginfo(f"Distance: {distance} cm")
+        distance = self.__average_distance / self.__readings_per_publish
+        rospy.loginfo(f"Distance: {distance:.2f} cm (avg. of {self.__readings_per_publish} samples)")
 
-        r = Range()
-        r.header.stamp = rospy.Time.now()
-        r.header.frame_id = "/base_link"
-        r.radiation_type = Range.ULTRASOUND
-        r.field_of_view = self.driver.fov
-        r.min_range = self.driver.min_range
-        r.max_range = self.driver.max_range
-        r.range = distance
+        self.distance_publisher.publish(self.create_range_message(distance))
 
-        self.distance_publisher.publish(r)
-
-    def publish_current_velocity(self, event):
-        """
-        Publishes the current relative velocity to the vehicle/relative_velocity topic.
-        """
-        relative_velocity = self.driver.get_speed()
-
-        rospy.loginfo(f"Speed: {relative_velocity} m/s")
-
-        r = Range()
-        r.header.stamp = rospy.Time.now()
-        r.header.frame_id = "/base_link"
-        r.radiation_type = Range.ULTRASOUND
-        r.field_of_view = self.driver.fov
-        r.min_range = self.driver.min_range
-        r.max_range = self.driver.max_range
-        r.range = relative_velocity
-
-        self.relative_velocity_publisher.publish(r)
+        # Restore starting reading state
+        self.reset_reading_state()
 
     def stop(self):
         """
         Stops the distance node.
         """
         self.distance_publisher.unregister()
-        self.relative_velocity_publisher.unregister()
         self.driver.cleanup()
 
 

@@ -15,7 +15,6 @@ class PlatooningController:
         self.__no_turn_key = rospy.get_param("NO_TURN")
 
         self.__current_distance = 0
-        self.__current_relative_velocity = 0
         self.__line_follower = [0, 0, 0]
 
         self.speed_publisher = rospy.Publisher(
@@ -36,11 +35,6 @@ class PlatooningController:
             Range,
             self.__callback_distance,
             queue_size=self.__message_queue_size)
-        self.relative_velocity_subscriber = rospy.Subscriber(
-            "vehicle/relative_velocity",
-            Range,
-            self.__callback_relative_velocity,
-            queue_size=self.__message_queue_size)
         self.line_follower_subscriber = rospy.Subscriber(
             "vehicle/line_follower",
             UInt8MultiArray,
@@ -50,12 +44,6 @@ class PlatooningController:
         rospy.Timer(rospy.Duration(
             rospy.get_param("PLATOONING_PERIOD")),
             self.__perform_step)
-
-    def __callback_relative_velocity(self, data: Range):
-        """
-        Callback for the relative velocity subscriber.
-        """
-        self.__current_relative_velocity = data.range
 
     def __callback_distance(self, data: Range):
         """
@@ -92,14 +80,14 @@ class PlatooningController:
         if self.__current_distance < self.__min_distance_threshold:
             self.speed_publisher.publish(0)
         else:
-            self.speed_publisher.publish(rospy.get_param("MAX_SPEED_MOTOR"))
+            self.speed_publisher.publish(self.__max_speed)
 
     def stop(self):
         """
         Stops the platooning node.
         """
         self.distance_subscriber.unregister()
-        self.relative_velocity_subscriber.unregister()
+
 
 if __name__ == "__main__":
     rospy.init_node("platooning_node")
