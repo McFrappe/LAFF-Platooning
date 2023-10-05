@@ -20,7 +20,7 @@ class DistanceController:
             Range,
             queue_size=rospy.get_param("MESSAGE_QUEUE_SIZE"))
 
-        rospy.Timer(rospy.Duration(rospy.get_param("DISTANCE_PUBLISH_PERIOD") / self.__readings_per_publish),
+        rospy.Timer(rospy.Duration(rospy.get_param("DISTANCE_PUBLISH_PERIOD") * self.__readings_per_publish),
                     self.publish_current_distance)
 
     def create_range_message(self, distance):
