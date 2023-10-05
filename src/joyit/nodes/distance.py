@@ -48,7 +48,7 @@ class DistanceController:
         """
         Publishes the current distance to the vehicle/distance topic.
         """
-        if self.__current_reading <= self.__readings_per_publish:
+        if self.__current_reading < self.__readings_per_publish:
             self.__average_distance += self.driver.get_distance()
             self.__current_reading += 1
             return
