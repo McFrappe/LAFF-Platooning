@@ -28,6 +28,7 @@ class Platoon:
             speeds_each_run = np.append(speeds_each_run, v.update_speed(step))
             positions_each_run = np.append(positions_each_run, v.update_position())
             distances_each_run = np.append(distances_each_run, v.update_distance(v_in_front.get_position()))
+            v.update_min_distance()
             v_in_front = v
 
         self.speeds.append(speeds_each_run)

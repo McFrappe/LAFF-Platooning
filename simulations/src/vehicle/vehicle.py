@@ -1,12 +1,12 @@
 class Vehicle:
 
     t_c = 10  # number of steps for period of communication (10ms*t_c = 100ms)
-    max_speed = 100 # (km/h)
-    max_acceleration = 0.05 # speed (km/h) / step
-    max_deceleration = 0.2 # speed (km/h) / step
     array_distance_errors_len = 100
 
     def __init__(self, order) -> None:
+        self.max_speed = 55 # (km/h)
+        self.max_acceleration = 0.05 # speed (km/h) / step
+        self.max_deceleration = 0.2 # speed (km/h) / step
         self.speed = 0  # initially it the vehicle stands still
         self.speed_old = 0  # updates each period t_c
         self.position = 0  # current position of the vehicle in meters
@@ -40,16 +40,18 @@ class Vehicle:
         self.prev_distance_error = error
 
         self.array_distance_errors[self.array_distance_errors_pointer] = error
-        #self.array_distance_errors_pointer = 1 + self.array_distance_errors_pointer
         if self.array_distance_errors_pointer == self.array_distance_errors_len-1:
             self.array_distance_errors_pointer = 0
 
-        #self.sum_distance_errors = self.sum_distance_errors + error
         return self.distance
+
+    def update_min_distance(self):
+        self.min_distance = self.speed/3.6 * 0.01 + 2 # + margin
+        return self.min_distance
 
     def calculate_valid_speed(self, desired_speed):
         # Calculate valid speed, i.e., between 0 and 100
-        allowed_speed = min(max(desired_speed, 0), 100)
+        allowed_speed = min(max(desired_speed, 0), self.max_speed)
 
         # Calculate valid acceleration/deceleration
         speed_up  = allowed_speed - self.speed > 0

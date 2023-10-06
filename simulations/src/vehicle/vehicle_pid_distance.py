@@ -14,12 +14,14 @@ class VehiclePidDistance(Vehicle):
         is_leader = self.order == 0
 
         if is_leader:
-            if self.speed < self.max_speed/2:
-                self.speed = self.speed + self.max_acceleration/2
-            elif step > 60: # TODO: should change to when it actually should start slowing down
-                self.speed = self.speed - self.max_acceleration/2
+            desired_speed = self.speed
+            if self.speed < 50 and step < 6000: #self.max_speed/2:
+                desired_speed = self.speed + self.max_acceleration/2
+            elif step > 6000: # TODO: should change to when it actually should start slowing down
+                desired_speed = self.speed - self.max_deceleration/24
             # else remain constant speed
-            pass
+            self.speed = self.calculate_valid_speed(desired_speed)
+
         else: 
             distance_from_min = (self.distance - self.min_distance)
             kp = 0.05/17
