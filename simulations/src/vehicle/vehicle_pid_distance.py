@@ -27,11 +27,9 @@ class VehiclePidDistance(Vehicle):
             kd = 3
             integral = sum(self.array_distance_errors) # 1 step * (sum of all distance_errors) gives area
             derivative = self.error_derivative
-            print(self.order, distance_from_min, derivative)
+
             fs = kp * distance_from_min + ki * integral + kd * derivative
             desired_speed = self.speed + fs
-            print(self.order, desired_speed)
             self.speed = self.calculate_valid_speed(desired_speed)
-            print(self.order, self.speed)
 
         return self.speed

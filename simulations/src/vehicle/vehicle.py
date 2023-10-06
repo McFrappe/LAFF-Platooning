@@ -19,13 +19,6 @@ class Vehicle:
         self.min_distance = 9  # how close the vehicles should be to each other, depends on speed. (m)
 
     # This should be called each step
-    def update_speed(self, step):
-        if self.speed < self.max_speed:
-            self.speed = self.speed + self.max_acceleration/2
-
-        return self.speed
-
-    # This should be called each step
     def update_position(self):
         speed_ms = self.speed/3.6
         distance_traveled_per_step_m = speed_ms/100  # TODO: should work with any step size
