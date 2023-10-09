@@ -2,8 +2,8 @@ from src.vehicle.vehicle import Vehicle
 
 class VehiclePidDistance(Vehicle):
 
-    def __init__(self, order, init_speed, init_position, init_distance):
-        Vehicle.__init__(self, order)
+    def __init__(self, order, init_speed, init_position, init_distance, vehicle_specs):
+        Vehicle.__init__(self, order, vehicle_specs)
         self.speed = init_speed
         self.position = init_position
         self.distance = init_distance
@@ -16,9 +16,11 @@ class VehiclePidDistance(Vehicle):
         if is_leader:
             desired_speed = self.speed
             if self.speed < 50 and step < 6000: #self.max_speed/2:
-                desired_speed = self.speed + self.max_acceleration/2
+                max_acceleration = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_step()
+                desired_speed = self.speed + max_acceleration/2
             elif step > 6000: # TODO: should change to when it actually should start slowing down
-                desired_speed = self.speed - self.max_deceleration/24
+                max_deceleration = self.vehicle_specs.get_max_deceleration_in_km_per_h_per_step()
+                desired_speed = self.speed - max_deceleration/24
             # else remain constant speed
             self.speed = self.calculate_valid_speed(desired_speed)
 

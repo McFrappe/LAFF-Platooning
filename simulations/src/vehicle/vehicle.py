@@ -3,10 +3,8 @@ class Vehicle:
     t_c = 10  # number of steps for period of communication (10ms*t_c = 100ms)
     array_distance_errors_len = 100
 
-    def __init__(self, order) -> None:
-        self.max_speed = 55 # (km/h)
-        self.max_acceleration = 0.05 # speed (km/h) / step
-        self.max_deceleration = 0.2 # speed (km/h) / step
+    def __init__(self, order, vehicle_specs) -> None:
+        self.vehicle_specs = vehicle_specs
         self.speed = 0  # initially it the vehicle stands still
         self.speed_old = 0  # updates each period t_c
         self.position = 0  # current position of the vehicle in meters
@@ -20,9 +18,10 @@ class Vehicle:
 
     # This should be called each step
     def update_position(self):
-        speed_ms = self.speed/3.6
-        distance_traveled_per_step_m = speed_ms/100  # TODO: should work with any step size
-        self.position = self.position + distance_traveled_per_step_m
+        speed_in_m_per_s = self.speed/3.6
+        step_time_in_s = 0.01 # TODO: should work with any step size
+        distance_traveled_per_step_in_m = speed_in_m_per_s * step_time_in_s
+        self.position = self.position + distance_traveled_per_step_in_m
 
         return self.position
 
@@ -46,19 +45,27 @@ class Vehicle:
         return self.distance
 
     def update_min_distance(self):
-        self.min_distance = self.speed/3.6 * 0.01 + 2 # + margin
+        step_time_in_s = 0.01
+        speed_in_m_per_s = self.speed/3.6
+        margin_in_m = 2
+        self.min_distance = speed_in_m_per_s * step_time_in_s + margin_in_m 
         return self.min_distance
 
     def calculate_valid_speed(self, desired_speed):
         # Calculate valid speed, i.e., between 0 and 100
-        allowed_speed = min(max(desired_speed, 0), self.max_speed)
+        max_speed = self.vehicle_specs.get_max_speed_in_km_per_h()
+        allowed_speed = min(max(desired_speed, 0), max_speed)
 
         # Calculate valid acceleration/deceleration
         speed_up  = allowed_speed - self.speed > 0
         if speed_up:
-            speed = self.speed + min(allowed_speed - self.speed, self.max_acceleration)
+            acceleration = allowed_speed - self.speed
+            max_acceleration = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_step()
+            speed = self.speed + min(acceleration, max_acceleration)
         else:
-            speed = self.speed - min(self.speed - allowed_speed, self.max_deceleration)
+            deceleration = self.speed - allowed_speed
+            max_deceleration = self.vehicle_specs.get_max_deceleration_in_km_per_h_per_step()
+            speed = self.speed - min(deceleration, max_deceleration)
 
         return speed
 

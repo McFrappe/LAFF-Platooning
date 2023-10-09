@@ -1,8 +1,9 @@
 from src.platoon.platoon_pid_distance import PlatoonPidDistance
 from src.common.plot import plot_speed, plot_position, plot_distances
+from src.vehicle.vehicle_specs import truck
 
 def simulate(num_steps, num_vehicles):
-    p = PlatoonPidDistance(num_vehicles)  # all vehicles are standing still in an imaginary position of 0
+    p = PlatoonPidDistance(num_vehicles, truck)  # all vehicles are standing still in an imaginary position of 0
 
     # Each step is 10ms
     for s in range(num_steps):

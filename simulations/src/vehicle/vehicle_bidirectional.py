@@ -2,8 +2,8 @@ from src.vehicle.vehicle import Vehicle
 
 class VehicleBidirectional(Vehicle):
 
-    def __init__(self, order, init_speed, init_position, init_distance):
-        Vehicle.__init__(self, order)
+    def __init__(self, order, init_speed, init_position, init_distance, vehicle_specs):
+        Vehicle.__init__(self, order, vehicle_specs)
         # TODO: save the position for all of the vehicles 
         # could be a global object or each save there data.
         # if each has there own data you could introduce disturbance 
