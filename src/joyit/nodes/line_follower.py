@@ -23,7 +23,9 @@ class LineFollowerController:
         """
         Publishes the current line position to the vehicle/line_follower topic.
         """
-        self.publisher.publish(UInt8MultiArray(data=self.driver.get_values()))
+        position = self.driver.get_values()
+        rospy.loginfo(f"Line position: {position}")
+        self.publisher.publish(UInt8MultiArray(data=position))
 
     def cleanup(self):
         """
