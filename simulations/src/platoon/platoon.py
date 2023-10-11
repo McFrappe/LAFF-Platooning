@@ -17,8 +17,8 @@ class Platoon:
         for i in range(num_vehicles):
             self.vehicles.append(Vehicle(i, vehicle_specs))
 
-    # should be called each step
-    def run(self, step):
+    # should be called each tick
+    def run(self, tick):
         speeds_each_run = np.array([])
         positions_each_run = np.array([])
         distances_each_run = np.array([])
@@ -26,7 +26,7 @@ class Platoon:
         v_in_front = Vehicle(-1, dummy_vehicle) # dummy vehicle
 
         for v in self.vehicles:
-            speeds_each_run = np.append(speeds_each_run, v.update_speed(step))
+            speeds_each_run = np.append(speeds_each_run, v.update_speed(tick))
             positions_each_run = np.append(positions_each_run, v.update_position())
             distances_each_run = np.append(distances_each_run, v.update_distance(v_in_front.get_position()))
             v.update_min_distance()
