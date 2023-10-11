@@ -13,18 +13,18 @@
     <!-- GPIO for Left motors -->
     <param name="LEFT_MOTOR_ENA" type="int" value="33" />
     <param name="LEFT_MOTOR_ENB" type="int" value="35" />
-    <param name="LEFT_MOTOR_IN1" type="int" value="3" />
-    <param name="LEFT_MOTOR_IN2" type="int" value="5" />
-    <param name="LEFT_MOTOR_IN3" type="int" value="7" />
-    <param name="LEFT_MOTOR_IN4" type="int" value="8" />
+    <param name="LEFT_MOTOR_IN1" type="int" value="37" />
+    <param name="LEFT_MOTOR_IN2" type="int" value="40" />
+    <param name="LEFT_MOTOR_IN3" type="int" value="38" />
+    <param name="LEFT_MOTOR_IN4" type="int" value="36" />
 
     <!-- GPIO for Right motors -->
     <param name="RIGHT_MOTOR_ENA" type="int" value="32" />
     <param name="RIGHT_MOTOR_ENB" type="int" value="12" />
-    <param name="RIGHT_MOTOR_IN1" type="int" value="11" />
-    <param name="RIGHT_MOTOR_IN2" type="int" value="13" />
-    <param name="RIGHT_MOTOR_IN3" type="int" value="15" />
-    <param name="RIGHT_MOTOR_IN4" type="int" value="16" />
+    <param name="RIGHT_MOTOR_IN1" type="int" value="8" />
+    <param name="RIGHT_MOTOR_IN2" type="int" value="10" />
+    <param name="RIGHT_MOTOR_IN3" type="int" value="16" />
+    <param name="RIGHT_MOTOR_IN4" type="int" value="18" />
 
     <!-- GPIO for IR -->
     <param name="IR_LEFT" type="int" value="19" />
