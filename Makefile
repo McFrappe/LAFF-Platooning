@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 install:
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
 	sudo apt install curl
@@ -19,11 +21,9 @@ cat:
 	rm -rf build
 	catkin_make
 
-run: cat
-	. devel/setup.bash
+run:
+	source devel/setup.bash
 	roslaunch joyit vehicle.launch
 
-run_pi: cat
-	sudo su
-	. devel/setup.bash
-	roslaunch joyit vehicle.launch --screen
+run_pi:
+	echo "source ./devel/setup.bash; roslaunch joyit vehicle.launch --screen" | sudo su
