@@ -11,7 +11,7 @@ class PlatooningController:
         self.__min_distance_threshold = rospy.get_param("MINIMUM_DISTANCE_THRESHOLD")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
         self.__turn_right_key = rospy.get_param("TURN_RIGHT")
-        self.__turn_left_key = rospy.get_param("TURN_RIGHT")
+        self.__turn_left_key = rospy.get_param("TURN_LEFT")
         self.__no_turn_key = rospy.get_param("NO_TURN")
 
         self.__current_distance = 0
