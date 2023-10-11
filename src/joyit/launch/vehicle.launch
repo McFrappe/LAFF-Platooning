@@ -21,8 +21,8 @@
     <!-- GPIO for Right motors -->
     <param name="RIGHT_MOTOR_ENA" type="int" value="32" />
     <param name="RIGHT_MOTOR_ENB" type="int" value="12" />
-    <param name="RIGHT_MOTOR_IN1" type="int" value="8" />
-    <param name="RIGHT_MOTOR_IN2" type="int" value="10" />
+    <param name="RIGHT_MOTOR_IN1" type="int" value="11" />
+    <param name="RIGHT_MOTOR_IN2" type="int" value="13" />
     <param name="RIGHT_MOTOR_IN3" type="int" value="16" />
     <param name="RIGHT_MOTOR_IN4" type="int" value="18" />
 
