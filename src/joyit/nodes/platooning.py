@@ -55,7 +55,8 @@ class PlatooningController:
         """
         Callback for the line follower subscriber.
         """
-        self.__line_follower = data.data
+        # data is a sequence of hexadecimals.
+        self.__line_follower = [x for x in data.data]
 
     def __perform_step(self, event):
         """

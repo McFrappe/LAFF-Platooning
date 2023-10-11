@@ -5,7 +5,7 @@
     <node name="platooning_node" pkg="joyit" type="platooning.py" respawn="true" />
 
     <!-- Publisher periods -->
-    <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.1" />
+    <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
     <param name="RELATIVE_VELOCITY_PUBLISH_PERIOD" type="double" value="0.1" />
     <param name="LINE_FOLLOWER_PUBLISH_PERIOD" type="double" value="0.1" />
     <param name="PLATOONING_PERIOD" type="double" value="0.1" />
