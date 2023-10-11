@@ -59,6 +59,7 @@ class MovementController:
         """
         Stop turning and go forward/backwards.
         """
+        rospy.loginfo("Stop turning")
         self.left_driver.set_speed(self.speed)
         self.right_driver.set_speed(self.speed)
 
@@ -66,6 +67,7 @@ class MovementController:
         """
         Turn the vehicle left.
         """
+        rospy.loginfo("Turn left")
         self.left_driver.set_speed(0)
         self.right_driver.set_speed(self.speed)
 
@@ -73,6 +75,7 @@ class MovementController:
         """
         Turn the vehicle right.
         """
+        rospy.loginfo("Turn right")
         self.left_driver.set_speed(self.speed)
         self.right_driver.set_speed(0)
 

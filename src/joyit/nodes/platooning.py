@@ -62,17 +62,17 @@ class PlatooningController:
         """
         Performs one step of the platooning algorithm.
         """
-        if self.__line_follower == [0, 0, 1]:
+        if self.__line_follower == [1, 1, 0]:
             self.speed_publisher.publish(self.__max_speed)
-            self.turn_publisher.publish(self.__turn_right_key)
-        elif self.__line_follower == [0, 1, 1]:
-            self.speed_publisher.publish(self.__max_speed / 2)
             self.turn_publisher.publish(self.__turn_right_key)
         elif self.__line_follower == [1, 0, 0]:
+            self.speed_publisher.publish(int(self.__max_speed / 2))
+            self.turn_publisher.publish(self.__turn_right_key)
+        elif self.__line_follower == [0, 1, 1]:
             self.speed_publisher.publish(self.__max_speed)
             self.turn_publisher.publish(self.__turn_left_key)
-        elif self.__line_follower == [1, 1, 0]:
-            self.speed_publisher.publish(self.__max_speed / 2)
+        elif self.__line_follower == [0, 0, 1]:
+            self.speed_publisher.publish(int(self.__max_speed / 2))
             self.turn_publisher.publish(self.__turn_left_key)
         else:
             self.speed_publisher.publish(self.__max_speed)
