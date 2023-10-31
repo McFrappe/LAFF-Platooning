@@ -1,12 +1,12 @@
+from src.common.constants import tick_in_s
+
 class Vehicle:
 
-    t_c = 10  # number of steps for period of communication (10ms*t_c = 100ms)
-    max_speed = 100 # (km/h)
-    max_acceleration = 0.05 # speed (km/h) / step
-    max_deceleration = 0.2 # speed (km/h) / step
+    t_c = 10  # number of ticks for period of communication (10ms*t_c = 100ms)
     array_distance_errors_len = 100
 
-    def __init__(self, order) -> None:
+    def __init__(self, order, vehicle_specs) -> None:
+        self.vehicle_specs = vehicle_specs
         self.speed = 0  # initially it the vehicle stands still
         self.speed_old = 0  # updates each period t_c
         self.position = 0  # current position of the vehicle in meters
@@ -18,15 +18,15 @@ class Vehicle:
         self.prev_distance_error = 0
         self.min_distance = 9  # how close the vehicles should be to each other, depends on speed. (m)
 
-    # This should be called each step
+    # This should be called each tick
     def update_position(self):
-        speed_ms = self.speed/3.6
-        distance_traveled_per_step_m = speed_ms/100  # TODO: should work with any step size
-        self.position = self.position + distance_traveled_per_step_m
+        speed_in_m_per_s = self.speed/3.6
+        distance_traveled_per_tick_in_m = speed_in_m_per_s * tick_in_s
+        self.position = self.position + distance_traveled_per_tick_in_m
 
         return self.position
 
-    # This should be called each step
+    # This should be called each tick
     def update_distance(self, position_of_vehicle_in_front):
         is_leader = self.order == 0
 
@@ -40,23 +40,32 @@ class Vehicle:
         self.prev_distance_error = error
 
         self.array_distance_errors[self.array_distance_errors_pointer] = error
-        #self.array_distance_errors_pointer = 1 + self.array_distance_errors_pointer
         if self.array_distance_errors_pointer == self.array_distance_errors_len-1:
             self.array_distance_errors_pointer = 0
 
-        #self.sum_distance_errors = self.sum_distance_errors + error
         return self.distance
+
+    def update_min_distance(self):
+        speed_in_m_per_s = self.speed/3.6
+        margin_in_m = 2
+        self.min_distance = speed_in_m_per_s * tick_in_s + margin_in_m 
+        return self.min_distance
 
     def calculate_valid_speed(self, desired_speed):
         # Calculate valid speed, i.e., between 0 and 100
-        allowed_speed = min(max(desired_speed, 0), 100)
+        max_speed = self.vehicle_specs.get_max_speed_in_km_per_h()
+        allowed_speed = min(max(desired_speed, 0), max_speed)
 
         # Calculate valid acceleration/deceleration
         speed_up  = allowed_speed - self.speed > 0
         if speed_up:
-            speed = self.speed + min(allowed_speed - self.speed, self.max_acceleration)
+            acceleration = allowed_speed - self.speed
+            max_acceleration = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
+            speed = self.speed + min(acceleration, max_acceleration)
         else:
-            speed = self.speed - min(self.speed - allowed_speed, self.max_deceleration)
+            deceleration = self.speed - allowed_speed
+            max_deceleration = self.vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
+            speed = self.speed - min(deceleration, max_deceleration)
 
         return speed
 
