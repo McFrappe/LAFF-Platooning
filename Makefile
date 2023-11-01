@@ -25,9 +25,16 @@ cat:
 	rm -rf build
 	catkin_make
 
-run:
+run_joyit:
 	source devel/setup.bash
 	roslaunch joyit vehicle.launch
 
-run_pi:
+run_joyit_pi:
 	echo "source ./devel/setup.bash; roslaunch joyit vehicle.launch --screen" | sudo su
+
+run_rcv:
+	source devel/setup.bash
+	roslaunch rcv vehicle.launch
+
+run_rcv_pi:
+	echo "source ./devel/setup.bash; roslaunch rcv vehicle.launch --screen" | sudo su
