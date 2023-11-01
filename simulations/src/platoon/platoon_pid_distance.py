@@ -6,11 +6,12 @@ import numpy as np
 
 
 class VehicleLeaderTruckS1(Vehicle):
-    def __init__(self, order, init_speed, init_position, init_distance, vehicle_specs):
+    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
         Vehicle.__init__(self, order, vehicle_specs)
         self.speed = init_speed
         self.position = init_position
         self.distance = init_distance
+        self.travel_distance = init_travel_distance
 
         self.leader_accelerating = True
         self.leader_initial_accelerating = True
@@ -37,18 +38,19 @@ class PlatoonPidDistanceTruckS1(Platoon):
 
 
     def init_vehicles(self, num_vehicles, vehicle_specs):
-        self.vehicles.append(VehicleLeaderTruckS1(order=0, init_speed=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+        self.vehicles.append(VehicleLeaderTruckS1(order=0, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
 
         for i in range(num_vehicles-1):
-            self.vehicles.append(VehiclePidDistance(i+1, init_speed=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+            self.vehicles.append(VehiclePidDistance(i+1, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
 
 
 class VehicleLeaderTruckS2(Vehicle):
-    def __init__(self, order, init_speed, init_position, init_distance, vehicle_specs):
+    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
         Vehicle.__init__(self, order, vehicle_specs)
         self.speed = init_speed
         self.position = init_position
         self.distance = init_distance
+        self.travel_distance = init_travel_distance
 
         self.leader_accelerating = True
         self.leader_initial_accelerating = True
@@ -67,15 +69,15 @@ class PlatoonPidDistanceTruckS2(Platoon):
         Platoon.__init__(self, num_vehicles, truck)
 
     def init_vehicles(self, num_vehicles, vehicle_specs):
-        self.vehicles.append(VehicleLeaderTruckS2(order=0, init_speed=60, init_position=2.17, init_distance=0, vehicle_specs=vehicle_specs))
-        self.vehicles.append(VehiclePidDistance(order=1, init_speed=60, init_position=0, init_distance=2.17, vehicle_specs=vehicle_specs))
+        self.vehicles.append(VehicleLeaderTruckS2(order=0, init_speed=60, init_travel_distance=2.17, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+        #self.vehicles.append(VehiclePidDistance(order=1, init_speed=60, init_travel_distance=0, init_position=2.17, init_distance=2.17, vehicle_specs=vehicle_specs))
 
-        for i in range(num_vehicles-2):
-            self.vehicles.append(VehiclePidDistance(i+2, init_speed=60, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+        for i in range(num_vehicles-1):
+            self.vehicles.append(VehiclePidDistance(order=i+1, init_speed=60, init_travel_distance=2.17*(-i), init_position=2.17*(-i+1), init_distance=2.17, vehicle_specs=vehicle_specs))
 
 
 class VehicleLeaderTruckS3(Vehicle):
-    def __init__(self, order, init_speed, init_position, init_distance, vehicle_specs):
+    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
         Vehicle.__init__(self, order, vehicle_specs)
         self.speed = init_speed
         self.position = init_position
@@ -104,7 +106,7 @@ class PlatoonPidDistanceTruckS3(Platoon):
         Platoon.__init__(self, num_vehicles, truck)
 
     def init_vehicles(self, num_vehicles, vehicle_specs):
-        self.vehicles.append(VehicleLeaderTruckS3(order=0, init_speed=0, init_position=20, init_distance=0, vehicle_specs=vehicle_specs))
+        self.vehicles.append(VehicleLeaderTruckS3(order=0, init_speed=0, init_travel_distance=20, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
 
         for i in range(num_vehicles-1):
-            self.vehicles.append(VehiclePidDistance(i+1, init_speed=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+            self.vehicles.append(VehiclePidDistance(i+1, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))

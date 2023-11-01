@@ -1,3 +1,4 @@
+import sys, getopt
 from src.platoon.platoon_pid_distance import PlatoonPidDistanceTruckS1, PlatoonPidDistanceTruckS2, PlatoonPidDistanceTruckS3
 from src.common.plot import plot_speed, plot_travel_distance, plot_distances, plot_position
 
@@ -32,5 +33,30 @@ def simulate(num_tick, num_vehicles, scenario):
     plot_position(positions, num_vehicles, f'plots/positions-with-{suffix}.png')
 
 
+def main(argv):
+    num_ticks = 0
+    num_vehicles = 0
+    scenario = 1
+    opts, args = getopt.getopt(argv,"ht:s:v:",["ticks=","scenario=","vehicles="])
+    for opt, arg in opts:
+        if opt == '-h':
+            print ('simulation-pid-distance-model.py -t <number of ticks> -s <scenario> -v "number of vehicles"')
+            sys.exit()
+        elif opt in ("-t", "--ticks"):
+            num_ticks = int(arg)
+        elif opt in ("-s", "--scenario"):
+            scenario = int(arg)
+        elif opt in ("-v", "--vehicles"):
+            num_vehicles = int(arg)
+
+    simulate(num_ticks, num_vehicles, scenario)
+
+
+
 if __name__ == "__main__":
-    simulate(20000, 5, 3)
+    main(sys.argv[1:])
+
+    # Examples
+    #simulate(20000, 5, 1)
+    #simulate(2000, 5, 2)
+    #simulate(20000, 5, 3)
