@@ -9,7 +9,8 @@ class Vehicle:
         self.vehicle_specs = vehicle_specs
         self.speed = 0  # initially it the vehicle stands still
         self.speed_old = 0  # updates each period t_c
-        self.position = 0  # current position of the vehicle in meters
+        self.position = 0  # the distance to the leader
+        self.travel_distance = 0 # current distance traveled of the vehicle in meters
         self.distance = 0  # distance to the vehicle in front (-1 if no one is in front)
         self.order = order  # number of vehicles in front (first has order = 0)
         self.array_distance_errors = [0]*self.array_distance_errors_len
@@ -19,21 +20,27 @@ class Vehicle:
         self.min_distance = 9  # how close the vehicles should be to each other, depends on speed. (m)
 
     # This should be called each tick
-    def update_position(self):
+    def update_travel_distance(self):
         speed_in_m_per_s = self.speed/3.6
         distance_traveled_per_tick_in_m = speed_in_m_per_s * tick_in_s
-        self.position = self.position + distance_traveled_per_tick_in_m
+        self.travel_distance = self.travel_distance + distance_traveled_per_tick_in_m
+
+        return self.travel_distance
+
+    # This should be called each tick
+    def update_position(self, travel_distance_leader):
+        self.position = travel_distance_leader - self.travel_distance
 
         return self.position
 
     # This should be called each tick
-    def update_distance(self, position_of_vehicle_in_front):
+    def update_distance(self, travel_distance_of_vehicle_in_front):
         is_leader = self.order == 0
 
         if is_leader:
             self.distance = 0
         else:
-            self.distance = position_of_vehicle_in_front - self.position
+            self.distance = travel_distance_of_vehicle_in_front - self.travel_distance
 
         error = self.distance - self.min_distance
         self.error_derivative = error - self.prev_distance_error # ms
@@ -80,3 +87,6 @@ class Vehicle:
 
     def get_position(self):
         return self.position
+
+    def get_travel_distance(self):
+        return self.travel_distance

@@ -25,10 +25,10 @@ def plot_speed(data, num_vehicles, download_path):
 
     plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_path)
 
-def plot_position(data, num_vehicles, download_path):
+def plot_travel_distance(data, num_vehicles, download_path):
     x_label_text = 'Ticks (10ms)'
     y_label_text = 'Position (m)'
-    title_text = 'Position of vehicles'
+    title_text = 'Travel distance of vehicles'
 
     plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_path)
 
@@ -36,5 +36,12 @@ def plot_distances(data, num_vehicles, download_path):
     x_label_text = 'Ticks (10ms)'
     y_label_text = 'Distance (m)'
     title_text = 'Distance to vehicle in front'
+
+    plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_path)
+
+def plot_position(data, num_vehicles, download_path):
+    x_label_text = 'Ticks (10ms)'
+    y_label_text = 'Distance (m)'
+    title_text = 'Relative position to the lead vehicle'
 
     plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_path)

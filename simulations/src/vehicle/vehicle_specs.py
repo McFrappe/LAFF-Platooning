@@ -14,7 +14,7 @@ class VehicleSpecs:
         return self.max_deceleration_in_km_per_h_per_tick
 
 
-truck = VehicleSpecs(55, 0.05, 0.2)  # TODO: should change too 100 km/h
+truck = VehicleSpecs(100, 0.05, 0.2) 
 kit_car = VehicleSpecs(4, 0.04, 0.15)
 rc_car = VehicleSpecs(30, 0.08, 0.3)
 dummy_vehicle = VehicleSpecs(0, 0, 0)
