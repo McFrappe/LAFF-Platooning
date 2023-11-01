@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import rospy
+import numpy as np
 
 from std_msgs.msg import Int32
 from sensor_msgs.msg import Range
@@ -20,6 +21,9 @@ class PIDController:
         self.__max_right = rospy.get_param("MAX_RIGHT_ANGLE")
         self.__max_left = rospy.get_param("MAX_LEFT_ANGLE")
         self.__zero = rospy.get_param("ZERO_ANGLE")
+
+        self.__pid_min = rospy.get_param("PID_MIN")
+        self.__pid_max = rospy.get_param("PID_MAX")
 
         self.__steering_angle = self.__zero
         self.__current_speed = self.__idle
@@ -47,7 +51,11 @@ class PIDController:
         updated_control = self.__pid.update(self.__current_distance)
         # TODO: Convert into the correct unit?
         rospy.loginfo(f"PID controller output for distance {self.__current_distance}: {updated_control}")
-        self.current_speed = int(min(self.__idle + updated_control, self.__max_forward))
+        self.current_speed = int(np.interp(
+            updated_control,
+            [self.__pid_min, self.__pid_max],
+            [self.__idle, self.__max_forward]
+        ))
         self.speed_publisher.publish(self.current_speed)
 
     def stop(self):

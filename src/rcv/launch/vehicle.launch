@@ -15,6 +15,13 @@
     <param name="K_D" type="double" value="3" />
     <param name="PID_REFERENCE" type="double" value="10" />
 
+    <!-- Affects how the output of the PID controller maps to changes in speed. -->
+    <!-- If the output is below or equal to PID_MIN, the speed will be 0, and if the output -->
+    <!-- is above or equal to PID_MAX, the speed will be set to the max speed. -->
+    <param name="PID_MIN" type="int" value="-1" />
+    <param name="PID_MAX" type="int" value="1" />
+
+
     <!-- GPIO for motor (PWM1) -->
     <param name="MOTOR_PIN" type="int" value="33" />
     <!-- GPIO for servo motor (PWM0) -->
