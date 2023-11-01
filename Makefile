@@ -13,7 +13,7 @@ install:
 	rosdep update
 
 	git clone https://github.com/naoki-mizuno/ds4drv --branch devel ~/ds4drv
-	cd ~/ds4drv && python3 setup.py install --prefix ~/.local && sudo cp udev/50-ds4drv.rules /etc/udev/rules.d/
+	cd ~/ds4drv && python3 setup.py install && sudo cp udev/50-ds4drv.rules /etc/udev/rules.d/
 	sudo udevadm control --reload-rules
 	sudo udevadm trigger
 
