@@ -185,3 +185,5 @@ $RECYCLE.BIN/
 devel
 build
 .direnv
+
+**/*.pyc
