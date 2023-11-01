@@ -1,7 +1,7 @@
 <launch>
     <node name="esc_node" pkg="rcv" type="esc.py" respawn="true" />
     <node name="servo_node" pkg="rcv" type="servo.py" respawn="true" />
-    <node name="pid_controller" pkg="rcv" type="pid_controller.py" respawn="true" />
+    <node name="simple_controller_node" pkg="rcv" type="simple_controller.py" respawn="true" />
     <node name="line_follower_node" pkg="common" type="line_follower.py" respawn="true" />
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
     <node name="ds4_controller_node" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true" />

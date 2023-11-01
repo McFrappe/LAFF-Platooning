@@ -3,7 +3,7 @@ import rospy
 
 from sensor_msgs.msg import Range
 
-from joyit.ultrasonic_driver import UltrasonicDriver
+from common.ultrasonic_driver import UltrasonicDriver
 
 class DistanceController:
     def __init__(self):

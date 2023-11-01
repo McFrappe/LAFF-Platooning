@@ -3,7 +3,7 @@ import rospy
 
 from std_msgs.msg import UInt8MultiArray
 
-from joyit.IR_array_driver import IRArrayDriver
+from common.IR_array_driver import IRArrayDriver
 
 class LineFollowerController:
     def __init__(self):
