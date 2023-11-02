@@ -17,9 +17,9 @@ install:
 	sudo udevadm control --reload-rules
 	sudo udevadm trigger
 
-	git clone https://github.com/mcfrappe/laff-platooning ~/laff-platooning
 	cd ~/laff-platooning && git submodule update --init --recursive
 	cd ~/laff-platooning && sudo pip install -r requirements.txt
+	source /opt/ros/noetic/setup.bash
 
 cat:
 	rm -rf build
