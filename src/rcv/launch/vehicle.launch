@@ -4,12 +4,6 @@
     <node name="pid_controller" pkg="rcv" type="pid_controller.py" respawn="true" />
     <node name="line_follower_node" pkg="common" type="line_follower.py" respawn="true" />
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
-    <node name="ds4_controller_node" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true">
-  	<param name="~backend" type="string" value="bluetooth" />
-    </node>
-
-    <!-- Hidraw backend does not work with DS4 -->
-    <param name="backend" type="string" value="bluetooth" />
 
     <!-- PID controller -->
     <param name="K_P" type="double" value="0.00294" />
@@ -23,7 +17,6 @@
     <param name="PID_MIN" type="int" value="-1" />
     <param name="PID_MAX" type="int" value="1" />
 
-
     <!-- GPIO for motor (PWM1) -->
     <param name="MOTOR_PIN" type="int" value="33" />
     <!-- GPIO for servo motor (PWM0) -->
@@ -31,9 +24,8 @@
 
     <!-- Publisher periods -->
     <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
-    <param name="RELATIVE_VELOCITY_PUBLISH_PERIOD" type="double" value="0.1" />
     <param name="LINE_FOLLOWER_PUBLISH_PERIOD" type="double" value="0.1" />
-    <param name="PLATOONING_PERIOD" type="double" value="0.1" />
+    <param name="PID_CONTROL_PERIOD" type="double" value="0.1" />
 
     <!-- GPIO for IR -->
     <param name="IR_LEFT" type="int" value="19" />
@@ -43,15 +35,6 @@
     <!-- GPIO for Ultrasonic -->
     <param name="ULTRASONIC_TRIGGER" type="int" value="29" />
     <param name="ULTRASONIC_ECHO" type="int" value="31" />
-
-    <!-- Misc -->
-    <param name="MAX_SPEED_MOTOR" type="int" value="100" />
-    <param name="PWM_FREQUENCY" type="int" value="50" />
-    <param name="DIR_FORWARD" type="int" value="1" />
-    <param name="DIR_BACKWARD" type="int" value="-1" />
-    <param name="TURN_LEFT" type="int" value="1" />
-    <param name="TURN_RIGHT" type="int" value="-1" />
-    <param name="NO_TURN" type="int" value="0" />
 
     <param name="MAX_FORWARD_MOTOR" type="int" value="88" />
     <param name="MAX_REVERSE_MOTOR" type="int" value="10" />

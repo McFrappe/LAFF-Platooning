@@ -38,3 +38,10 @@ run_rcv:
 
 run_rcv_pi:
 	echo "source ./devel/setup.bash; roslaunch rcv vehicle.launch --screen" | sudo su
+
+run_rcv_joystick:
+	source devel/setup.bash
+	roslaunch rcv vehicle_joystick.launch
+
+run_rcv_joystick_pi:
+	echo "source ./devel/setup.bash; roslaunch rcv vehicle_joystick.launch --screen" | sudo su

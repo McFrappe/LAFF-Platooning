@@ -15,6 +15,9 @@ class PIDController:
             rospy.get_param("K_D"),
             rospy.get_param("PID_REFERENCE"))
 
+        self.__pid_min = rospy.get_param("PID_MIN")
+        self.__pid_max = rospy.get_param("PID_MAX")
+
         self.__max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
         self.__max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
         self.__idle = rospy.get_param("IDLE_MOTOR")
@@ -22,12 +25,9 @@ class PIDController:
         self.__max_left = rospy.get_param("MAX_LEFT_ANGLE")
         self.__zero = rospy.get_param("ZERO_ANGLE")
 
-        self.__pid_min = rospy.get_param("PID_MIN")
-        self.__pid_max = rospy.get_param("PID_MAX")
-
         self.__steering_angle = self.__zero
         self.__current_speed = self.__idle
-        self.__current_distance = 0 # TODO: remember to update this
+        self.__current_distance = 0 
 
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
 
@@ -39,7 +39,7 @@ class PIDController:
             self.__callback_distance,
             queue_size=self.__message_queue_size)
 
-        rospy.Timer(rospy.Duration(rospy.get_param("PLATOONING_PERIOD")), self.__perform_step)
+        rospy.Timer(rospy.Duration(rospy.get_param("PID_CONTROL_PERIOD")), self.__perform_step)
 
     def __callback_distance(self, data: Range):
         """
@@ -49,7 +49,6 @@ class PIDController:
 
     def __perform_step(self, event):
         updated_control = self.__pid.update(self.__current_distance)
-        # TODO: Convert into the correct unit?
         rospy.loginfo(f"PID controller output for distance {self.__current_distance}: {updated_control}")
         self.current_speed = int(np.interp(
             updated_control,

@@ -1,13 +1,14 @@
 <launch>
     <node name="esc_node" pkg="rcv" type="esc.py" respawn="true" />
     <node name="servo_node" pkg="rcv" type="servo.py" respawn="true" />
-    <node name="simple_controller_node" pkg="rcv" type="simple_controller.py" respawn="true" />
+    <node name="joystick_controller_node" pkg="rcv" type="joystick_controller.py" respawn="true" />
     <node name="line_follower_node" pkg="common" type="line_follower.py" respawn="true" />
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
-    <node name="ds4_controller_node" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true" />
-
-    <!-- Hidraw backend does not work with DS4 -->
-    <param name="backend" type="string" value="bluetooth" />
+    <node name="ds4_controller_node" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true">
+        <!-- Hidraw backend does not work with DS4 -->
+  	    <param name="~backend" type="string" value="bluetooth" />
+  	    <param name="~use_standard_msgs" type="boolean" value="true" />
+    </node>
 
     <!-- PID controller -->
     <param name="K_P" type="double" value="0.00294" />
@@ -28,9 +29,8 @@
 
     <!-- Publisher periods -->
     <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
-    <param name="RELATIVE_VELOCITY_PUBLISH_PERIOD" type="double" value="0.1" />
     <param name="LINE_FOLLOWER_PUBLISH_PERIOD" type="double" value="0.1" />
-    <param name="PLATOONING_PERIOD" type="double" value="0.1" />
+    <param name="JOYSTICK_CONTROL_PERIOD" type="double" value="0.1" />
 
     <!-- GPIO for IR -->
     <param name="IR_LEFT" type="int" value="19" />
@@ -41,15 +41,6 @@
     <param name="ULTRASONIC_TRIGGER" type="int" value="29" />
     <param name="ULTRASONIC_ECHO" type="int" value="31" />
 
-    <!-- Misc -->
-    <param name="MAX_SPEED_MOTOR" type="int" value="100" />
-    <param name="PWM_FREQUENCY" type="int" value="50" />
-    <param name="DIR_FORWARD" type="int" value="1" />
-    <param name="DIR_BACKWARD" type="int" value="-1" />
-    <param name="TURN_LEFT" type="int" value="1" />
-    <param name="TURN_RIGHT" type="int" value="-1" />
-    <param name="NO_TURN" type="int" value="0" />
-
     <param name="MAX_FORWARD_MOTOR" type="int" value="88" />
     <param name="MAX_REVERSE_MOTOR" type="int" value="10" />
     <param name="IDLE_MOTOR" type="int" value="57" />
@@ -59,7 +50,6 @@
     <!-- TODO: is this true? Maybe it should be 47? TEST IT! -->
     <param name="ZERO_ANGLE" type="int" value="57" />
 
-    <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />
     <param name="MESSAGE_QUEUE_SIZE" type="int" value="10" />
 
     <param name="ULTRASONIC_SAMPLES_PER_PUBLISH" type="int" value="5" />
