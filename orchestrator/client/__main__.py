@@ -1,5 +1,3 @@
-import os
-import time
 import socket
 import select
 import linuxfd
@@ -21,9 +19,10 @@ def run():
 
     print(f"Node: Listening on {local_ip}:{SOCKET_PORT}")
     node = Node(s, local_ip)
+    print("Node: Created node object")
 
-    timer = linuxfd.timerfd(time.CLOCK_REALTIME)
-    timer.settime(0, interval=HEARTBEAT_INTERVAL)
+    timer = linuxfd.timerfd(rtc=True)
+    timer.settime(1, interval=HEARTBEAT_INTERVAL)
     timer_fd = timer.fileno()
 
     while True:
@@ -37,6 +36,7 @@ def run():
                 node.handle_message(parsed_msg)
             else:
                 node.send_heartbeat()
+                print("Heartbeat sent")
 
 if __name__ == "__main__":
     run()
