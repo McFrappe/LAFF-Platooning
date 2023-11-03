@@ -58,6 +58,8 @@ class Server:
             self.__socket.sendto(str.encode(cmd), (self.__broadcast_ip,
                                                    SOCKET_PORT))
             self.__is_running = True
+            self.__socket.sendto(str.encode(cmd), (BROADCAST_ADDR,
+                                                   SOCKET_PORT))
         elif cmd == MSG_CMD_STOP:
             self.__socket.sendto(str.encode(cmd), (self.__broadcast_ip,
                                                    SOCKET_PORT))
