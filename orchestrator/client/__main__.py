@@ -8,13 +8,18 @@ from orchestrator.utils import get_ip
 from orchestrator.client.node import Node
 
 def run():
+    """
+    Main entry point for a client node. Creates a UDP socket and listens for
+    incoming messages from the master node. Also sends heartbeat messages  with
+    a specified interval to the server to register itself.
+    """
     local_ip = get_ip()
     s = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     s.bind((local_ip, SOCKET_PORT))
 
-    print(f"Listening on {local_ip}:{SOCKET_PORT}")
+    print(f"Node: Listening on {local_ip}:{SOCKET_PORT}")
     node = Node(s, local_ip)
 
     timer = linuxfd.timerfd(time.CLOCK_REALTIME)

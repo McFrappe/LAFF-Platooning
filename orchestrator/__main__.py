@@ -6,10 +6,18 @@ from orchestrator.shared import *
 from orchestrator.server import Server
 
 def prompt():
+    """
+    Prints the prompt for the user to enter a command and flushes the stdout
+    buffer.
+    """
     sys.stdout.write("> ")
     sys.stdout.flush()
 
 def run():
+    """
+    Main entry point for the orchestrator. Creates a UDP socket and listens for
+    incoming messages
+    """
     s = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -28,22 +36,21 @@ def run():
                 (msg, addr) = sock.recvfrom(BUFFER_SIZE)
                 if addr[0].endswith("255"):
                     continue
+
                 parsed_msg = msg.decode("utf-8").split(":")
                 server.handle_message(parsed_msg, addr)
             else:
                 msg = sys.stdin.readline()
                 parsed_msg = [x.strip("\n").lower() for x in msg.split(" ")]
+
                 if parsed_msg[0] == "q" or parsed_msg[0] == "quit":
                     sys.exit(1)
                 elif parsed_msg[0] == "h" or parsed_msg[0] == "help":
-                    print(f"Available commands: {MSG_CMD_SET_MASTER}, {MSG_CMD_START}, {MSG_CMD_STOP}, ls")
-                    prompt()
-                elif parsed_msg[0] == "n" or parsed_msg[0] == "nodes":
-                    server.print_nodes()
-                    prompt()
-                else:
+                    print(AVAILABLE_COMMANDS_STR)
+                elif len(parsed_msg[0]) > 0:
                     server.handle_user_cmd(parsed_msg)
-                    prompt()
+
+                prompt()
 
 if __name__ == "__main__":
     run()
