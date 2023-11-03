@@ -67,4 +67,3 @@ class Server:
         elif cmd == MSG_CMD_LIST_NODES:
             self.print_nodes()
             return
-

@@ -22,8 +22,8 @@ def run():
     print("Node: Created node object")
 
     timer = linuxfd.timerfd(rtc=True)
-    timer.settime(1, interval=HEARTBEAT_INTERVAL)
     timer_fd = timer.fileno()
+    timer.settime(STARTUP_HEARTBEAT_TIMER_EXPIRATION)
 
     while True:
         fds = [timer_fd, s]
@@ -31,12 +31,14 @@ def run():
 
         for sock in rs:
             if sock == s:
-                (msg, addr) = s.recvfrom(BUFFER_SIZE)
+                (msg, _) = s.recvfrom(BUFFER_SIZE)
                 parsed_msg = [x.strip("\n").lower() for x in msg.decode("utf-8").split(":")]
                 node.handle_message(parsed_msg)
             else:
                 node.send_heartbeat()
                 print("Heartbeat sent")
+
+        timer.settime(HEARTBEAT_TIMER_EXPIRATION)
 
 if __name__ == "__main__":
     run()
