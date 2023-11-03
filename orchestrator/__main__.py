@@ -21,7 +21,7 @@ def run():
     prompt()
     while True:
         fds = [sys.stdin, s]
-        rs, ws, _ = select.select(fds, [], [])
+        rs, _, _ = select.select(fds, [], [])
 
         for sock in rs:
             if sock == s:
