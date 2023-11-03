@@ -35,6 +35,10 @@ class Server:
             if addr not in self.__nodes:
                 self.__nodes.append(addr)
                 print(f"Server: Registered node {addr} to list of nodes")
+                return
+
+            print(f"Server: Heartbeat received from node: {addr}")
+
 
     def handle_user_cmd(self, msg):
         """

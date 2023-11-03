@@ -64,7 +64,10 @@ class Node:
         data = "" if len(msg) == 1 else msg[1]
         if msg == MSG_CMD_SET_MASTER:
             self.__is_master = data == self.__ip
+            print(f"Node: Node is master: {self.__is_master}")
         elif msg == MSG_CMD_START:
             self.start()
+            print(f"Node: Started")
         elif msg == MSG_CMD_STOP:
             self.stop()
+            print(f"Node: Stopped")

@@ -17,9 +17,8 @@ def run():
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     s.bind((local_ip, SOCKET_PORT))
 
-    print(f"Node: Listening on {local_ip}:{SOCKET_PORT}")
     node = Node(s, local_ip)
-    print("Node: Created node object")
+    print(f"Node: created node with {local_ip}:{SOCKET_PORT}")
 
     timer = linuxfd.timerfd(rtc=True)
     timer_fd = timer.fileno()
@@ -36,7 +35,6 @@ def run():
                 node.handle_message(parsed_msg)
             else:
                 node.send_heartbeat()
-                print("Heartbeat sent")
 
         timer.settime(HEARTBEAT_TIMER_EXPIRATION)
 
