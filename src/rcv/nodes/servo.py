@@ -29,7 +29,7 @@ class ServoController:
         """
         self.angle = msg.data
         self.driver.set_angle(self.angle)
-        rospy.loginfo(f"Status of steering angle is {self.driver.get_status()}")
+        #rospy.loginfo(f"Status of steering angle is {self.driver.get_status()}")
 
     def stop(self):
         """

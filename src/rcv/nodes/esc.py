@@ -29,7 +29,7 @@ class ESCController:
         """
         self.speed = msg.data
         self.driver.set_speed(self.speed)
-        rospy.loginfo(f"Status of speed is {self.driver.get_status()}")
+        #rospy.loginfo(f"Status of speed is {self.driver.get_status()}")
 
     def stop(self):
         """
