@@ -5,14 +5,6 @@ from orchestrator.shared import *
 from orchestrator.utils import *
 from orchestrator.server import Server
 
-def prompt():
-    """
-    Prints the prompt for the user to enter a command and flushes the stdout
-    buffer.
-    """
-    sys.stdout.write("> ")
-    sys.stdout.flush()
-
 def run():
     """
     Main entry point for the orchestrator. Creates a UDP socket and listens for

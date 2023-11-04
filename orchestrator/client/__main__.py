@@ -15,7 +15,6 @@ def run():
     s = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    s.bind((local_ip, SOCKET_PORT))
 
     node = Node(s, local_ip)
     print(f"Node: created node with {local_ip}:{SOCKET_PORT}")

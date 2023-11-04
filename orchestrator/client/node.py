@@ -48,12 +48,19 @@ class Node:
         os.killpg(self.__pid, signal.SIGTERM)
         self.__pid = -1
 
+    def set_master(self, new_master):
+        self.__is_master = new_master == self.__ip
+        print(f"Set master: {self.__is_master}")
+
     def send_heartbeat(self):
         """
         Sends a heartbeat message to the master node.
         """
         print("Sending heartbeat")
-        self.__socket.sendto(str.encode(MSG_CMD_HEARTBEAT), (self.__broadcast_ip,                                                 SOCKET_PORT))
+        self.__socket.sendto(
+            str.encode(MSG_CMD_HEARTBEAT),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
 
     def handle_message(self, msg):
         """
@@ -63,11 +70,8 @@ class Node:
         cmd = msg[0]
         data = "" if len(msg) == 1 else msg[1]
         if msg == MSG_CMD_SET_MASTER:
-            self.__is_master = data == self.__ip
-            print(f"Node: Node is master: {self.__is_master}")
+            self.set_master(data)
         elif msg == MSG_CMD_START:
             self.start()
-            print(f"Node: Started")
         elif msg == MSG_CMD_STOP:
             self.stop()
-            print(f"Node: Stopped")

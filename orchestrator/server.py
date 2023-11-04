@@ -1,5 +1,5 @@
 from orchestrator.shared import *
-from orchestrator.utils import get_broadcast_ip
+from orchestrator.utils import get_broadcast_ip, prompt
 
 class Server:
     """
@@ -32,13 +32,11 @@ class Server:
         """
         cmd = msg[0]
         if cmd == MSG_CMD_HEARTBEAT:
-            if addr not in self.__nodes:
-                self.__nodes.append(addr)
-                print(f"Server: Registered node {addr} to list of nodes")
+            if addr in self.__nodes:
                 return
-
-            print(f"Server: Heartbeat received from node: {addr}")
-
+            self.__nodes.append(addr)
+            print(f"Registered node {addr[0]} to list of nodes")
+            prompt()
 
     def handle_user_cmd(self, msg):
         """
@@ -49,11 +47,11 @@ class Server:
         data = "" if len(msg) == 1 else msg[1]
 
         if cmd not in AVAILABLE_COMMANDS:
-                print(f"Server: Unsupported command: {cmd}")
+                print(f"Unsupported command: {cmd}")
                 return
         elif cmd == MSG_CMD_SET_MASTER:
             if len(data) == 0 or data not in self.__nodes:
-                print("Server: Invalid node address for master, see the registered nodes with command 'ls'")
+                print("Invalid node address for master, see the registered nodes with command 'ls'")
                 return
 
             # TODO: send broadcast to all nodes to set master instead
