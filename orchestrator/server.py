@@ -31,11 +31,12 @@ class Server:
         format of [command, data]
         """
         cmd = msg[0]
+        ip = addr[0]
         if cmd == MSG_CMD_HEARTBEAT:
-            if addr in self.__nodes:
+            if ip in self.__nodes:
                 return
-            self.__nodes.append(addr[0])
-            print(f"Registered node {addr[0]} to list of nodes")
+            self.__nodes.append(ip)
+            print(f"Registered node {ip} to list of nodes")
             prompt()
 
     def handle_user_cmd(self, msg):
