@@ -34,7 +34,7 @@ class Server:
         if cmd == MSG_CMD_HEARTBEAT:
             if addr in self.__nodes:
                 return
-            self.__nodes.append(addr)
+            self.__nodes.append(addr[0])
             print(f"Registered node {addr[0]} to list of nodes")
             prompt()
 
@@ -47,24 +47,24 @@ class Server:
         data = "" if len(msg) == 1 else msg[1]
 
         if cmd not in AVAILABLE_COMMANDS:
-                print(f"Unsupported command: {cmd}")
-                return
+            print(f"Unsupported command: {cmd}")
+            return
         elif cmd == MSG_CMD_SET_MASTER:
             if len(data) == 0 or data not in self.__nodes:
-                print("Invalid node address for master, see the registered nodes with command 'ls'")
+                print("Invalid address, see the registered nodes with 'ls'")
                 return
-
-            # TODO: send broadcast to all nodes to set master instead
             self.__socket.sendto(str.encode(cmd), (data, SOCKET_PORT))
         elif cmd == MSG_CMD_START:
-            self.__socket.sendto(str.encode(cmd), (self.__broadcast_ip,
-                                                   SOCKET_PORT))
+            self.__socket.sendto(
+                str.encode(cmd),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
             self.__is_running = True
-            self.__socket.sendto(str.encode(cmd), (BROADCAST_ADDR,
-                                                   SOCKET_PORT))
         elif cmd == MSG_CMD_STOP:
-            self.__socket.sendto(str.encode(cmd), (self.__broadcast_ip,
-                                                   SOCKET_PORT))
+            self.__socket.sendto(
+                str.encode(cmd),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
             self.__is_running = False
         elif cmd == MSG_CMD_LIST_NODES:
             self.print_nodes()
