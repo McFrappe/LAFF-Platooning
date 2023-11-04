@@ -56,7 +56,6 @@ class Node:
         """
         Sends a heartbeat message to the master node.
         """
-        print("Sending heartbeat")
         self.__socket.sendto(
             str.encode(MSG_CMD_HEARTBEAT),
             (self.__broadcast_ip, SOCKET_PORT)

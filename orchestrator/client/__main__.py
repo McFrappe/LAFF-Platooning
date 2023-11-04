@@ -17,7 +17,7 @@ def run():
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     node = Node(s, local_ip)
-    print(f"Node: created node with {local_ip}:{SOCKET_PORT}")
+    print(f"Created node at {local_ip}:{SOCKET_PORT}")
 
     timer = linuxfd.timerfd(rtc=True)
     timer_fd = timer.fileno()
