@@ -27,13 +27,15 @@ class Node:
         if self.__pid != -1:
             return
 
-        if self.__is_master:
-            make_cmd = "run_rcv_joystick_pi"
-        else:
-            make_cmd = "run_rcv_pi"
+        # TODO: Add when rcdriver is merged
+        # if self.__is_master:
+        #     make_cmd = "run_rcv_joystick_pi"
+        # else:
+        #     make_cmd = "run_rcv_pi"
+        make_cmd = "run_pi"
 
         try:
-            proc = subprocess.Popen(f"cd {REPO_PATH} && make {make_cmd}", shell=True)
+            proc = subprocess.Popen(f"make {make_cmd}", shell=True, cwd=REPO_PATH)
             self.__pid = proc.pid
         except Exception as e:
             print(f"Failed to start process:\n{e}")
