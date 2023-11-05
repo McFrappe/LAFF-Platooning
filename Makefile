@@ -27,20 +27,23 @@ install:
 	sudo systemctl start laff.service
 	sudo loginctl enable-linger laff
 
-update:
+source:
+	source /opt/ros/noetic/setup.bash
+	source devel/setup.bash
+
+update: source
 	git reset --hard
 	git checkout $(BRANCH)
 	git pull
 	rm -rf build
 	catkin_make
 
-cat:
+cat: source
 	rm -rf build
 	catkin_make
 
-run:
-	source devel/setup.bash
+run: source
 	roslaunch joyit vehicle.launch
 
-run_pi:
-	echo "source ./devel/setup.bash; roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid" | sudo su
+run_pi: source
+	roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid
