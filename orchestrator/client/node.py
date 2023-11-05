@@ -68,9 +68,9 @@ class Node:
         """
         cmd = msg[0]
         data = "" if len(msg) == 1 else msg[1]
-        if msg == MSG_CMD_SET_MASTER:
+        if cmd == MSG_CMD_SET_MASTER:
             self.set_master(data)
-        elif msg == MSG_CMD_START:
+        elif cmd == MSG_CMD_START:
             self.start()
-        elif msg == MSG_CMD_STOP:
+        elif cmd == MSG_CMD_STOP:
             self.stop()
