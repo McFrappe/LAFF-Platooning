@@ -44,5 +44,4 @@ run:
 	roslaunch joyit vehicle.launch
 
 run_pi:
-	source devel/setup.bash
-	roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid
+	echo "source devel/setup.bash; roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid" | sudo su
