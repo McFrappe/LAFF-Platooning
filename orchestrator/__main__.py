@@ -5,6 +5,7 @@ from orchestrator.shared import *
 from orchestrator.utils import *
 from orchestrator.server import Server
 
+
 def run():
     """
     Main entry point for the orchestrator. Creates a UDP socket and listens for
@@ -43,6 +44,7 @@ def run():
                     server.handle_user_cmd(parsed_msg)
 
                 prompt()
+
 
 if __name__ == "__main__":
     run()

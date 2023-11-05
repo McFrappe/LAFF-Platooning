@@ -5,6 +5,7 @@ from orchestrator.shared import *
 from orchestrator.utils import get_ip
 from orchestrator.client.node import Node
 
+
 def run():
     """
     Main entry point for a client node. Creates a UDP socket and listens for
@@ -31,12 +32,14 @@ def run():
         for sock in rs:
             if sock == s:
                 (msg, _) = s.recvfrom(BUFFER_SIZE)
-                parsed_msg = [x.strip("\n").lower() for x in msg.decode("utf-8").split(":")]
+                parsed_msg = [x.strip("\n").lower()
+                              for x in msg.decode("utf-8").split(":")]
                 node.handle_message(parsed_msg)
             else:
                 node.send_heartbeat()
 
         timer.settime(HEARTBEAT_TIMER_EXPIRATION)
+
 
 if __name__ == "__main__":
     run()

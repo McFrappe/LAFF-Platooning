@@ -1,6 +1,7 @@
 from orchestrator.shared import *
 from orchestrator.utils import get_broadcast_ip, prompt
 
+
 class Server:
     """
     Server class that handles the communication between the master node and the

@@ -1,6 +1,7 @@
 import sys
 import socket
 
+
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.settimeout(0)
@@ -13,9 +14,11 @@ def get_ip():
         s.close()
         return ip
 
+
 def get_broadcast_ip():
     local_ip = get_ip()
     return f"{str.join('.', local_ip.split('.')[0:-1])}.255"
+
 
 def prompt():
     """

@@ -4,6 +4,7 @@ import subprocess
 from orchestrator.shared import *
 from orchestrator.utils import get_broadcast_ip
 
+
 class Node:
     """
     Node class that handles the communication between the server and the
@@ -35,7 +36,8 @@ class Node:
         make_cmd = "run_pi"
 
         try:
-            proc = subprocess.Popen(f"make {make_cmd}", shell=True, cwd=REPO_PATH)
+            proc = subprocess.Popen(
+                f"make {make_cmd}", shell=True, cwd=REPO_PATH)
             self.__running = True
         except Exception as e:
             print(f"Failed to start process:\n{e}")
@@ -51,7 +53,8 @@ class Node:
             return
 
         try:
-            subprocess.Popen(f"sudo kill -SIGINT $(cat {PID_PATH})", shell=True)
+            subprocess.Popen(
+                f"sudo kill -SIGINT $(cat {PID_PATH})", shell=True)
         except Exception as e:
             print(f"Failed to stop process:\n{e}")
 
@@ -66,6 +69,8 @@ class Node:
         """
         Sends a heartbeat message to the master node.
         """
+        print("Heartbeat sent")
+
         self.__socket.sendto(
             str.encode(MSG_CMD_HEARTBEAT),
             (self.__broadcast_ip, SOCKET_PORT)
