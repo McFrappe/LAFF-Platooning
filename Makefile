@@ -1,4 +1,5 @@
 SHELL := /bin/bash
+BRANCH ?= main
 
 install:
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -25,6 +26,13 @@ install:
 	sudo systemctl enable laff.service
 	sudo systemctl start laff.service
 	sudo loginctl enable-linger laff
+
+update:
+	git reset --hard
+	git checkout $(BRANCH)
+	git pull
+	rm -rf build
+	catkin_make
 
 cat:
 	rm -rf build

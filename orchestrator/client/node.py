@@ -23,8 +23,6 @@ class Node:
         Starts the node process and sets the master flag if the node is the
         master node. If the node is already running, this method does nothing.
         """
-        print("Received start command")
-
         if self.__running:
             return
 
@@ -36,7 +34,7 @@ class Node:
         make_cmd = "run_pi"
 
         try:
-            proc = subprocess.Popen(
+            subprocess.Popen(
                 f"make {make_cmd}", shell=True, cwd=REPO_PATH)
             self.__running = True
         except Exception as e:
@@ -47,8 +45,6 @@ class Node:
         Stops the node process. If the node is not running, this method does
         nothing.
         """
-        print("Received stop command")
-
         if not self.__running:
             return
 
@@ -61,6 +57,12 @@ class Node:
         # Assume the process is already dead
         self.__running = False
 
+    def update(self, branch):
+        self.stop()
+        subprocess.Popen(
+            f"make BRANCH={branch} update", shell=True, cwd=REPO_PATH)
+        self.start()
+
     def set_master(self, new_master):
         self.__is_master = new_master == self.__ip
         print(f"Set master: {self.__is_master}")
@@ -69,8 +71,6 @@ class Node:
         """
         Sends a heartbeat message to the master node.
         """
-        print("Heartbeat sent")
-
         self.__socket.sendto(
             str.encode(MSG_CMD_HEARTBEAT),
             (self.__broadcast_ip, SOCKET_PORT)
@@ -84,8 +84,14 @@ class Node:
         cmd = msg[0]
         data = "" if len(msg) == 1 else msg[1]
         if cmd == MSG_CMD_SET_MASTER:
+            print("Received set master command")
             self.set_master(data)
         elif cmd == MSG_CMD_START:
+            print("Received start command")
             self.start()
         elif cmd == MSG_CMD_STOP:
+            print("Received stop command")
             self.stop()
+        elif cmd == MSG_CMD_UPDATE:
+            print(f"Received update command for branch {data}")
+            self.update(data)

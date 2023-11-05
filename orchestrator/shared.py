@@ -15,13 +15,22 @@ MSG_CMD_REQUEST_MASTER = "rm"
 MSG_CMD_SET_MASTER = "master"
 MSG_CMD_START = "start"
 MSG_CMD_STOP = "stop"
+MSG_CMD_UPDATE = "update"
 MSG_CMD_LIST_NODES = "ls"
 
 AVAILABLE_COMMANDS = [
-    MSG_CMD_SET_MASTER,
     MSG_CMD_START,
     MSG_CMD_STOP,
-    MSG_CMD_LIST_NODES
+    MSG_CMD_LIST_NODES,
+    MSG_CMD_UPDATE,
+    MSG_CMD_SET_MASTER,
 ]
 
-AVAILABLE_COMMANDS_STR = f"Available commands: \n- {MSG_CMD_SET_MASTER}: Set a node to master node.\n- {MSG_CMD_START}: Start the nodes.\n- {MSG_CMD_STOP}: Stop the nodes.\n- {MSG_CMD_LIST_NODES}: List the nodes connected to the server.\n"
+AVAILABLE_COMMANDS_STR = f"""
+Available commands:
+- {MSG_CMD_START}: Start ROS on all nodes.
+- {MSG_CMD_STOP}: Stop ROS on all nodes.
+- {MSG_CMD_LIST_NODES}: List the nodes connected to the server.
+- {MSG_CMD_UPDATE} [branch]: Update all nodes to latest code on <branch>
+- {MSG_CMD_SET_MASTER} [ip]: Set master node to be controlled with DS4 controller
+"""

@@ -56,6 +56,14 @@ class Server:
                 print("Invalid address, see the registered nodes with 'ls'")
                 return
             self.__socket.sendto(str.encode(cmd), (data, SOCKET_PORT))
+        elif cmd == MSG_CMD_UPDATE:
+            if len(data) == 0 or " " in data:
+                print("Invalid branch name")
+                return
+            self.__socket.sendto(
+                str.encode(f"{cmd}:{data}"),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
         elif cmd == MSG_CMD_START:
             self.__socket.sendto(
                 str.encode(cmd),
