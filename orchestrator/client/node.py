@@ -32,8 +32,11 @@ class Node:
         else:
             make_cmd = "run_rcv_pi"
 
-        proc = subprocess.Popen(f"cd {REPO_PATH} && make {make_cmd}", shell=True)
-        self.__pid = proc.pid
+        try:
+            proc = subprocess.Popen(f"cd {REPO_PATH} && make {make_cmd}", shell=True)
+            self.__pid = proc.pid
+        except Exception as e:
+            print(f"Failed to start process:\n{e}")
 
     def stop(self):
         """
@@ -45,7 +48,12 @@ class Node:
         if self.__pid == -1:
             return
 
-        os.killpg(self.__pid, signal.SIGTERM)
+        try:
+            os.killpg(self.__pid, signal.SIGTERM)
+        except Exception as e:
+            print(f"Failed to stop process:\n{e}")
+
+        # Assume the process is already dead
         self.__pid = -1
 
     def set_master(self, new_master):
