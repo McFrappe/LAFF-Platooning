@@ -24,6 +24,7 @@ install:
 	sudo cp ~/laff-platooning/orchestrator/laff.service /lib/systemd/system
 	sudo systemctl enable laff.service
 	sudo systemctl start laff.service
+	sudo loginctl enable-linger laff
 
 cat:
 	rm -rf build
