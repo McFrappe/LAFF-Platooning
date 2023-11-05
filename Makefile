@@ -21,6 +21,10 @@ install:
 	cd ~/laff-platooning && git submodule update --init --recursive
 	cd ~/laff-platooning && sudo pip install -r requirements.txt
 
+	sudo cp ~/laff-platooning/orchestrator/laff.service /lib/systemd/system
+	sudo systemctl enable laff.service
+	sudo systemctl start laff.service
+
 cat:
 	rm -rf build
 	catkin_make
