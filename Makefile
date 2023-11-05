@@ -32,6 +32,7 @@ update:
 	git reset --hard
 	git checkout $(BRANCH)
 	git pull
+	source devel/setup.bash
 	rm -rf build
 	catkin_make
 
