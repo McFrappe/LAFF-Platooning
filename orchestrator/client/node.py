@@ -14,7 +14,7 @@ class Node:
         self.__ip = ip
         self.__socket = socket
         self.__is_master = False
-        self.__pid = -1
+        self.__running = False
         self.__broadcast_ip = get_broadcast_ip()
 
     def start(self):
@@ -24,7 +24,7 @@ class Node:
         """
         print("Received start command")
 
-        if self.__pid != -1:
+        if self.__running:
             return
 
         # TODO: Add when rcdriver is merged
@@ -36,7 +36,7 @@ class Node:
 
         try:
             proc = subprocess.Popen(f"make {make_cmd}", shell=True, cwd=REPO_PATH)
-            self.__pid = proc.pid
+            self.__running = True
         except Exception as e:
             print(f"Failed to start process:\n{e}")
 
@@ -47,16 +47,16 @@ class Node:
         """
         print("Received stop command")
 
-        if self.__pid == -1:
+        if not self.__running:
             return
 
         try:
-            os.killpg(self.__pid, signal.SIGTERM)
+            subprocess.Popen(f"sudo kill -SIGINT $(cat {PID_PATH})", shell=True)
         except Exception as e:
             print(f"Failed to stop process:\n{e}")
 
         # Assume the process is already dead
-        self.__pid = -1
+        self.__running = False
 
     def set_master(self, new_master):
         self.__is_master = new_master == self.__ip
