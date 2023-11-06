@@ -40,9 +40,8 @@ update:
 	git pull
 	git checkout $(BRANCH)
 	git pull
-	source devel/setup.bash
 	rm -rf build
-	catkin_make
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; catkin_make"
 
 cat:
 	rm -rf build
