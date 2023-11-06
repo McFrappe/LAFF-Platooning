@@ -1,6 +1,8 @@
 SHELL := /bin/bash
 BRANCH ?= main
 
+PASSWORD ?= laff
+
 install:
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
 	sudo apt install curl
