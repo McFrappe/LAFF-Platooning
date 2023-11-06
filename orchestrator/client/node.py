@@ -1,7 +1,6 @@
 import os
 import signal
 import subprocess
-from subprocess import PIPE
 from orchestrator.shared import *
 from orchestrator.utils import get_broadcast_ip
 
@@ -36,7 +35,7 @@ class Node:
 
         try:
             subprocess.Popen(
-                f"make {make_cmd}", shell=True, cwd=REPO_PATH, executable="/bin/bash", stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                f"make {make_cmd}", shell=True, cwd=REPO_PATH, executable="/bin/bash")
             self.__running = True
         except Exception as e:
             print(f"Failed to start process:\n{e}")
@@ -51,7 +50,7 @@ class Node:
 
         try:
             subprocess.Popen(
-                f"sudo kill -SIGINT $(cat {PID_PATH})", shell=True, executable="/bin/bash", stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                f"sudo kill -SIGINT $(cat {PID_PATH})", shell=True, executable="/bin/bash")
         except Exception as e:
             print(f"Failed to stop process:\n{e}")
 
@@ -61,7 +60,7 @@ class Node:
     def update(self, branch):
         self.stop()
         subprocess.Popen(
-            f"make BRANCH={branch} update", shell=True, cwd=REPO_PATH, executable="/bin/bash", stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            f"make BRANCH={branch} update", shell=True, cwd=REPO_PATH, executable="/bin/bash")
         self.start()
 
     def set_master(self, new_master):
