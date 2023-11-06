@@ -31,7 +31,7 @@ class Node:
         #     make_cmd = "run_rcv_joystick_pi"
         # else:
         #     make_cmd = "run_rcv_pi"
-        make_cmd = "run"
+        make_cmd = "run_pi"
 
         try:
             subprocess.Popen(
