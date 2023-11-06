@@ -6,8 +6,6 @@ After=multi-user.target
 Type=simple
 Restart=always
 User=laff
-StandardOutput=append:/home/laff/stdout.log
-StandardError=append:/home/laff/error.log
 WorkingDirectory=/home/laff/laff-platooning
 ExecStart=/usr/bin/python3 -m orchestrator.client
 
