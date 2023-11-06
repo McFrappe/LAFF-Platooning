@@ -1,4 +1,5 @@
 import os
+import time
 import signal
 import subprocess
 from orchestrator.shared import *
@@ -17,6 +18,7 @@ class Node:
         self.__is_master = False
         self.__running = False
         self.__broadcast_ip = get_broadcast_ip()
+        self.__start_time = -1
 
     def start(self):
         """
@@ -41,6 +43,7 @@ class Node:
                 (self.__broadcast_ip, SOCKET_PORT)
             )
             self.__running = True
+            self.__start_time = time.time()
         except Exception as e:
             print(f"Failed to start process:\n{e}")
 
@@ -50,6 +53,13 @@ class Node:
         nothing.
         """
         if not self.__running:
+            return
+
+        # Killing roslaunch before nodes have been fully spawned results
+        # in nodes being kept alive. Ensure that all nodes have spawned
+        # before stopping.
+        time_since_start = time.time() - self.__start_time
+        if self.__start_time != -1 and time_since_start < MINIMUM_RUNNING_TIME:
             return
 
         try:
@@ -64,6 +74,7 @@ class Node:
 
         # Assume the process is already dead
         self.__running = False
+        self.__start_time = -1
 
     def update(self, branch):
         was_running = self.__running
