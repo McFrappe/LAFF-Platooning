@@ -63,8 +63,9 @@ class Node:
             return
 
         try:
-            subprocess.Popen(
+            proc = subprocess.Popen(
                 f"sudo kill -SIGINT $(cat {PID_PATH})", shell=True, executable="/bin/bash")
+            proc.wait()
             self.__socket.sendto(
                 str.encode(MSG_CMD_STOP_CONFIRM),
                 (self.__broadcast_ip, SOCKET_PORT)
@@ -80,8 +81,9 @@ class Node:
         was_running = self.__running
         self.stop()
 
-        subprocess.Popen(
+        proc = subprocess.Popen(
             f"make BRANCH={branch} update", shell=True, cwd=REPO_PATH, executable="/bin/bash")
+        proc.wait()
         self.__socket.sendto(
             str.encode(MSG_CMD_UPDATE_CONFIRM),
             (self.__broadcast_ip, SOCKET_PORT)
