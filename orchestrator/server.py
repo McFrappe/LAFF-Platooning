@@ -23,8 +23,8 @@ class Server:
             print("No connected nodes")
             return
 
-        for node in self.__nodes:
-            print(node)
+        for idx, node in enumerate(self.__nodes):
+            print(f"{idx}: {node}")
 
     def handle_message(self, msg, addr):
         """
@@ -66,10 +66,26 @@ class Server:
             print(f"Unsupported command: {cmd}")
             return
         elif cmd == MSG_CMD_SET_MASTER:
-            if len(data) == 0 or data not in self.__nodes:
-                print("Invalid address, see the registered nodes with 'ls'")
-                return
-            self.__socket.sendto(str.encode(cmd), (data, SOCKET_PORT))
+            if len(data) == 0 or len(self.__nodes) == 0:
+                print("Invalid address, see registered nodes with 'ls'")
+
+            node = self.__nodes[0]
+            if "." in data:
+                node = data
+            else:
+                try:
+                    val = int(data)
+                    if val >= len(self.__nodes):
+                        print("Node index out of range, see registered nodes with 'ls'")
+                        return
+                    node = self.__nodes[val]
+                except:
+                    print("Invalid node index, see registered nodes with 'ls'")
+                    return
+            self.__socket.sendto(
+                str.encode(f"{cmd}:{data}"),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
         elif cmd == MSG_CMD_UPDATE:
             if len(data) == 0 or " " in data:
                 print("Invalid branch name")
