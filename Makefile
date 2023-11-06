@@ -21,6 +21,7 @@ install:
 	sudo udevadm trigger
 
 	git clone https://github.com/mcfrappe/laff-platooning ~/laff-platooning
+	git config --global --add safe.directory /home/laff/laff-platooning
 	cd ~/laff-platooning && git submodule update --init --recursive
 	cd ~/laff-platooning && sudo pip install -r requirements.txt
 
@@ -33,8 +34,10 @@ install:
 
 
 update:
+	git config --global --add safe.directory /home/laff/laff-platooning
 	cd /home/laff/laff-platooning
 	git reset --hard
+	git pull
 	git checkout $(BRANCH)
 	git pull
 	source devel/setup.bash
