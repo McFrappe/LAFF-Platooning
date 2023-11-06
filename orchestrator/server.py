@@ -38,7 +38,17 @@ class Server:
                 return
             self.__nodes.append(ip)
             print(f"Registered node {ip} to list of nodes")
-            prompt()
+        elif cmd == MSG_CMD_START_CONFIRM:
+            print(f"Node {ip} started")
+        elif cmd == MSG_CMD_STOP_CONFIRM:
+            print(f"Node {ip} stopped")
+        elif cmd == MSG_CMD_UPDATE_CONFIRM:
+            print(f"Node {ip} updated")
+        else:
+            # Only update prompt if we actually print something
+            return
+
+        prompt()
 
     def handle_user_cmd(self, msg):
         """

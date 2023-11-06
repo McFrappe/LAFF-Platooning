@@ -36,6 +36,10 @@ class Node:
         try:
             subprocess.Popen(
                 f"make {make_cmd}", shell=True, cwd=REPO_PATH, executable="/bin/bash")
+            self.__socket.sendto(
+                str.encode(MSG_CMD_START_CONFIRM),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
             self.__running = True
         except Exception as e:
             print(f"Failed to start process:\n{e}")
@@ -51,6 +55,10 @@ class Node:
         try:
             subprocess.Popen(
                 f"sudo kill -SIGINT $(cat {PID_PATH})", shell=True, executable="/bin/bash")
+            self.__socket.sendto(
+                str.encode(MSG_CMD_STOP_CONFIRM),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
         except Exception as e:
             print(f"Failed to stop process:\n{e}")
 
@@ -58,10 +66,18 @@ class Node:
         self.__running = False
 
     def update(self, branch):
+        was_running = self.__running
         self.stop()
+
         subprocess.Popen(
             f"make BRANCH={branch} update", shell=True, cwd=REPO_PATH, executable="/bin/bash")
-        self.start()
+        self.__socket.sendto(
+            str.encode(MSG_CMD_UPDATE_CONFIRM),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
+
+        if was_running:
+            self.start()
 
     def set_master(self, new_master):
         self.__is_master = new_master == self.__ip

@@ -8,8 +8,11 @@ HEARTBEAT_TIMER_EXPIRATION = 5
 STARTUP_HEARTBEAT_TIMER_EXPIRATION = 1
 
 # Node message
-MSG_CMD_HEARTBEAT = "hb"
-MSG_CMD_REQUEST_MASTER = "rm"
+MSG_CMD_HEARTBEAT = "heartbeat"
+MSG_CMD_REQUEST_MASTER = "request_master"
+MSG_CMD_START_CONFIRM = "start_confirm"
+MSG_CMD_STOP_CONFIRM = "stop_confirm"
+MSG_CMD_UPDATE_CONFIRM = "update_confirm"
 
 # Server messages
 MSG_CMD_SET_MASTER = "master"
