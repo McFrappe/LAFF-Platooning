@@ -26,7 +26,7 @@ class Node:
         master node. If the node is already running, this method does nothing.
         """
         if self.__running:
-            return
+            return ERROR
 
         # TODO: Add when rcdriver is merged
         # if self.__is_master:
@@ -44,8 +44,10 @@ class Node:
             )
             self.__running = True
             self.__start_time = time.time()
+            return OK
         except Exception as e:
             print(f"Failed to start process:\n{e}")
+            return ERROR
 
     def stop(self):
         """
@@ -53,14 +55,14 @@ class Node:
         nothing.
         """
         if not self.__running:
-            return
+            return ERROR
 
         # Killing roslaunch before nodes have been fully spawned results
         # in nodes being kept alive. Ensure that all nodes have spawned
         # before stopping.
         time_since_start = time.time() - self.__start_time
         if self.__start_time != -1 and time_since_start < MINIMUM_RUNNING_TIME:
-            return
+            return ERROR
 
         try:
             proc = subprocess.Popen(
@@ -76,25 +78,33 @@ class Node:
         # Assume the process is already dead
         self.__running = False
         self.__start_time = -1
+        return OK
 
     def update(self, branch):
         was_running = self.__running
-        self.stop()
+        if self.stop() != OK:
+            return ERROR
 
-        proc = subprocess.Popen(
-            f"make BRANCH={branch} update", shell=True, cwd=REPO_PATH, executable="/bin/bash")
-        proc.wait()
-        self.__socket.sendto(
-            str.encode(MSG_CMD_UPDATE_CONFIRM),
-            (self.__broadcast_ip, SOCKET_PORT)
-        )
+        try:
+            proc = subprocess.Popen(
+                f"make BRANCH={branch} update", shell=True,
+                cwd=REPO_PATH, executable="/bin/bash")
+            proc.wait()
+            self.__socket.sendto(
+                str.encode(MSG_CMD_UPDATE_CONFIRM),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
+        except Exception as e:
+            print(f"Failed to update to branch {branch}:\n{e}")
+            return ERROR
 
         if was_running:
-            self.start()
+            return self.start()
 
     def set_master(self, new_master):
         self.__is_master = new_master == self.__ip
-        print(f"Set master: {self.__is_master}")
+        print(f"See master: {self.__is_master}")
+        return OK
 
     def send_heartbeat(self):
         """
@@ -104,6 +114,7 @@ class Node:
             str.encode(MSG_CMD_HEARTBEAT),
             (self.__broadcast_ip, SOCKET_PORT)
         )
+        return OK
 
     def handle_message(self, msg):
         """
