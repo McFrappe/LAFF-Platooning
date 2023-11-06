@@ -18,6 +18,7 @@ MSG_CMD_START_CONFIRM = "start_confirm"
 MSG_CMD_STOP_CONFIRM = "stop_confirm"
 MSG_CMD_UPDATE_START_CONFIRM = "update_start_confirm"
 MSG_CMD_UPDATE_CONFIRM = "update_confirm"
+MSG_CMD_MASTER_CONFIRM = "master_confirm"
 
 # Server messages
 MSG_CMD_SET_MASTER = "master"

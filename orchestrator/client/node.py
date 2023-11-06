@@ -107,7 +107,11 @@ class Node:
 
     def set_master(self, new_master):
         self.__is_master = new_master == self.__ip
-        print(f"See master: {self.__is_master}")
+        print(f"Set master: {self.__is_master}")
+        self.__socket.sendto(
+            str.encode(MSG_CMD_MASTER_CONFIRM),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
         return OK
 
     def send_heartbeat(self):
