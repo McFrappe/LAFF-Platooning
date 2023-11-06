@@ -83,7 +83,7 @@ class Server:
                     print("Invalid node index, see registered nodes with 'ls'")
                     return
             self.__socket.sendto(
-                str.encode(f"{cmd}:{data}"),
+                str.encode(f"{cmd}:{node}"),
                 (self.__broadcast_ip, SOCKET_PORT)
             )
         elif cmd == MSG_CMD_UPDATE:
