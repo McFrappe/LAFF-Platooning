@@ -29,6 +29,7 @@ install:
 
 
 update:
+	cd /home/laff/laff-platooning
 	git reset --hard
 	git checkout $(BRANCH)
 	git pull
@@ -45,4 +46,4 @@ run:
 	roslaunch joyit vehicle.launch
 
 run_pi:
-	echo "source devel/setup.bash; roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid" | sudo su
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source	devel/setup.bash; roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid"
