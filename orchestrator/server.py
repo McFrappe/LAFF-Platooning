@@ -37,13 +37,13 @@ class Server:
             if ip in self.__nodes:
                 return
             self.__nodes.append(ip)
-            print(f"Registered node {ip} to list of nodes")
+            print(f"** Registered node {ip} to list of nodes **")
         elif cmd == MSG_CMD_START_CONFIRM:
-            print(f"Node {ip} started")
+            print(f"** Node {ip} started **")
         elif cmd == MSG_CMD_STOP_CONFIRM:
-            print(f"Node {ip} stopped")
+            print(f"** Node {ip} stopped **")
         elif cmd == MSG_CMD_UPDATE_CONFIRM:
-            print(f"Node {ip} updated")
+            print(f"** Node {ip} updated **")
         else:
             # Only update prompt if we actually print something
             return

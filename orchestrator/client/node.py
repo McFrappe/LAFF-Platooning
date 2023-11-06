@@ -26,7 +26,7 @@ class Node:
         master node. If the node is already running, this method does nothing.
         """
         if self.__running:
-            return ERROR
+            return OK
 
         # TODO: Add when rcdriver is merged
         # if self.__is_master:
@@ -55,7 +55,7 @@ class Node:
         nothing.
         """
         if not self.__running:
-            return ERROR
+            return OK
 
         # Killing roslaunch before nodes have been fully spawned results
         # in nodes being kept alive. Ensure that all nodes have spawned
