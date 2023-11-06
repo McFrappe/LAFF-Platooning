@@ -42,6 +42,8 @@ class Server:
             print(f"** Node {ip} started **")
         elif cmd == MSG_CMD_STOP_CONFIRM:
             print(f"** Node {ip} stopped **")
+        elif cmd == MSG_CMD_UPDATE_START_CONFIRM:
+            print(f"** Node {ip} started update **")
         elif cmd == MSG_CMD_UPDATE_CONFIRM:
             print(f"** Node {ip} updated **")
         else:
