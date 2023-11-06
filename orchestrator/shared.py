@@ -16,6 +16,7 @@ MSG_CMD_HEARTBEAT = "heartbeat"
 MSG_CMD_REQUEST_MASTER = "request_master"
 MSG_CMD_START_CONFIRM = "start_confirm"
 MSG_CMD_STOP_CONFIRM = "stop_confirm"
+MSG_CMD_UPDATE_START_CONFIRM = "update_start_confirm"
 MSG_CMD_UPDATE_CONFIRM = "update_confirm"
 
 # Server messages

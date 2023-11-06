@@ -86,6 +86,10 @@ class Node:
             return ERROR
 
         try:
+            self.__socket.sendto(
+                str.encode(MSG_CMD_UPDATE_START_CONFIRM),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
             proc = subprocess.Popen(
                 f"make BRANCH={branch} update", shell=True,
                 cwd=REPO_PATH, executable="/bin/bash")
