@@ -69,6 +69,7 @@ class Server:
         if cmd == MSG_CMD_SET_MASTER:
             if len(data) == 0 or len(self.__nodes) == 0:
                 print("Invalid address, see registered nodes with 'ls'")
+                return
 
             node = self.__nodes[0]
             if "." in data:
