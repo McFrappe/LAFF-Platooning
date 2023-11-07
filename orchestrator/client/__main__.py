@@ -37,8 +37,7 @@ def run():
                 node.handle_message(parsed_msg)
             else:
                 node.send_heartbeat()
-
-        timer.settime(HEARTBEAT_TIMER_EXPIRATION)
+                timer.settime(HEARTBEAT_TIMER_EXPIRATION)
 
 
 if __name__ == "__main__":
