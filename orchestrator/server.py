@@ -65,7 +65,8 @@ class Server:
         if cmd not in AVAILABLE_COMMANDS:
             print(f"Unsupported command: {cmd}")
             return
-        elif cmd == MSG_CMD_SET_MASTER:
+
+        if cmd == MSG_CMD_SET_MASTER:
             if len(data) == 0 or len(self.__nodes) == 0:
                 print("Invalid address, see registered nodes with 'ls'")
 
