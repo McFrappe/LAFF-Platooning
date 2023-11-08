@@ -54,6 +54,7 @@ class ObjectFollowerController:
         target_left_edge = int(center_pos - (block.roi.width / 2))
         return block.roi.x_offset - target_left_edge
 
+    # TODO: Tilt camera to always keep object vertically centered
     def __update(self, event):
         """
         Updates the steering angle based on object(s) detected
