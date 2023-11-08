@@ -2,3 +2,4 @@ RPi.GPIO
 Mock.GPIO
 simple-pid
 numpy
+linuxfd

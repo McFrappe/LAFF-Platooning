@@ -2,3 +2,6 @@
 	path = src/ds4_driver
 	url = https://github.com/naoki-mizuno/ds4_driver
 	branch = noetic-devel
+[submodule "src/pixy2_ros"]
+	path = src/pixy2_ros
+	url = https://github.com/zhiquanyeo/pixy2_ros.git
