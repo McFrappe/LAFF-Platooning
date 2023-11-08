@@ -28,12 +28,10 @@ class Node:
         if self.__running:
             return OK
 
-        # TODO: Add when rcdriver is merged
-        # if self.__is_master:
-        #     make_cmd = "run_rcv_joystick_pi"
-        # else:
-        #     make_cmd = "run_rcv_pi"
-        make_cmd = "run_pi"
+        if self.__is_master:
+            make_cmd = "run_rcv_joystick_pi"
+        else:
+            make_cmd = "run_rcv_pi"
 
         try:
             subprocess.Popen(

@@ -1,8 +1,8 @@
 <launch>
     <node name="motor_node" pkg="joyit" type="motors.py" respawn="true" />
-    <node name="line_follower_node" pkg="joyit" type="line_follower.py" respawn="true" />
-    <node name="distance_node" pkg="joyit" type="distance.py" respawn="true" />
     <node name="platooning_node" pkg="joyit" type="platooning.py" respawn="true" />
+    <node name="line_follower_node" pkg="common" type="line_follower.py" respawn="true" />
+    <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
     <node name="ds4_controller" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true" />
 
     <!-- Publisher periods -->

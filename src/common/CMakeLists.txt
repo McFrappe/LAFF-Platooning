@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(joyit)
+project(common)
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
@@ -16,7 +16,7 @@ include_directories(
 )
 
 catkin_install_python(PROGRAMS
-  nodes/motors.py
-  nodes/platooning.py
+  nodes/line_follower.py
+  nodes/distance.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
