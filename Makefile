@@ -9,7 +9,7 @@ install:
 	curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add
 	sudo apt update
 	sudo apt install ros-noetic-ros-base
-	sudo apt install python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+	sudo apt install python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential g++ libusb-1.0-0-dev
 	echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 	source ~/.bashrc
 	sudo rosdep init
@@ -17,13 +17,15 @@ install:
 
 	git clone https://github.com/naoki-mizuno/ds4drv --branch devel ~/ds4drv
 	cd ~/ds4drv && python3 setup.py install && sudo cp udev/50-ds4drv.rules /etc/udev/rules.d/
-	sudo udevadm control --reload-rules
-	sudo udevadm trigger
 
 	git clone https://github.com/mcfrappe/laff-platooning ~/laff-platooning
 	git config --global --add safe.directory /home/laff/laff-platooning
 	cd ~/laff-platooning && git submodule update --init --recursive
 	cd ~/laff-platooning && sudo pip install -r requirements.txt
+
+	sudo cp ~/laff-platooning/src/pixy2_ros/pixy2_node/pixy2/src/host/linux/pixy.rules /etc/udev/rules.d/
+	sudo udevadm control --reload-rules
+	sudo udevadm trigger
 
 	sudo cp ~/laff-platooning/orchestrator/laff.service /lib/systemd/system
 	sudo systemctl enable laff.service
