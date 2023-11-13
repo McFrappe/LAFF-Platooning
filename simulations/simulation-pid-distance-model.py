@@ -1,35 +1,40 @@
 import sys, getopt
+from src.platoon.platoon_bidirectional_truck import PlatoonBidirectionalTruckS3
 from src.platoon.platoon_pid_distance_truck import PlatoonPidDistanceTruckS1, PlatoonPidDistanceTruckS2, PlatoonPidDistanceTruckS3, PlatoonPidDistanceTruckS4
 from src.platoon.platoon_pid_distance_rc_vehicle import PlatoonPidDistanceRcVehicleS1, PlatoonPidDistanceRcVehicleS2, PlatoonPidDistanceRcVehicleS3
 from src.common.plot import plot_speed, plot_travel_distance, plot_distances, plot_position
 
 
-def simulate(num_tick, num_vehicles, scenario, type):
-    match (scenario, type):
-        case (1,1):
+def simulate(num_tick, num_vehicles, scenario, type, model):
+    match (scenario, type, model):
+        case (1,1,1):
             p = PlatoonPidDistanceTruckS1(num_vehicles)
             suffix = "pid-distance-model-s1-truck"
-        case (2,1):
+        case (2,1,1):
             p = PlatoonPidDistanceTruckS2(num_vehicles)
             suffix = "pid-distance-model-s2-truck"
-        case (3,1):
+        case (3,1,1):
             p = PlatoonPidDistanceTruckS3(num_vehicles)
             suffix = "pid-distance-model-s3-truck"
-        case (4,1):
+        case (4,1,1):
             p = PlatoonPidDistanceTruckS4(num_vehicles)
             suffix = "pid-distance-model-s4-truck"
-        case (1,3):
+        case (1,3,1):
             p = PlatoonPidDistanceRcVehicleS1(num_vehicles)
             suffix = "pid-distance-model-s1-rc-vehicle"
-        case (2,3):
+        case (2,3,1):
             p = PlatoonPidDistanceRcVehicleS2(num_vehicles)
             suffix = "pid-distance-model-s2-rc-vehicle"
-        case (3,3):
+        case (3,3,1):
             p = PlatoonPidDistanceRcVehicleS3(num_vehicles)
             suffix = "pid-distance-model-s3-rc-vehicle"
-        case (_,_):
-            p = PlatoonPidDistanceTruckS1(num_vehicles)
-            suffix = "pid-distance-model-s1-truck"
+        case (3,1,2):
+            p = PlatoonBidirectionalTruckS3(num_vehicles)
+            suffix = "bidirectional-model-s3-truck"
+        case (_,_,_):
+            print("Unknown option")
+            exit(1)
+    print(suffix)
 
     # Each tick is 10ms
     for tick in range(num_tick):
@@ -50,7 +55,9 @@ def main(argv):
     num_ticks = 0
     num_vehicles = 0
     scenario = 1
-    opts, args = getopt.getopt(argv,"ht:s:v:y:",["ticks=","scenario=","vehicles=","type="])
+    type = 1
+    model = 1
+    opts, args = getopt.getopt(argv,"ht:s:v:y:m:",["ticks=","scenario=","vehicles=","type=","model="])
     for opt, arg in opts:
         if opt == '-h':
             print ('simulation-pid-distance-model.py -t <number of ticks> -s <scenario> -v <number of vehicles> -y <vehicle type>')
@@ -58,6 +65,9 @@ def main(argv):
             print ('\t1: Truck')
             print ('\t2: DIY-kit vehicle (TODO)')
             print ('\t3: RC vehicle (TODO)')
+            print ('Model to use:')
+            print ('\t1: PID distance')
+            print ('\t2: Bidirectional')
             sys.exit()
         elif opt in ("-t", "--ticks"):
             num_ticks = int(arg)
@@ -67,8 +77,10 @@ def main(argv):
             num_vehicles = int(arg)
         elif opt in ("-y", "--type"):
             type = int(arg)
+        elif opt in ("-m", "--model"):
+            model = int(arg)
 
-    simulate(num_ticks, num_vehicles, scenario, type)
+    simulate(num_ticks, num_vehicles, scenario, type, model)
 
 
 
