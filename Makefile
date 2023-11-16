@@ -21,7 +21,7 @@ install:
 	git clone https://github.com/mcfrappe/laff-platooning ~/laff-platooning
 	git config --global --add safe.directory /home/laff/laff-platooning
 	cd ~/laff-platooning && git submodule update --init --recursive
-	cd ~/laff-platooning && sudo pip install -r requirements.txt
+	cd ~/laff-platooning && sudo pip3 install -r requirements.txt
 	source /opt/ros/noetic/setup.bash
 
 	sudo cp ~/laff-platooning/src/pixy2_ros/pixy2_node/pixy2/src/host/linux/pixy.rules /etc/udev/rules.d/
