@@ -12,7 +12,7 @@ class ObjectFollowerController:
         self.__max_right=rospy.get_param("MAX_RIGHT_ANGLE")
         self.__max_left=rospy.get_param("MAX_LEFT_ANGLE")
         self.__zero=rospy.get_param("ZERO_ANGLE")
-        self.__update_period = rospy.get_param("OBJECT_FOLLOWER_PUBLISH_PERIOD")
+        self.__update_period = rospy.get_param("OBJECT_FOLLOWER_PERIOD")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
 
         self.__resolution_x = 315
