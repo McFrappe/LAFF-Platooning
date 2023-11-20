@@ -16,7 +16,7 @@ class ObjectFollowerController:
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
 
         self.__resolution_x = 315
-        self.__detected_blocks: PixyBlock[] = []
+        self.__detected_blocks: list[PixyBlock] = []
 
         self.__steering_angle_publisher = rospy.Publisher(
             "vehicle/steering_angle",
