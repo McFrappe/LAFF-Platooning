@@ -18,7 +18,6 @@ install:
 	git clone https://github.com/naoki-mizuno/ds4drv --branch devel ~/ds4drv
 	cd ~/ds4drv && sudo python3 setup.py install && sudo cp udev/50-ds4drv.rules /etc/udev/rules.d/
 
-	git clone https://github.com/mcfrappe/laff-platooning ~/laff-platooning
 	git config --global --add safe.directory /home/laff/laff-platooning
 	cd ~/laff-platooning && git submodule update --init --recursive
 	cd ~/laff-platooning && sudo pip3 install -r requirements.txt
