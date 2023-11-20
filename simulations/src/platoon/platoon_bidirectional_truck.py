@@ -6,6 +6,148 @@ from src.vehicle.vehicle_specs import dummy_vehicle
 import numpy as np
 
 
+class VehicleLeaderTruckS1(Vehicle):
+    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
+        Vehicle.__init__(self, order, vehicle_specs)
+        self.speed = init_speed
+        self.position = init_position
+        self.distance = init_distance
+        self.travel_distance = init_travel_distance
+
+        self.leader_accelerating = True
+        self.leader_initial_accelerating = True
+
+
+    def update_speed(self, tick):
+        desired_speed = self.speed
+
+        if self.speed < 50 and tick < 6000: #self.max_speed/2:
+            max_acceleration = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
+            desired_speed = self.speed + max_acceleration/2
+        elif tick > 6000: # TODO: should change to when it actually should start slowing down
+            max_deceleration = self.vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
+            desired_speed = self.speed - max_deceleration/24
+
+        self.speed = self.calculate_valid_speed(desired_speed)
+
+        return self.speed
+
+
+class PlatoonBidirectionalTruckS1(Platoon):
+    def __init__(self, num_vehicles):
+        Platoon.__init__(self, num_vehicles, truck)
+
+
+    def init_vehicles(self, num_vehicles, vehicle_specs):
+        self.vehicles.append(VehicleLeaderTruckS1(order=0, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+
+        for i in range(num_vehicles-1):
+            self.vehicles.append(VehicleBidirectional(i+1, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+
+    # should be called each tick
+    def run(self, tick):
+        speeds_each_run = np.array([])
+        positions_each_run = np.array([])
+        distances_each_run = np.array([])
+        travel_distance_each_run = np.array([])
+
+        # v_in_front (order -1 if no vehicle is in front)
+        v_in_front = Vehicle(-1, dummy_vehicle) # dummy vehicle
+
+        # FIXME: ugly as fuck
+        first = True
+
+        for v in self.vehicles:
+            # the first vehicles only take a single arguments.
+            if first:
+                speeds_each_run = np.append(speeds_each_run, v.update_speed(tick))
+            else:
+                speeds_each_run = np.append(speeds_each_run, v.update_speed(tick, self.vehicles[0].get_current_speed(), v_in_front.get_position()))
+
+            travel_distance_each_run = np.append(travel_distance_each_run, v.update_travel_distance())
+            positions_each_run = np.append(positions_each_run, v.update_position(self.vehicles[0].get_travel_distance()))
+            distances_each_run = np.append(distances_each_run, v.update_distance(v_in_front.get_travel_distance()))
+            v.update_min_distance()
+            v_in_front = v
+            first = False
+
+        self.speeds.append(speeds_each_run)
+        self.travel_distance.append(travel_distance_each_run)
+        self.distances.append(distances_each_run)
+        self.positions.append(positions_each_run)
+
+        return speeds_each_run, positions_each_run, distances_each_run
+
+
+
+class VehicleLeaderTruckS2(Vehicle):
+    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
+        Vehicle.__init__(self, order, vehicle_specs)
+        self.speed = init_speed
+        self.position = init_position
+        self.distance = init_distance
+        self.travel_distance = init_travel_distance
+
+        self.leader_accelerating = True
+        self.leader_initial_accelerating = True
+
+
+    def update_speed(self, tick):
+        max_deceleration = self.vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
+        desired_speed = self.speed - max_deceleration
+        self.speed = self.calculate_valid_speed(desired_speed)
+
+        return self.speed
+
+
+class PlatoonBidirectionalTruckS2(Platoon):
+    def __init__(self, num_vehicles):
+        Platoon.__init__(self, num_vehicles, truck)
+
+    def init_vehicles(self, num_vehicles, vehicle_specs):
+        self.vehicles.append(VehicleLeaderTruckS2(order=0, init_speed=60, init_travel_distance=2.17, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+        #self.vehicles.append(VehiclePidDistance(order=1, init_speed=60, init_travel_distance=0, init_position=2.17, init_distance=2.17, vehicle_specs=vehicle_specs))
+
+        for i in range(num_vehicles-1):
+            self.vehicles.append(VehicleBidirectional(order=i+1, init_speed=60, init_travel_distance=2.17*(-i), init_position=2.17*(-i+1), init_distance=2.17, vehicle_specs=vehicle_specs))
+
+    # should be called each tick
+    def run(self, tick):
+        speeds_each_run = np.array([])
+        positions_each_run = np.array([])
+        distances_each_run = np.array([])
+        travel_distance_each_run = np.array([])
+
+        # v_in_front (order -1 if no vehicle is in front)
+        v_in_front = Vehicle(-1, dummy_vehicle) # dummy vehicle
+
+        # FIXME: ugly as fuck
+        first = True
+
+        for v in self.vehicles:
+            # the first vehicles only take a single arguments.
+            if first:
+                speeds_each_run = np.append(speeds_each_run, v.update_speed(tick))
+            else:
+                speeds_each_run = np.append(speeds_each_run, v.update_speed(tick, self.vehicles[0].get_current_speed(), v_in_front.get_position()))
+
+            travel_distance_each_run = np.append(travel_distance_each_run, v.update_travel_distance())
+            positions_each_run = np.append(positions_each_run, v.update_position(self.vehicles[0].get_travel_distance()))
+            distances_each_run = np.append(distances_each_run, v.update_distance(v_in_front.get_travel_distance()))
+            v.update_min_distance()
+            v_in_front = v
+            first = False
+
+        self.speeds.append(speeds_each_run)
+        self.travel_distance.append(travel_distance_each_run)
+        self.distances.append(distances_each_run)
+        self.positions.append(positions_each_run)
+
+        return speeds_each_run, positions_each_run, distances_each_run
+
+
+
+
 class VehicleLeaderTruckS3(Vehicle):
     def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
         Vehicle.__init__(self, order, vehicle_specs)

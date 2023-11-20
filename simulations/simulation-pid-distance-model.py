@@ -1,5 +1,5 @@
 import sys, getopt
-from src.platoon.platoon_bidirectional_truck import PlatoonBidirectionalTruckS3
+from src.platoon.platoon_bidirectional_truck import PlatoonBidirectionalTruckS3, PlatoonBidirectionalTruckS1, PlatoonBidirectionalTruckS2
 from src.platoon.platoon_pid_distance_truck import PlatoonPidDistanceTruckS1, PlatoonPidDistanceTruckS2, PlatoonPidDistanceTruckS3, PlatoonPidDistanceTruckS4
 from src.platoon.platoon_pid_distance_rc_vehicle import PlatoonPidDistanceRcVehicleS1, PlatoonPidDistanceRcVehicleS2, PlatoonPidDistanceRcVehicleS3
 from src.common.plot import plot_speed, plot_travel_distance, plot_distances, plot_position
@@ -28,6 +28,12 @@ def simulate(num_tick, num_vehicles, scenario, type, model):
         case (3,3,1):
             p = PlatoonPidDistanceRcVehicleS3(num_vehicles)
             suffix = "pid-distance-model-s3-rc-vehicle"
+        case (1,1,2):
+            p = PlatoonBidirectionalTruckS1(num_vehicles)
+            suffix = "bidirectional-model-s1-truck"
+        case (2,1,2):
+            p = PlatoonBidirectionalTruckS2(num_vehicles)
+            suffix = "bidirectional-model-s2-truck"
         case (3,1,2):
             p = PlatoonBidirectionalTruckS3(num_vehicles)
             suffix = "bidirectional-model-s3-truck"

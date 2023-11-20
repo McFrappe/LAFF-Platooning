@@ -10,39 +10,36 @@ class VehicleBidirectional(Vehicle):
         self.position = init_position
         self.distance = init_distance
         self.travel_distance = init_travel_distance
+        self.integral_sum = 0
+        self.prev_velocity_error = 0
 
     # This should be called each tick
     def update_speed(self, tick, leader_speed, relative_position_infront):
-        print("----------------------------------")
-        print(f"in front: {relative_position_infront}")
-        print(f"self: {self.position}")
+        #print("----------------------------------")
+        #print(f"in front: {relative_position_infront}")
+        #print(f"self: {self.position}")
         delta_self = self.calculate_positioning_error(leader_speed, relative_position_infront) # TODO:
-        print(f"delta: {delta_self}")
+        #print(f"delta: {delta_self}")
         velocity_deviation = self.calculate_velocity_deviation(leader_speed, delta_self)
-        print(f"velocity deviation: {velocity_deviation}")
+        velocity_deviation_fin = -velocity_deviation[0][0] * 0.85 + velocity_deviation[0][1] * 0.15 #0.8 and 0.2
+        #print(f"velocity deviation: {velocity_deviation}")
+        #print(f"velocity deviation fin: {velocity_deviation_fin}")
 
-        distance_from_min = (self.distance - self.min_distance)
-        integral = sum(self.array_distance_errors) # 1 tick * (sum of all distance_errors) gives area
-        derivative = self.error_derivative
 
-        if derivative >= 0: # accelerating
-            max_acceleration  = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
-            kp = max_acceleration/15
-            #ki = 0.002
-            ki = 0.1
-            kd = 4
-        elif distance_from_min < 0.2: # safety margin break with maximum deceleration
-            max_deceleration = self.vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
-            kp = max_deceleration*100
-            ki = 0
-            kd = 0
-        else: # normal deceleration
-            max_deceleration = self.vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
-            kp = max_deceleration/15
-            ki = 0
-            kd = 3
+        #distance_from_min = (self.distance - self.min_distance)
+        #integral = sum(self.array_distance_errors) # 1 tick * (sum of all distance_errors) gives area
+        #derivative = self.error_derivative
 
-        fs = kp * distance_from_min + ki * integral + kd * derivative
+
+        max_acceleration  = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
+        kp = max_acceleration/0.4 #0.2
+        ki = 0.00005  # 0.001
+        kd = 1 # 0.1
+        self.integral_sum += velocity_deviation_fin *kp
+        derivative = (velocity_deviation_fin *kp) - self.prev_velocity_error
+        self.prev_velocity_error = velocity_deviation_fin *kp
+
+        fs = kp * velocity_deviation_fin + ki * self.integral_sum + kd * derivative
         desired_speed = self.speed + fs
         self.speed = self.calculate_valid_speed(desired_speed)
     
@@ -84,7 +81,7 @@ class VehicleBidirectional(Vehicle):
         reference_infront = self.calculate_valid_reference(leader_speed, self.order-1) # will be 0 for the first follower as desired
         positioning_error = (reference_self - self.position) - (reference_infront - relative_position_infront)
 
-        return positioning_error
+        return -positioning_error
 
     def calculate_valid_reference(self, leader_speed, order):
         """ Determine the minimal distance and then multiply it with the order to get the reference """
@@ -100,8 +97,8 @@ class VehicleBidirectional(Vehicle):
         m_self = 1  # mass of self
         v_self = self.speed  # velocity of self
         # v_leader = 1  # velocity of leader
-        a_self = 1  # positioning coupling of self
+        a_self = 0.8  # positioning coupling of self
         p_self = m_self * v_self
         delta_self = positioning_error  # positioning error
-        deviation_vector = np.array([[1/np.sqrt(m_self) * (p_self - m_self*v_leader), a_self * delta_self]])
+        deviation_vector = np.array([[1/np.sqrt(m_self) * (p_self - m_self*v_leader), np.sqrt(a_self) * delta_self]])
         return np.sqrt(1/2)*deviation_vector
