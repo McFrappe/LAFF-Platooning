@@ -24,6 +24,10 @@ class Server:
             return
 
         for idx, node in enumerate(self.__nodes):
+            if node == self.__master_node:
+                print(f"{idx}: {node} (master)")
+                continue
+
             print(f"{idx}: {node}")
 
     def handle_message(self, msg, addr):
@@ -47,6 +51,7 @@ class Server:
         elif cmd == MSG_CMD_UPDATE_CONFIRM:
             print(f"** Node {ip} updated **")
         elif cmd == MSG_CMD_MASTER_CONFIRM:
+            self.__master_node = ip
             print(f"** Node {ip} set to master **")
         elif cmd == MSG_CMD_NOT_MASTER_CONFIRM:
             print(f"** Node {ip} set to slave **")
@@ -99,6 +104,10 @@ class Server:
                 (self.__broadcast_ip, SOCKET_PORT)
             )
         elif cmd == MSG_CMD_START:
+            if self.__master_node is None:
+                print("No master node set, cannot start")
+                return
+
             self.__socket.sendto(
                 str.encode(cmd),
                 (self.__broadcast_ip, SOCKET_PORT)
