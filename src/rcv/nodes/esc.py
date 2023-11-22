@@ -10,6 +10,7 @@ class ESCController:
     Controller for the ESC.
      """
     def __init__(self):
+        self.id = rospy.get_param("VEHICLE_ID")
         self.driver = ESCDriver(
             out_pin=rospy.get_param("MOTOR_PIN"))
 
@@ -21,7 +22,7 @@ class ESCController:
         """
         Setup the service for the ESC.
         """
-        rospy.Subscriber("vehicle/speed", Int32, self.callback_speed)
+        rospy.Subscriber(f"{self.id}/speed", Int32, self.callback_speed)
 
     def callback_speed(self, msg: Int32):
         """
@@ -39,7 +40,7 @@ class ESCController:
         self.driver.cleanup()
 
 if __name__ == "__main__":
-    rospy.init_node("esc_node")
+    rospy.init_node("esc_node", anonymous=True)
     controller = ESCController()
     rospy.on_shutdown(controller.stop)
 
