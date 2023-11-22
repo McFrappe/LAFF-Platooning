@@ -2,7 +2,7 @@ SHELL := /bin/bash
 BRANCH ?= main
 
 PASSWORD ?= laff
-IP := $(shell ip addr show wlan0 | grep -Po 'inet \K[\d.]+')
+IP := $(shell ip addr show wlan0 | grep -Po4 'inet \K[\d.]+')
 DEVICE_ID := $(shell ip addr show wlan0 | grep -Po 'inet \K[\d.]+' | grep -Po '\.\K\d+$')
 ROS_MASTER_URI := $(shell cat /tmp/ROS_MASTER_URI)
 
