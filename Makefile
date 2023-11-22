@@ -40,7 +40,7 @@ install:
 	echo 'laff ALL=(ALL) NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo
 
 update:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "date -s \"$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "date -s \"$(shell wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
 	git config --global --add safe.directory /home/laff/laff-platooning
 	cd /home/laff/laff-platooning
 	git reset --hard
