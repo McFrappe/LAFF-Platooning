@@ -111,6 +111,11 @@ class Node:
                 str.encode(MSG_CMD_MASTER_CONFIRM),
                 (self.__broadcast_ip, SOCKET_PORT)
             )
+
+        # store master ip in file and set it to be the environent variable ROS_MASTER_URI
+        with open(ROS_MASTER_URI_PATH, "w") as f:
+            f.write(new_master)
+
         return OK
 
     def send_heartbeat(self):
