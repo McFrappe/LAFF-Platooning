@@ -3,7 +3,7 @@ BRANCH ?= main
 
 PASSWORD ?= laff
 IP := $(shell ip addr show wlan0 | grep -Po 'inet \K[\d.]+')
-ROS_MASTER_URI = $(cat /tmp/ROS_MASTER_URI)
+ROS_MASTER_URI = $(shell cat /tmp/ROS_MASTER_URI)
 
 install:
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'

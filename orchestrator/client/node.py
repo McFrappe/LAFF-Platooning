@@ -106,16 +106,19 @@ class Node:
     def set_master(self, new_master):
         self.__is_master = new_master == self.__ip
         print(f"Set master: {self.__is_master}")
-        if self.__is_master:
-            self.__socket.sendto(
-                str.encode(MSG_CMD_MASTER_CONFIRM),
-                (self.__broadcast_ip, SOCKET_PORT)
-            )
 
-        # store master ip in file and set it to be the environent variable ROS_MASTER_URI
-        with open(ROS_MASTER_URI_PATH, "w") as f:
-            f.write(new_master)
+        try:
+            # store master ip in file and set it to be the environent variable ROS_MASTER_URI
+            with open(ROS_MASTER_URI_PATH, "w") as f:
+                f.write(new_master)
+        except Exception:
+            return ERROR
 
+        cmd = MSG_CMD_MASTER_CONFIRM if self.__is_master else MSG_CMD_NOT_MASTER_CONFIRM
+        self.__socket.sendto(
+            str.encode(cmd),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
         return OK
 
     def send_heartbeat(self):

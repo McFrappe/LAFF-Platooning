@@ -48,6 +48,8 @@ class Server:
             print(f"** Node {ip} updated **")
         elif cmd == MSG_CMD_MASTER_CONFIRM:
             print(f"** Node {ip} set to master **")
+        elif cmd == MSG_CMD_NOT_MASTER_CONFIRM:
+            print(f"** Node {ip} set to slave **")
         else:
             # Only update prompt if we actually print something
             return
