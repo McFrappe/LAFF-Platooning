@@ -7,7 +7,6 @@ DEVICE_ID := $(shell ip addr show wlan0 | grep -Po 'inet \K[\d.]+' | grep -Po '\
 ROS_MASTER_URI := $(shell cat /tmp/ROS_MASTER_URI)
 
 
-
 install:
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
 	sudo apt -y install curl
@@ -41,6 +40,7 @@ install:
 	echo 'laff ALL=(ALL) NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo
 
 update:
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "date -s \"$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
 	git config --global --add safe.directory /home/laff/laff-platooning
 	cd /home/laff/laff-platooning
 	git reset --hard
