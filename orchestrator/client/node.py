@@ -110,7 +110,7 @@ class Node:
         try:
             # store master ip in file and set it to be the environent variable ROS_MASTER_URI
             with open(ROS_MASTER_URI_PATH, "w") as f:
-                f.write(new_master)
+                f.write(f"http://{new_master}:11311")
         except Exception:
             return ERROR
 
