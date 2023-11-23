@@ -146,9 +146,7 @@ class Server:
                 print("Invalid branch name")
                 return
 
-            for node in self.__nodes.keys():
-                self.__nodes[node].cancel()
-
+            self.stop_node_timers()
             self.__socket.sendto(
                 str.encode(f"{cmd}|{data}"),
                 (self.__broadcast_ip, SOCKET_PORT)
