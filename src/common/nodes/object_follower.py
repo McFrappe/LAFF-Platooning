@@ -9,6 +9,7 @@ from pixy2_msgs.msg import PixyData, PixyBlock, PixyResolution
 
 class ObjectFollowerController:
     def __init__(self):
+        self.__id=rospy.get_param("VEHICLE_ID")
         self.__max_right=rospy.get_param("MAX_RIGHT_ANGLE")
         self.__max_left=rospy.get_param("MAX_LEFT_ANGLE")
         self.__zero=rospy.get_param("ZERO_ANGLE")
@@ -19,7 +20,7 @@ class ObjectFollowerController:
         self.__detected_blocks: list[PixyBlock] = []
 
         self.__steering_angle_publisher = rospy.Publisher(
-            "vehicle/steering_angle",
+            f"{self.__id}/steering_angle",
             Int32,
             queue_size=self.__message_queue_size)
 
@@ -87,7 +88,7 @@ class ObjectFollowerController:
 
 
 if __name__ == "__main__":
-    rospy.init_node("object_follower_node")
+    rospy.init_node("object_follower_node", anonymous=True)
     controller = ObjectFollowerController()
     rospy.on_shutdown(controller.cleanup)
 
