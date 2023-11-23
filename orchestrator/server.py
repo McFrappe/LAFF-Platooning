@@ -63,7 +63,6 @@ class Server:
             self.__nodes[ip].start()
 
             print(f"** Registered node {ip} to list of nodes **")
-
         elif cmd == MSG_CMD_START_CONFIRM:
             print(f"** Node {ip} started **")
             if self.__master_node == ip:
