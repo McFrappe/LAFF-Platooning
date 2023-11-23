@@ -27,10 +27,11 @@ class Server:
 
         for idx, node in enumerate(self.__nodes):
             if node == self.__master_node:
-                print(f"{idx}: {node.key} (master)")
+                print(
+                    f"{idx}: {node} (master)")
                 continue
 
-            print(f"{idx}: {node.key}")
+            print(f"{idx}: {node}")
 
     def remove_node(self, ip):
         if ip in self.__nodes.keys():
