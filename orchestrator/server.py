@@ -36,6 +36,7 @@ class Server:
         format of [command, data]
         """
         cmd = msg[0]
+        data = "" if len(msg) == 1 else msg[1]
         ip = addr[0]
         if cmd == MSG_CMD_HEARTBEAT:
             if ip in self.__nodes:
@@ -55,6 +56,8 @@ class Server:
             print(f"** Node {ip} set to master **")
         elif cmd == MSG_CMD_NOT_MASTER_CONFIRM:
             print(f"** Node {ip} set to slave **")
+        elif cmd == MSG_CMD_ORDER_CONFIRM:
+            print(f"** Node {ip} assigned id {data} **")
         else:
             # Only update prompt if we actually print something
             return
@@ -119,6 +122,20 @@ class Server:
                 (self.__broadcast_ip, SOCKET_PORT)
             )
             self.__is_running = False
+        elif cmd == MSG_CMD_ORDER:
+            if self.__master_node is None:
+                print("No master node set, cannot assign order")
+                return
+
+            for idx, node in enumerate(self.__nodes):
+                vehicle_id = idx + 1
+                if node == self.__master_node:
+                    vehicle_id = 0
+
+                self.__socket.sendto(
+                    str.encode(f"{MSG_CMD_ORDER}:{vehicle_id}"),
+                    (node, SOCKET_PORT)
+                )
         elif cmd == MSG_CMD_LIST_NODES:
             self.print_nodes()
             return

@@ -3,7 +3,7 @@ BRANCH ?= main
 
 PASSWORD ?= laff
 IP := $(shell ip addr show wlan0 | grep -Po4 'inet \K[\d.]+')
-DEVICE_ID := $(shell ip addr show wlan0 | grep -Po 'inet \K[\d.]+' | grep -Po '\.\K\d+$$')
+VEHICLE_ID := $(shell cat /tmp/VEHICLE_ID)
 ROS_MASTER_URI := $(shell cat /tmp/ROS_MASTER_URI)
 
 
@@ -36,7 +36,6 @@ install:
 	sudo systemctl start laff.service
 	sudo loginctl enable-linger laff
 
-	echo "http://localhost:11311" > /tmp/ROS_MASTER_URI
 	echo 'laff ALL=(ALL) NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo
 
 update:
@@ -66,11 +65,11 @@ run_rcv:
 	ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle.launch
 
 run_rcv_pi:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(DEVICE_ID)"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"
 
 run_rcv_joystick:
 	source devel/setup.bash
 	ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle_joystick.launch
 
 run_rcv_joystick_pi:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle_joystick.launch --screen --pid /tmp/laff.pid vehicle_id:=$(DEVICE_ID)"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle_joystick.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"

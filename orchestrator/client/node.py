@@ -13,6 +13,7 @@ class Node:
     """
 
     def __init__(self, socket, ip):
+        self.__id = None
         self.__ip = ip
         self.__socket = socket
         self.__is_master = False
@@ -121,6 +122,21 @@ class Node:
         )
         return OK
 
+    def set_id(self, new_id):
+        try:
+            with open(VEHICLE_ID_PATH, "w") as f:
+                f.write(f"vehicle_{new_id}")
+        except Exception:
+            return ERROR
+
+        self.__id = new_id
+        self.__socket.sendto(
+            str.encode(MSG_CMD_ORDER_CONFIRM),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
+        return OK
+
+
     def send_heartbeat(self):
         """
         Sends a heartbeat message to the master node.
@@ -150,3 +166,6 @@ class Node:
         elif cmd == MSG_CMD_UPDATE:
             print(f"Received update command for branch {data}")
             self.update(data)
+        elif cmd == MSG_CMD_ORDER:
+            print(f"Received order command with assigned id {data}")
+            self.set_id(data)

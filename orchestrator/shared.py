@@ -4,6 +4,7 @@ BUFFER_SIZE = 1024
 REPO_PATH = "/home/laff/laff-platooning"
 PID_PATH = "/tmp/laff.pid"
 ROS_MASTER_URI_PATH = "/tmp/ROS_MASTER_URI"
+VEHICLE_ID_PATH = "/tmp/VEHICLE_ID"
 
 HEARTBEAT_TIMER_EXPIRATION = 5
 STARTUP_HEARTBEAT_TIMER_EXPIRATION = 1
@@ -21,9 +22,11 @@ MSG_CMD_UPDATE_START_CONFIRM = "update_start_confirm"
 MSG_CMD_UPDATE_CONFIRM = "update_confirm"
 MSG_CMD_MASTER_CONFIRM = "master_confirm"
 MSG_CMD_NOT_MASTER_CONFIRM = "not_master_confirm"
+MSG_CMD_ORDER_CONFIRM = "order_confirm"
 
 # Server messages
 MSG_CMD_SET_MASTER = "master"
+MSG_CMD_ORDER = "order"
 MSG_CMD_START = "start"
 MSG_CMD_STOP = "stop"
 MSG_CMD_UPDATE = "update"
@@ -35,6 +38,7 @@ AVAILABLE_COMMANDS = [
     MSG_CMD_LIST_NODES,
     MSG_CMD_UPDATE,
     MSG_CMD_SET_MASTER,
+    MSG_CMD_ORDER,
 ]
 
 AVAILABLE_COMMANDS_STR = f"""
@@ -44,4 +48,5 @@ Available commands:
 - {MSG_CMD_LIST_NODES}: List the nodes connected to the server.
 - {MSG_CMD_UPDATE} [branch]: Update all nodes to latest code on <branch>
 - {MSG_CMD_SET_MASTER} [ip]: Set master node to be controlled with DS4 controller
+- {MSG_CMD_ORDER}: Assign platooning order based on time of conection (master is always first)
 """
