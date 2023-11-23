@@ -142,10 +142,13 @@ class Server:
                 print("No master node set, cannot assign order")
                 return
 
-            for idx, node in enumerate(self.__nodes):
-                vehicle_id = idx + 1
+            current_id = 1
+            for node in self.__nodes:
                 if node == self.__master_node:
                     vehicle_id = 0
+                else:
+                    vehicle_id = current_id
+                    current_id += 1
 
                 self.__socket.sendto(
                     str.encode(f"{MSG_CMD_ORDER}|{vehicle_id}"),
