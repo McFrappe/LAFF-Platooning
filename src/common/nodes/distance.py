@@ -7,6 +7,7 @@ from common.ultrasonic_driver import UltrasonicDriver
 
 class DistanceController:
     def __init__(self):
+        self.__id = rospy.get_param("VEHICLE_ID")
         self.__current_reading = 0
         self.__average_distance = 0.0
         self.__readings_per_publish = rospy.get_param("ULTRASONIC_SAMPLES_PER_PUBLISH")
@@ -16,7 +17,7 @@ class DistanceController:
             rospy.get_param("ULTRASONIC_ECHO"))
 
         self.distance_publisher = rospy.Publisher(
-            "vehicle/distance",
+            f"{self.__id}/distance",
             Range,
             queue_size=rospy.get_param("MESSAGE_QUEUE_SIZE"))
 
@@ -70,7 +71,7 @@ class DistanceController:
 
 
 if __name__ == "__main__":
-    rospy.init_node("distance_node")
+    rospy.init_node("distance_node", anonymous=True)
     controller = DistanceController()
     rospy.on_shutdown(controller.stop)
 

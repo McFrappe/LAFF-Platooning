@@ -2,14 +2,18 @@ SHELL := /bin/bash
 BRANCH ?= main
 
 PASSWORD ?= laff
+IP := $(shell ip addr show wlan0 | grep -Po4 'inet \K[\d.]+')
+VEHICLE_ID := $(shell cat /tmp/VEHICLE_ID)
+ROS_MASTER_URI := $(shell cat /tmp/ROS_MASTER_URI)
+
 
 install:
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
 	sudo apt install -y curl
 	curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add
 	sudo apt update
-	sudo apt install -y ros-noetic-ros-base
-	sudo apt install -y python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential g++ libusb-1.0-0-dev
+	sudo apt -y install ros-noetic-ros-base
+	sudo apt -y install python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential g++ libusb-1.0-0-dev
 	echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 	source ~/.bashrc
 	sudo rosdep init
@@ -35,6 +39,7 @@ install:
 	echo 'laff ALL=(ALL) NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo
 
 update:
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "date -s \"$(shell wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
 	git config --global --add safe.directory /home/laff/laff-platooning
 	cd /home/laff/laff-platooning
 	git reset --hard
@@ -50,21 +55,21 @@ cat:
 
 run_joyit:
 	source devel/setup.bash
-	roslaunch joyit vehicle.launch
+	ROS_IP=$(IP) roslaunch joyit vehicle.launch
 
 run_joyit_pi:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(DEVICE_ID)"
 
 run_rcv:
 	source devel/setup.bash
-	roslaunch rcv vehicle.launch
+	ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle.launch
 
 run_rcv_pi:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; roslaunch rcv vehicle.launch --screen --pid /tmp/laff.pid"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"
 
 run_rcv_joystick:
 	source devel/setup.bash
-	roslaunch rcv vehicle_joystick.launch
+	ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle_joystick.launch
 
 run_rcv_joystick_pi:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; roslaunch rcv vehicle_joystick.launch --screen --pid /tmp/laff.pid"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle_joystick.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"

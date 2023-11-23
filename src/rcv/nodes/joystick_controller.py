@@ -8,6 +8,7 @@ from sensor_msgs.msg import Joy
 
 class JoystickController:
     def __init__(self):
+        self.id = rospy.get_param("VEHICLE_ID")
         self.max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
         self.max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
         self.idle = rospy.get_param("IDLE_MOTOR")
@@ -20,8 +21,8 @@ class JoystickController:
         self.old_angle = 0
         self.message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
 
-        self.speed_publisher = rospy.Publisher("vehicle/speed",Int32, queue_size=self.message_queue_size)
-        self.steering_angle_publisher = rospy.Publisher("vehicle/steering_angle",Int32, queue_size=self.message_queue_size)
+        self.speed_publisher = rospy.Publisher(f"{self.id}/speed",Int32, queue_size=self.message_queue_size)
+        self.steering_angle_publisher = rospy.Publisher(f"{self.id}/steering_angle",Int32, queue_size=self.message_queue_size)
 
         self.controller_subscriber = rospy.Subscriber(
             "/joy",
@@ -77,7 +78,7 @@ class JoystickController:
         self.controller_subscriber.unregister()
 
 if __name__ == "__main__":
-    rospy.init_node("joystick_controller_node")
+    rospy.init_node("joystick_controller_node", anonymous=True)
     controller = JoystickController()
     rospy.on_shutdown(controller.stop)
 

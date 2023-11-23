@@ -9,6 +9,7 @@ from controller.pid import PID
 
 class PIDController:
     def __init__(self):
+        self.__id = rospy.get_param("VEHICLE_ID")
         self.__pid = PID(
             rospy.get_param("K_P"),
             rospy.get_param("K_I"),
@@ -27,14 +28,14 @@ class PIDController:
 
         self.__steering_angle = self.__zero
         self.__current_speed = self.__idle
-        self.__current_distance = 0 
+        self.__current_distance = 0
 
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
 
-        self.speed_publisher = rospy.Publisher("vehicle/speed", Int32, queue_size=self.__message_queue_size)
-        self.steering_angle_publisher = rospy.Publisher("vehicle/steering_angle", Int32, queue_size=self.__message_queue_size)
+        self.speed_publisher = rospy.Publisher(f"{self.__id}/speed", Int32, queue_size=self.__message_queue_size)
+        self.steering_angle_publisher = rospy.Publisher(f"{self.__id}/steering_angle", Int32, queue_size=self.__message_queue_size)
         self.distance_subscriber = rospy.Subscriber(
-            "vehicle/distance",
+            f"{self.__id}/distance",
             Range,
             self.__callback_distance,
             queue_size=self.__message_queue_size)
@@ -61,7 +62,7 @@ class PIDController:
         self.speed_publisher.publish(self.__idle)
 
 if __name__ == "__main__":
-    rospy.init_node("pid_controller_node")
+    rospy.init_node("pid_controller_node", anonymous=True)
     controller = PIDController()
     rospy.on_shutdown(controller.stop)
 
