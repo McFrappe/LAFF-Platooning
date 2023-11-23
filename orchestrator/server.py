@@ -155,6 +155,10 @@ class Server:
                     str.encode(f"{MSG_CMD_ORDER}|{vehicle_id}"),
                     (node, SOCKET_PORT)
                 )
+        elif cmd == MSG_CMD_CLEAR_SCREEN:
+            # Clear the terminal screen
+            print("\033c")
+            return
         elif cmd == MSG_CMD_LIST_NODES:
             self.print_nodes()
             return

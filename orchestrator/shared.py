@@ -33,6 +33,7 @@ MSG_CMD_START = "start"
 MSG_CMD_STOP = "stop"
 MSG_CMD_UPDATE = "update"
 MSG_CMD_LIST_NODES = "ls"
+MSG_CMD_CLEAR_SCREEN = "cls"
 
 AVAILABLE_COMMANDS = [
     MSG_CMD_START,
@@ -41,14 +42,17 @@ AVAILABLE_COMMANDS = [
     MSG_CMD_UPDATE,
     MSG_CMD_SET_MASTER,
     MSG_CMD_ORDER,
+    MSG_CMD_CLEAR_SCREEN,
 ]
 
 AVAILABLE_COMMANDS_STR = f"""
 Available commands:
+- q: Quit the program.
 - {MSG_CMD_START}: Start ROS on all nodes.
 - {MSG_CMD_STOP}: Stop ROS on all nodes.
 - {MSG_CMD_LIST_NODES}: List the nodes connected to the server.
 - {MSG_CMD_UPDATE} [branch]: Update all nodes to latest code on <branch>
 - {MSG_CMD_SET_MASTER} [ip]: Set master node to be controlled with DS4 controller
 - {MSG_CMD_ORDER}: Assign platooning order based on time of conection (master is always first)
+- {MSG_CMD_CLEAR_SCREEN}: Clear the screen
 """
