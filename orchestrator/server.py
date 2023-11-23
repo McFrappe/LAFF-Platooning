@@ -1,3 +1,4 @@
+from threading import Timer
 from orchestrator.shared import *
 from orchestrator.utils import get_broadcast_ip, prompt
 
@@ -12,9 +13,9 @@ class Server:
         self.__broadcast_ip = get_broadcast_ip()
         self.__master_node = None
         self.__is_running = False
-        self.__ordered_nodes = set()
+        self.__nodes = dict()
         self.__socket = socket
-        self.__nodes = []
+        self.__ordered_nodes = set()
 
     def print_nodes(self):
         """
@@ -26,10 +27,19 @@ class Server:
 
         for idx, node in enumerate(self.__nodes):
             if node == self.__master_node:
-                print(f"{idx}: {node} (master)")
+                print(f"{idx}: {node.key} (master)")
                 continue
 
-            print(f"{idx}: {node}")
+            print(f"{idx}: {node.key}")
+
+    def remove_node(self, ip):
+        if ip in self.__nodes.keys():
+            del self.__nodes[ip]
+            print(
+                f"** Node {ip} removed from list of nodes due to timeout. **")
+            return
+
+        print(f"** Node {ip} not found in list of nodes to be removed. **")
 
     def handle_message(self, msg, addr):
         """
@@ -40,10 +50,17 @@ class Server:
         data = "" if len(msg) == 1 else msg[1]
         ip = addr[0]
         if cmd == MSG_CMD_HEARTBEAT:
-            if ip in self.__nodes:
+            if ip in self.__nodes.keys():
+                self.__nodes[ip].reset()
                 return
-            self.__nodes.append(ip)
+
+            # Set a timer for that specific node address to be removed if it times out after HEARTBEAT_TIMEOUT seconds
+            self.__nodes[ip] = Timer(
+                HEARTBEAT_TIMEOUT, self.remove_node, ip)
+            self.__nodes[ip].start()
+
             print(f"** Registered node {ip} to list of nodes **")
+
         elif cmd == MSG_CMD_START_CONFIRM:
             print(f"** Node {ip} started **")
             if self.__master_node == ip:
@@ -67,7 +84,9 @@ class Server:
             print(f"** Node {ip} assigned id {data} **")
             self.__ordered_nodes.add(ip)
         elif cmd == MSG_CMD_ERROR:
-            print(f"** Node {ip} got an unhandled error **\n\033[2;31m{error}\033[0;0m")
+            print(
+                # TODO: this will break if not fixed
+                f"** Node {ip} got an unhandled error **\n\033[2;31m{error}\033[0;0m")
         else:
             # Only update prompt if we actually print something
             return
@@ -91,16 +110,17 @@ class Server:
                 print("Invalid address, see registered nodes with 'ls'")
                 return
 
-            node = self.__nodes[0]
+            node = self.__nodes[0].key
             if "." in data:
                 node = data
             else:
                 try:
                     val = int(data)
                     if val >= len(self.__nodes):
-                        print("Node index out of range, see registered nodes with 'ls'")
+                        print(
+                            "Node index out of range, see registered nodes with 'ls'")
                         return
-                    node = self.__nodes[val]
+                    node = self.__nodes[val].key
                 except:
                     print("Invalid node index, see registered nodes with 'ls'")
                     return
@@ -144,7 +164,7 @@ class Server:
                 return
 
             current_id = 1
-            for node in self.__nodes:
+            for node in self.__nodes.keys():
                 if node == self.__master_node:
                     vehicle_id = 0
                 else:
@@ -156,7 +176,6 @@ class Server:
                     (node, SOCKET_PORT)
                 )
         elif cmd == MSG_CMD_CLEAR_SCREEN:
-            # Clear the terminal screen
             print("\033c")
             return
         elif cmd == MSG_CMD_LIST_NODES:

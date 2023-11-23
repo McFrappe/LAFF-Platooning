@@ -127,6 +127,9 @@ class Node:
             return self.start()
 
     def set_master(self, new_master):
+        """
+        Sets the master node. If the node is already the master node, this method does nothing.
+        """
         self.__is_master = new_master == self.__ip
         print(f"Set master: {self.__is_master}")
 
@@ -146,6 +149,9 @@ class Node:
         return OK
 
     def set_id(self, new_id):
+        """
+        Sets the id of the node.
+        """
         try:
             with open(VEHICLE_ID_PATH, "w") as f:
                 f.write(f"vehicle_{new_id}")
@@ -159,7 +165,6 @@ class Node:
             (self.__broadcast_ip, SOCKET_PORT)
         )
         return OK
-
 
     def send_heartbeat(self):
         """
