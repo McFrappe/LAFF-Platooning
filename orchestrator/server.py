@@ -41,13 +41,12 @@ class Server:
             print(f"{idx}: {node}")
 
     def remove_node(self, ip):
-        if ip in self.__nodes.keys():
-            del self.__nodes[ip]
-            print(
-                f"** Node {ip} removed from list of nodes due to timeout. **")
+        if ip not in self.__nodes.keys():
             return
 
-        print(f"** Node {ip} not found in list of nodes to be removed. **")
+        del self.__nodes[ip]
+        print(f"** Node {ip} removed from list of nodes due to timeout. **")
+        prompt()
 
     def handle_message(self, msg, addr):
         """
@@ -67,7 +66,7 @@ class Server:
 
             # Set a timer for that specific node address to be removed if it times out after HEARTBEAT_TIMEOUT seconds
             self.__nodes[ip] = Timer(
-                HEARTBEAT_TIMEOUT, self.remove_node, ip)
+                HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
             self.__nodes[ip].start()
 
             print(f"** Registered node {ip} to list of nodes **")
