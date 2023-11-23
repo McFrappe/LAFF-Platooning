@@ -49,7 +49,7 @@ class Server:
             if self.__master_node == ip:
                 print("Starting slaves")
                 self.__socket.sendto(
-                    str.encode(cmd),
+                    str.encode(MSG_CMD_START),
                     (self.__broadcast_ip, SOCKET_PORT)
                 )
         elif cmd == MSG_CMD_STOP_CONFIRM:

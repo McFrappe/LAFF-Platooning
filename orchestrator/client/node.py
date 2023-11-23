@@ -155,7 +155,7 @@ class Node:
 
         self.__id = new_id
         self.__socket.sendto(
-            str.encode(MSG_CMD_ORDER_CONFIRM),
+            str.encode(f"{MSG_CMD_ORDER_CONFIRM}|{new_id}"),
             (self.__broadcast_ip, SOCKET_PORT)
         )
         return OK
