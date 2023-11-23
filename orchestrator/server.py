@@ -51,7 +51,10 @@ class Server:
         ip = addr[0]
         if cmd == MSG_CMD_HEARTBEAT:
             if ip in self.__nodes.keys():
-                self.__nodes[ip].reset()
+                self.__nodes[ip].cancel()
+                self.__nodes[ip] = Timer(
+                    HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
+                self.__nodes[ip].start()
                 return
 
             # Set a timer for that specific node address to be removed if it times out after HEARTBEAT_TIMEOUT seconds
