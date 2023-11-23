@@ -2,6 +2,7 @@ import os
 import time
 import signal
 import subprocess
+from threading import Timer
 from orchestrator.shared import *
 from orchestrator.utils import get_broadcast_ip
 
@@ -20,6 +21,15 @@ class Node:
         self.__running = False
         self.__broadcast_ip = get_broadcast_ip()
         self.__start_time = -1
+        self.__start_confirm_timer = Timer(
+            MASTER_STARTUP_WAIT_TIME, self.__confirm_start)
+
+    def __confirm_start(self):
+        self.__socket.sendto(
+            str.encode(MSG_CMD_START_CONFIRM),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
+        self.__running = True
 
     def start(self):
         """
@@ -37,11 +47,14 @@ class Node:
         try:
             subprocess.Popen(
                 f"make {make_cmd}", shell=True, cwd=REPO_PATH, executable="/bin/bash")
-            self.__socket.sendto(
-                str.encode(MSG_CMD_START_CONFIRM),
-                (self.__broadcast_ip, SOCKET_PORT)
-            )
-            self.__running = True
+            if self.__is_master:
+                # If we are the master, we need to wait for it to start to
+                # ensure that the ROS master is available for the slaves.
+                # Only send confirm (and start slaves) after a few seconds.
+                self.__start_confirm_timer.start()
+            else:
+                self.__confirm_start()
+
             self.__start_time = time.time()
             return OK
         except Exception as e:

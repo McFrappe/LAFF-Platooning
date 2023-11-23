@@ -45,6 +45,12 @@ class Server:
             print(f"** Registered node {ip} to list of nodes **")
         elif cmd == MSG_CMD_START_CONFIRM:
             print(f"** Node {ip} started **")
+            if self.__master_node == ip:
+                print("Starting slaves")
+                self.__socket.sendto(
+                    str.encode(cmd),
+                    (self.__broadcast_ip, SOCKET_PORT)
+                )
         elif cmd == MSG_CMD_STOP_CONFIRM:
             print(f"** Node {ip} stopped **")
         elif cmd == MSG_CMD_UPDATE_START_CONFIRM:
@@ -111,9 +117,10 @@ class Server:
                 print("No master node set, cannot start")
                 return
 
+            # Start master first, slaves started on confirm
             self.__socket.sendto(
                 str.encode(cmd),
-                (self.__broadcast_ip, SOCKET_PORT)
+                (self.__master_node, SOCKET_PORT)
             )
             self.__is_running = True
         elif cmd == MSG_CMD_STOP:
