@@ -78,6 +78,9 @@ class Server:
             print(f"** Node {ip} started update **")
         elif cmd == MSG_CMD_UPDATE_CONFIRM:
             print(f"** Node {ip} updated **")
+            self.__nodes[ip] = Timer(
+                HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
+            self.__nodes[ip].start()
         elif cmd == MSG_CMD_MASTER_CONFIRM:
             self.__master_node = ip
             print(f"** Node {ip} set to master **")
@@ -136,6 +139,10 @@ class Server:
             if len(data) == 0 or " " in data:
                 print("Invalid branch name")
                 return
+
+            for node in self.__nodes.keys():
+                self.__nodes[node].cancel()
+
             self.__socket.sendto(
                 str.encode(f"{cmd}|{data}"),
                 (self.__broadcast_ip, SOCKET_PORT)
