@@ -12,6 +12,7 @@ class Server:
         self.__broadcast_ip = get_broadcast_ip()
         self.__master_node = None
         self.__is_running = False
+        self.__ordered_nodes = set()
         self.__socket = socket
         self.__nodes = []
 
@@ -64,6 +65,7 @@ class Server:
             print(f"** Node {ip} set to slave **")
         elif cmd == MSG_CMD_ORDER_CONFIRM:
             print(f"** Node {ip} assigned id {data} **")
+            self.__ordered_nodes.add(ip)
         else:
             # Only update prompt if we actually print something
             return
@@ -115,6 +117,10 @@ class Server:
         elif cmd == MSG_CMD_START:
             if self.__master_node is None:
                 print("No master node set, cannot start")
+                return
+
+            if len(self.__ordered_nodes) != len(self.__nodes):
+                print("Run 'order' first to assign ids to each vehicle")
                 return
 
             # Start master first, slaves started on confirm
