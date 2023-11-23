@@ -30,7 +30,7 @@ def run():
                 if addr[0].endswith("255"):
                     continue
 
-                parsed_msg = msg.decode("utf-8").split(":")
+                parsed_msg = msg.decode("utf-8").split("|")
                 server.handle_message(parsed_msg, addr)
             else:
                 msg = sys.stdin.readline()

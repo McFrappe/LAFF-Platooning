@@ -15,6 +15,7 @@ OK = 0
 ERROR = 1
 
 # Node message
+MSG_CMD_ERROR = "error"
 MSG_CMD_HEARTBEAT = "heartbeat"
 MSG_CMD_REQUEST_MASTER = "request_master"
 MSG_CMD_START_CONFIRM = "start_confirm"

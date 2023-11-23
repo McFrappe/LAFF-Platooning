@@ -31,6 +31,12 @@ class Node:
         )
         self.__running = True
 
+    def __broadcast_error(self, error):
+        self.__socket.sendto(
+            str.encode(f"{MSG_CMD_ERROR}|{error}"),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
+
     def start(self):
         """
         Starts the node process and sets the master flag if the node is the
@@ -59,6 +65,7 @@ class Node:
             return OK
         except Exception as e:
             print(f"Failed to start process:\n{e}")
+            self.__broadcast_error(e)
             return ERROR
 
     def stop(self):
@@ -86,6 +93,7 @@ class Node:
             )
         except Exception as e:
             print(f"Failed to stop process:\n{e}")
+            self.__broadcast_error(e)
 
         # Assume the process is already dead
         self.__running = False
@@ -112,6 +120,7 @@ class Node:
             )
         except Exception as e:
             print(f"Failed to update to branch {branch}:\n{e}")
+            self.__broadcast_error(e)
             return ERROR
 
         if was_running:
@@ -125,7 +134,8 @@ class Node:
             # store master ip in file and set it to be the environent variable ROS_MASTER_URI
             with open(ROS_MASTER_URI_PATH, "w") as f:
                 f.write(f"http://{new_master}:11311")
-        except Exception:
+        except Exception as e:
+            self.__broadcast_error(e)
             return ERROR
 
         cmd = MSG_CMD_MASTER_CONFIRM if self.__is_master else MSG_CMD_NOT_MASTER_CONFIRM
@@ -139,7 +149,8 @@ class Node:
         try:
             with open(VEHICLE_ID_PATH, "w") as f:
                 f.write(f"vehicle_{new_id}")
-        except Exception:
+        except Exception as e:
+            self.__broadcast_error(e)
             return ERROR
 
         self.__id = new_id

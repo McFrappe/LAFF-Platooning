@@ -66,6 +66,8 @@ class Server:
         elif cmd == MSG_CMD_ORDER_CONFIRM:
             print(f"** Node {ip} assigned id {data} **")
             self.__ordered_nodes.add(ip)
+        elif cmd == MSG_CMD_ERROR:
+            print(f"** Node {ip} got an unhandled error **\n\033[2;31m{error}\033[0;0m")
         else:
             # Only update prompt if we actually print something
             return
@@ -103,7 +105,7 @@ class Server:
                     print("Invalid node index, see registered nodes with 'ls'")
                     return
             self.__socket.sendto(
-                str.encode(f"{cmd}:{node}"),
+                str.encode(f"{cmd}|{node}"),
                 (self.__broadcast_ip, SOCKET_PORT)
             )
         elif cmd == MSG_CMD_UPDATE:
@@ -111,7 +113,7 @@ class Server:
                 print("Invalid branch name")
                 return
             self.__socket.sendto(
-                str.encode(f"{cmd}:{data}"),
+                str.encode(f"{cmd}|{data}"),
                 (self.__broadcast_ip, SOCKET_PORT)
             )
         elif cmd == MSG_CMD_START:
@@ -146,7 +148,7 @@ class Server:
                     vehicle_id = 0
 
                 self.__socket.sendto(
-                    str.encode(f"{MSG_CMD_ORDER}:{vehicle_id}"),
+                    str.encode(f"{MSG_CMD_ORDER}|{vehicle_id}"),
                     (node, SOCKET_PORT)
                 )
         elif cmd == MSG_CMD_LIST_NODES:

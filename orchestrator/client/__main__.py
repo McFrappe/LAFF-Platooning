@@ -33,7 +33,7 @@ def run():
             if sock == s:
                 (msg, _) = s.recvfrom(BUFFER_SIZE)
                 parsed_msg = [x.strip("\n").lower()
-                              for x in msg.decode("utf-8").split(":")]
+                              for x in msg.decode("utf-8").split("|")]
                 node.handle_message(parsed_msg)
             else:
                 node.send_heartbeat()
