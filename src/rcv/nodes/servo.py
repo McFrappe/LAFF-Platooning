@@ -11,6 +11,7 @@ class ServoController:
     """
 
     def __init__(self):
+        self.id = rospy.get_param("VEHICLE_ID")
         self.driver = ServoDriver(
             out_pin=rospy.get_param("SERVO_PIN"))
 
@@ -21,7 +22,7 @@ class ServoController:
         """
         Setup the service for the servo steering.
         """
-        rospy.Subscriber("vehicle/steering_angle", Int32, self.callback_steering_angle)
+        rospy.Subscriber(f"{self.id}/steering_angle", Int32, self.callback_steering_angle)
 
     def callback_steering_angle(self, msg: Int32):
         """
@@ -39,7 +40,7 @@ class ServoController:
         self.driver.cleanup()
 
 if __name__ == "__main__":
-    rospy.init_node("servo_node")
+    rospy.init_node("servo_node", anonymous=True)
     controller = ServoController()
     rospy.on_shutdown(controller.stop)
 

@@ -1,8 +1,12 @@
 <launch>
+    <arg name="vehicle_id" default="vehicle" />
+
     <node name="esc_node" pkg="rcv" type="esc.py" respawn="true" />
     <node name="servo_node" pkg="rcv" type="servo.py" respawn="true" />
     <node name="pid_controller" pkg="rcv" type="pid_controller.py" respawn="true" />
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
+
+    <param name="VEHICLE_ID" type="string" value="$(arg vehicle_id)" />
 
     <!-- PID controller -->
     <param name="K_P" type="double" value="0.00294" />

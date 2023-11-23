@@ -1,8 +1,0 @@
-{
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.python"
-    },
-    "python.formatting.provider": "none",
-    "python.analysis.typeCheckingMode": "basic",
-    "cmake.sourceDirectory": "/Users/fadde/Documents/GitHub/LAFF-Platooning/src/joyit"
-}
