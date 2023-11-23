@@ -45,6 +45,7 @@ def run():
                                   for x in msg.split(" ")]
 
                     if parsed_msg[0] == "q" or parsed_msg[0] == "quit":
+                        server.stop_node_timers()
                         sys.exit(1)
                     elif parsed_msg[0] == "h" or parsed_msg[0] == "help":
                         print(AVAILABLE_COMMANDS_STR)
@@ -54,6 +55,7 @@ def run():
                     prompt()
     except KeyboardInterrupt:
         print("\nExiting...")
+        server.stop_node_timers()
         sys.exit(1)
 
 

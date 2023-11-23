@@ -17,6 +17,13 @@ class Server:
         self.__socket = socket
         self.__ordered_nodes = set()
 
+    def stop_node_timers(self):
+        """
+        Stops all node timers
+        """
+        for node in self.__nodes.keys():
+            self.__nodes[node].cancel()
+
     def print_nodes(self):
         """
         Prints all connected nodes
