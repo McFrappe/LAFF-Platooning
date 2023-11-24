@@ -5,3 +5,5 @@
 [submodule "src/pixy2_ros"]
 	path = src/pixy2_ros
 	url = https://github.com/frewacom/pixy2_ros.git
+	ignore = dirty
+
