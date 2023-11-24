@@ -61,13 +61,19 @@ class ObjectFollowerController:
         Updates the steering angle based on object(s) detected
         by the Pixy2 camera.
         """
-        # Assume just one object is visible at any given time
-        if len(self.__detected_blocks) != 1:
+        if len(self.__detected_blocks) == 0:
             self.__steering_angle_publisher.publish(self.__zero)
             return
 
+        # Find the block with the highest age, i.e. the block that
+        # has been visible for the most amount of frames.
+        target_block = self.__detected_blocks[0]
+        for block in self.__detected_blocks:
+            if block.age > target_block.age:
+                target_block = block
+
         new_angle = self.__zero
-        hoffset = self.__calculate_horizontal_offset(self.__detected_blocks[0])
+        hoffset = self.__calculate_horizontal_offset(target_block)
         if hoffset < 0:
             # Turn left
             new_angle = int(np.interp(
