@@ -3,8 +3,8 @@ BRANCH ?= main
 
 PASSWORD ?= laff
 IP := $(shell ip addr show wlan0 | grep -Po4 'inet \K[\d.]+')
-VEHICLE_ID := $(shell cat /tmp/VEHICLE_ID)
-ROS_MASTER_URI := $(shell cat /tmp/ROS_MASTER_URI)
+VEHICLE_ID := $(shell cat /tmp/VEHICLE_ID || echo 'vehicle_0')
+ROS_MASTER_URI := $(shell cat /tmp/ROS_MASTER_URI || echo 'http://localhost:11311')
 
 
 install:
