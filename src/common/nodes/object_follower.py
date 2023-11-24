@@ -9,10 +9,10 @@ from pixy2_msgs.msg import PixyData, PixyBlock, PixyResolution
 
 class ObjectFollowerController:
     def __init__(self):
-        self.__id=rospy.get_param("VEHICLE_ID")
-        self.__max_right=rospy.get_param("MAX_RIGHT_ANGLE")
-        self.__max_left=rospy.get_param("MAX_LEFT_ANGLE")
-        self.__zero=rospy.get_param("ZERO_ANGLE")
+        self.__id = rospy.get_param("VEHICLE_ID")
+        self.__max_right = rospy.get_param("MAX_RIGHT_ANGLE")
+        self.__max_left = rospy.get_param("MAX_LEFT_ANGLE")
+        self.__zero = rospy.get_param("ZERO_ANGLE")
         self.__update_period = rospy.get_param("OBJECT_FOLLOWER_PERIOD")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
 
@@ -25,13 +25,13 @@ class ObjectFollowerController:
             queue_size=self.__message_queue_size)
 
         self.__resolution_subscriber = rospy.Subscriber(
-            "/pixy2_resolution",
+            f"{self.__id}/pixy2_resolution",
             PixyResolution,
             self.__callback_resolution,
             queue_size=self.__message_queue_size)
 
         self.__blocks_subscriber = rospy.Subscriber(
-            "/block_data",
+            f"{self.__id}/block_data",
             PixyData,
             self.__callback_blocks,
             queue_size=self.__message_queue_size)
