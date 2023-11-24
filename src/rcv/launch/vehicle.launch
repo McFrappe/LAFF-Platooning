@@ -6,7 +6,7 @@
     <node name="pid_controller" pkg="rcv" type="pid_controller.py" respawn="true" />
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
     <node name="object_follower_node" pkg="common" type="object_follower.py" respawn="true" />
-    <node name="pixy2_node" pkg="pixy2_node" type="pixy2_node" output="screen">
+    <node name="pixy2_node" pkg="pixy2_node" type="pixy2_node" output="screen" respawn="true">
         <param name="rate" value="50.0"/>
         <param name="use_servos" value="true"/>
     </node>
