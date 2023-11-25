@@ -50,7 +50,6 @@ class PIDController:
 
     def __perform_step(self, event):
         updated_control = self.__pid.update(self.__current_distance)
-        rospy.loginfo(f"PID controller output for distance {self.__current_distance}: {updated_control}")
         self.current_speed = int(np.interp(
             updated_control,
             [self.__pid_min, self.__pid_max],

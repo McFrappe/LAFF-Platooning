@@ -17,6 +17,7 @@ include_directories(
 
 catkin_install_python(PROGRAMS
   nodes/line_follower.py
+  nodes/object_follower.py
   nodes/distance.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
