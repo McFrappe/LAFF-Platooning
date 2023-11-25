@@ -61,7 +61,7 @@ cat:
 	catkin_make
 
 publish:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash || source /opt/ros/noetic/setup.bash; rostopic pub $(PUBLISH_CMD_ARGS)"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash || source /opt/ros/noetic/setup.bash; rostopic pub -1 $(PUBLISH_CMD_ARGS)"
 
 run_joyit:
 	source devel/setup.bash
