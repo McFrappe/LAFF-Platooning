@@ -67,13 +67,18 @@ class ObjectFollowerController:
         Updates the steering angle based on object(s) detected
         by the Pixy2 camera.
         """
-        # Always account that a block has been collected, even if there really wasn't one
-        self.__collected_blocks_count += 1
-        if len(self.__detected_blocks) == 0:
+        if self.__collected_blocks_count < self.__nr_of_blocks_to_collect:
+            self.__collected_blocks_count += 1
+
+            if len(self.__detected_blocks) != 0:
+                self.__collected_blocks.append(self.__detected_blocks[0])
+
             return
 
-        if self.__collected_blocks_count < self.__nr_of_blocks_to_collect + 1:
-            self.__collected_blocks.append(self.__detected_blocks[0])
+        # No blocks detected during the period, reset
+        if len(self.__collected_blocks) == 0:
+            self.__steering_angle_publisher.publish(self.__zero)
+            self.__collected_blocks_count = 0
             return
 
         new_angle = self.__zero
