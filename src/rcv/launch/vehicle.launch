@@ -33,7 +33,7 @@
 
     <!-- Publisher periods -->
     <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
-    <param name="OBJECT_FOLLOWER_PERIOD" type="double" value="0.1" />
+    <param name="OBJECT_FOLLOWER_PERIOD" type="double" value="0.0167" />
     <param name="PID_CONTROL_PERIOD" type="double" value="0.1" />
 
     <!-- GPIO for IR -->
