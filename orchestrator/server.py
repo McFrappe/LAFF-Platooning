@@ -94,6 +94,7 @@ class Server:
             print(f"** Node {ip} assigned id {data} **")
             self.__ordered_nodes.add(ip)
         elif cmd == MSG_CMD_LIGHTS_CONFIRM:
+            print(f"** Node {ip} turned lights {data} **")
             self.start_node_timer(ip)
         elif cmd == MSG_CMD_ERROR:
             print(

@@ -166,19 +166,19 @@ class Node:
         )
         return OK
 
-    def set_lights(self, enabled):
+    def set_lights(self, data):
         """
         Toggles the LED lights on the Pixy2 camera on/off based on
         the value of enabled.
         """
         try:
-            state = "true" if enabled else "false"
+            state = "true" if data == "on" else "false"
             proc = subprocess.Popen(
                 f"make PUBLISH_CMD_ARGS='/lights std_msgs/Bool {state}' publish",
                 shell=True, cwd=REPO_PATH, executable="/bin/bash")
             proc.wait()
             self.__socket.sendto(
-                str.encode(MSG_CMD_LIGHTS_CONFIRM),
+                str.encode(f"{MSG_CMD_LIGHTS_CONFIRM}|{data}"),
                 (self.__broadcast_ip, SOCKET_PORT)
             )
             return OK
@@ -220,4 +220,4 @@ class Node:
             self.set_id(data)
         elif cmd == MSG_CMD_LIGHTS:
             print(f"Received lights command with data {data}")
-            self.set_lights(data == "on")
+            self.set_lights(data)
