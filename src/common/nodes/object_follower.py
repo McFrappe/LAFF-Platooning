@@ -15,9 +15,13 @@ class ObjectFollowerController:
         self.__zero = rospy.get_param("ZERO_ANGLE")
         self.__update_period = rospy.get_param("OBJECT_FOLLOWER_PERIOD")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
+        self.__nr_of_blocks_to_collect = rospy.get_param(
+            "OBJECT_FOLLOWER_BLOCKS_PER_UPDATE")
 
         self.__resolution_x = 315
         self.__detected_blocks: list[PixyBlock] = []
+        self.__collected_blocks: list[PixyBlock] = []
+        self.__collected_blocks_count = 0
 
         self.__steering_angle_publisher = rospy.Publisher(
             f"{self.__id}/steering_angle",
@@ -44,36 +48,36 @@ class ObjectFollowerController:
     def __callback_blocks(self, data: PixyData):
         self.__detected_blocks = data.blocks
 
-    def __calculate_horizontal_offset(self, block: PixyBlock):
+    def __calculate_horizontal_offset(self, blocks: list[PixyBlock]):
         """
-        Calculates the offset of the object from the center of the
+        Calculates the average offset of a list of objects from the center of the
         image. A negative offset indicates that the object is too
         far to the left, and a positive offset that the object is
         too far to the right.
         """
+        avg_width = sum([b.roi.width for b in blocks]) / len(blocks)
+        avg_x_offset = sum([b.roi.x_offset for b in blocks]) / len(blocks)
         center_pos = self.__resolution_x / 2
-        target_left_edge = int(center_pos - (block.roi.width / 2))
-        return block.roi.x_offset - target_left_edge
+        target_left_edge = int(center_pos - (avg_width / 2))
 
-    # TODO: Tilt camera to always keep object vertically centered
+        return avg_x_offset - target_left_edge
+
     def __update(self, event):
         """
         Updates the steering angle based on object(s) detected
         by the Pixy2 camera.
         """
+        # Always account that a block has been collected, even if there really wasn't one
+        self.__collected_blocks_count += 1
         if len(self.__detected_blocks) == 0:
-            self.__steering_angle_publisher.publish(self.__zero)
             return
 
-        # Find the block with the highest age, i.e. the block that
-        # has been visible for the most amount of frames.
-        target_block = self.__detected_blocks[0]
-        for block in self.__detected_blocks:
-            if block.age > target_block.age:
-                target_block = block
+        if self.__collected_blocks_count != self.__nr_of_blocks_to_collect + 1:
+            self.__collected_blocks.append(self.__detected_blocks[0])
+            return
 
         new_angle = self.__zero
-        hoffset = self.__calculate_horizontal_offset(target_block)
+        hoffset = self.__calculate_horizontal_offset(self.__collected_blocks)
         if hoffset < 0:
             # Turn left
             new_angle = int(np.interp(
@@ -88,6 +92,8 @@ class ObjectFollowerController:
                 [self.__zero, self.__max_right]))
 
         self.__steering_angle_publisher.publish(new_angle)
+        self.__collected_blocks = []
+        self.__collected_blocks_count = 0
 
     def cleanup(self):
         self.__blocks_subscriber.unregister()

@@ -6,12 +6,13 @@
     <node name="pid_controller" pkg="rcv" type="pid_controller.py" respawn="true" />
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
     <node name="object_follower_node" pkg="common" type="object_follower.py" respawn="true" />
-    <node name="pixy2_node" pkg="pixy2_node" type="pixy2_node" output="screen" respawn="true">
-        <param name="rate" value="50.0"/>
-        <param name="use_servos" value="true"/>
+    <node name="pixy2_node" pkg="pixy2_node" type="pixy2_node" respawn="true">
+        <param name="rate" value="60.0"/>
+        <param name="use_servos" value="false"/>
     </node>
 
     <param name="VEHICLE_ID" type="string" value="$(arg vehicle_id)" />
+    <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="10" />
 
     <!-- PID controller -->
     <param name="K_P" type="double" value="0.00294" />
