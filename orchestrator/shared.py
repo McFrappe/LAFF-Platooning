@@ -26,6 +26,7 @@ MSG_CMD_UPDATE_CONFIRM = "update_confirm"
 MSG_CMD_MASTER_CONFIRM = "master_confirm"
 MSG_CMD_NOT_MASTER_CONFIRM = "not_master_confirm"
 MSG_CMD_ORDER_CONFIRM = "order_confirm"
+MSG_CMD_LIGHTS_CONFIRM = "lights_confirm"
 
 # Server messages
 MSG_CMD_SET_MASTER = "master"

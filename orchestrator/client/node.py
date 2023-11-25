@@ -177,8 +177,10 @@ class Node:
                 f"make PUBLISH_CMD_ARGS='/lights std_msgs/Bool {state}' publish",
                 shell=True, cwd=REPO_PATH, executable="/bin/bash")
             proc.wait()
-            # No need for a confirmation here, the lights are a visual
-            # confirmation.
+            self.__socket.sendto(
+                str.encode(MSG_CMD_LIGHTS_CONFIRM),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
             return OK
         except Exception as e:
             self.__broadcast_error(e)
@@ -218,4 +220,4 @@ class Node:
             self.set_id(data)
         elif cmd == MSG_CMD_LIGHTS:
             print(f"Received lights command with data {data}")
-            self.set_lights(data)
+            self.set_lights(data == "on")

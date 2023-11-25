@@ -24,6 +24,11 @@ class Server:
         for node in self.__nodes.keys():
             self.__nodes[node].cancel()
 
+    def start_node_timer(self, ip):
+        self.__nodes[ip] = Timer(
+            HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
+        self.__nodes[ip].start()
+
     def print_nodes(self):
         """
         Prints all connected nodes
@@ -59,15 +64,10 @@ class Server:
         if cmd == MSG_CMD_HEARTBEAT:
             if ip in self.__nodes.keys():
                 self.__nodes[ip].cancel()
-                self.__nodes[ip] = Timer(
-                    HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
-                self.__nodes[ip].start()
+                self.start_node_timer(ip)
                 return
 
-            # Set a timer for that specific node address to be removed if it times out after HEARTBEAT_TIMEOUT seconds
-            self.__nodes[ip] = Timer(
-                HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
-            self.__nodes[ip].start()
+            self.start_node_timer(ip)
 
             print(f"** Registered node {ip} to list of nodes **")
         elif cmd == MSG_CMD_START_CONFIRM:
@@ -84,9 +84,7 @@ class Server:
             print(f"** Node {ip} started update **")
         elif cmd == MSG_CMD_UPDATE_CONFIRM:
             print(f"** Node {ip} updated **")
-            self.__nodes[ip] = Timer(
-                HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
-            self.__nodes[ip].start()
+            self.start_node_timer(ip)
         elif cmd == MSG_CMD_MASTER_CONFIRM:
             self.__master_node = ip
             print(f"** Node {ip} set to master **")
@@ -95,6 +93,8 @@ class Server:
         elif cmd == MSG_CMD_ORDER_CONFIRM:
             print(f"** Node {ip} assigned id {data} **")
             self.__ordered_nodes.add(ip)
+        elif cmd == MSG_CMD_LIGHTS_CONFIRM:
+            self.start_node_timer(ip)
         elif cmd == MSG_CMD_ERROR:
             print(
                 # TODO: this will break if not fixed
@@ -193,6 +193,8 @@ class Server:
             if data.lower() not in ["on", "off"]:
                 print("Invalid input, expected 'on' or 'off'")
                 return
+
+            self.stop_node_timers()
             self.__socket.sendto(
                 str.encode(f"{MSG_CMD_LIGHTS}|{data.lower()}"),
                 (self.__broadcast_ip, SOCKET_PORT)
