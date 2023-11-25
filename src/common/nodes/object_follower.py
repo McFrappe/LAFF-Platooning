@@ -72,7 +72,7 @@ class ObjectFollowerController:
         if len(self.__detected_blocks) == 0:
             return
 
-        if self.__collected_blocks_count != self.__nr_of_blocks_to_collect + 1:
+        if self.__collected_blocks_count < self.__nr_of_blocks_to_collect + 1:
             self.__collected_blocks.append(self.__detected_blocks[0])
             return
 
