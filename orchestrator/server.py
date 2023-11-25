@@ -98,8 +98,7 @@ class Server:
             self.start_node_timer(ip)
         elif cmd == MSG_CMD_ERROR:
             print(
-                # TODO: this will break if not fixed
-                f"** Node {ip} got an unhandled error **\n\033[2;31m{error}\033[0;0m")
+                f"** Node {ip} got an unhandled error **\n\033[2;31m{data}\033[0;0m")
         else:
             # Only update prompt if we actually print something
             return
