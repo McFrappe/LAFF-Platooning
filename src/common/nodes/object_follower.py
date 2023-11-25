@@ -48,7 +48,7 @@ class ObjectFollowerController:
     def __callback_blocks(self, data: PixyData):
         self.__detected_blocks = data.blocks
 
-    def __calculate_horizontal_offset(self, blocks: list[PixyBlock]):
+    def __calculate_horizontal_offset(self, blocks):
         """
         Calculates the average offset of a list of objects from the center of the
         image. A negative offset indicates that the object is too
