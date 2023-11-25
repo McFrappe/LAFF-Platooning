@@ -169,7 +169,7 @@ class Node:
     def set_lights(self, data):
         """
         Toggles the LED lights on the Pixy2 camera on/off based on
-        the value of enabled.
+        the value of data.
         """
         try:
             state = "true" if data == "on" else "false"
