@@ -33,6 +33,7 @@ MSG_CMD_ORDER = "order"
 MSG_CMD_START = "start"
 MSG_CMD_STOP = "stop"
 MSG_CMD_UPDATE = "update"
+MSG_CMD_LIGHTS = "lights"
 MSG_CMD_LIST_NODES = "ls"
 MSG_CMD_CLEAR_SCREEN = "cls"
 
@@ -43,6 +44,7 @@ AVAILABLE_COMMANDS = [
     MSG_CMD_UPDATE,
     MSG_CMD_SET_MASTER,
     MSG_CMD_ORDER,
+    MSG_CMD_LIGHTS,
     MSG_CMD_CLEAR_SCREEN,
 ]
 
@@ -55,5 +57,6 @@ Available commands:
 - {MSG_CMD_UPDATE} [branch]: Update all nodes to latest code on <branch>
 - {MSG_CMD_SET_MASTER} [ip]: Set master node to be controlled with DS4 controller
 - {MSG_CMD_ORDER}: Assign platooning order based on time of conection (master is always first)
+- {MSG_CMD_LIGHTS} [on/off]: Toggle the LED lights on the Pixy2 camera on and off
 - {MSG_CMD_CLEAR_SCREEN}: Clear the screen
 """

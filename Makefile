@@ -1,5 +1,6 @@
 SHELL := /bin/bash
 BRANCH ?= main
+PUBLISH_CMD_ARGS :=
 
 PASSWORD ?= laff
 IP := $(shell ip addr show wlan0 | grep -Po4 'inet \K[\d.]+')
@@ -58,6 +59,9 @@ update:
 cat:
 	sudo rm -rf build
 	catkin_make
+
+publish:
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash || source /opt/ros/noetic/setup.bash; rostopic pub $(PUBLISH_CMD_ARGS)"
 
 run_joyit:
 	source devel/setup.bash

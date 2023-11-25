@@ -189,6 +189,14 @@ class Server:
                     str.encode(f"{MSG_CMD_ORDER}|{vehicle_id}"),
                     (node, SOCKET_PORT)
                 )
+        elif cmd == MSG_CMD_LIGHTS:
+            if data.lower() not in ["on", "off"]:
+                print("Invalid input, expected 'on' or 'off'")
+                return
+            self.__socket.sendto(
+                str.encode(f"{MSG_CMD_LIGHTS}|{data.lower()}"),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
         elif cmd == MSG_CMD_CLEAR_SCREEN:
             print("\033c")
             return

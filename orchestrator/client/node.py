@@ -166,6 +166,24 @@ class Node:
         )
         return OK
 
+    def set_lights(self, enabled):
+        """
+        Toggles the LED lights on the Pixy2 camera on/off based on
+        the value of enabled.
+        """
+        try:
+            state = "true" if enabled else "false"
+            proc = subprocess.Popen(
+                f"make PUBLISH_CMD_ARGS='/lights std_msgs/Bool {state}' publish",
+                shell=True, cwd=REPO_PATH, executable="/bin/bash")
+            proc.wait()
+            # No need for a confirmation here, the lights are a visual
+            # confirmation.
+            return OK
+        except Exception as e:
+            self.__broadcast_error(e)
+            return ERROR
+
     def send_heartbeat(self):
         """
         Sends a heartbeat message to the master node.
@@ -198,3 +216,6 @@ class Node:
         elif cmd == MSG_CMD_ORDER:
             print(f"Received order command with assigned id {data}")
             self.set_id(data)
+        elif cmd == MSG_CMD_LIGHTS:
+            print(f"Received lights command with data {data}")
+            self.set_lights(data)
