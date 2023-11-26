@@ -24,6 +24,11 @@ class Server:
         for node in self.__nodes.keys():
             self.__nodes[node].cancel()
 
+    def start_node_timer(self, ip):
+        self.__nodes[ip] = Timer(
+            HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
+        self.__nodes[ip].start()
+
     def print_nodes(self):
         """
         Prints all connected nodes
@@ -59,15 +64,10 @@ class Server:
         if cmd == MSG_CMD_HEARTBEAT:
             if ip in self.__nodes.keys():
                 self.__nodes[ip].cancel()
-                self.__nodes[ip] = Timer(
-                    HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
-                self.__nodes[ip].start()
+                self.start_node_timer(ip)
                 return
 
-            # Set a timer for that specific node address to be removed if it times out after HEARTBEAT_TIMEOUT seconds
-            self.__nodes[ip] = Timer(
-                HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
-            self.__nodes[ip].start()
+            self.start_node_timer(ip)
 
             print(f"** Registered node {ip} to list of nodes **")
         elif cmd == MSG_CMD_START_CONFIRM:
@@ -84,9 +84,7 @@ class Server:
             print(f"** Node {ip} started update **")
         elif cmd == MSG_CMD_UPDATE_CONFIRM:
             print(f"** Node {ip} updated **")
-            self.__nodes[ip] = Timer(
-                HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
-            self.__nodes[ip].start()
+            self.start_node_timer(ip)
         elif cmd == MSG_CMD_MASTER_CONFIRM:
             print(f"** Node {ip} set to master **")
             self.__master_node = ip
@@ -109,10 +107,12 @@ class Server:
         elif cmd == MSG_CMD_ORDER_CONFIRM:
             print(f"** Node {ip} assigned id {data} **")
             self.__ordered_nodes.add(ip)
+        elif cmd == MSG_CMD_LIGHTS_CONFIRM:
+            print(f"** Node {ip} turned lights {data} **")
+            self.start_node_timer(ip)
         elif cmd == MSG_CMD_ERROR:
             print(
-                # TODO: this will break if not fixed
-                f"** Node {ip} got an unhandled error **\n\033[2;31m{error}\033[0;0m")
+                f"** Node {ip} got an unhandled error **\n\033[2;31m{data}\033[0;0m")
         else:
             # Only update prompt if we actually print something
             return
@@ -187,6 +187,33 @@ class Server:
                 (self.__broadcast_ip, SOCKET_PORT)
             )
             self.__is_running = False
+        elif cmd == MSG_CMD_ORDER:
+            if self.__master_node is None:
+                print("No master node set, cannot assign order")
+                return
+
+            current_id = 1
+            for node in self.__nodes.keys():
+                if node == self.__master_node:
+                    vehicle_id = 0
+                else:
+                    vehicle_id = current_id
+                    current_id += 1
+
+                self.__socket.sendto(
+                    str.encode(f"{MSG_CMD_ORDER}|{vehicle_id}"),
+                    (node, SOCKET_PORT)
+                )
+        elif cmd == MSG_CMD_LIGHTS:
+            if data.lower() not in ["on", "off"]:
+                print("Invalid input, expected 'on' or 'off'")
+                return
+
+            self.stop_node_timers()
+            self.__socket.sendto(
+                str.encode(f"{MSG_CMD_LIGHTS}|{data.lower()}"),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
         elif cmd == MSG_CMD_CLEAR_SCREEN:
             print("\033c")
             return
