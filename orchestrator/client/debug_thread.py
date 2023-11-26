@@ -1,3 +1,4 @@
+import time
 import threading
 import subprocess
 from orchestrator.shared import *
@@ -14,6 +15,7 @@ class DebugThread(threading.Thread):
         self.__proc = subprocess.Popen(
             f"make debug_listener", shell=True, stdout=subprocess.PIPE,
             cwd=REPO_PATH, executable="/bin/bash")
+        time.sleep(2)
         while not self.__stop_event.is_set():
             msg = self.__proc.stdout.readline()
             if not msg:

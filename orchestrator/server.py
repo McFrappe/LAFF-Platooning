@@ -192,6 +192,10 @@ class Server:
             )
             self.__is_running = False
         elif cmd == MSG_CMD_DEBUG:
+            if not self.__running:
+                print("ROS is not running, please run 'start' first")
+                return
+
             if data.lower() not in ["on", "off"]:
                 print("Invalid input, expected 'on' or 'off'")
                 return
