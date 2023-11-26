@@ -42,7 +42,6 @@ AVAILABLE_COMMANDS = [
     MSG_CMD_LIST_NODES,
     MSG_CMD_UPDATE,
     MSG_CMD_SET_MASTER,
-    MSG_CMD_ORDER,
     MSG_CMD_CLEAR_SCREEN,
 ]
 
@@ -54,6 +53,5 @@ Available commands:
 - {MSG_CMD_LIST_NODES}: List the nodes connected to the server.
 - {MSG_CMD_UPDATE} [branch]: Update all nodes to latest code on <branch>
 - {MSG_CMD_SET_MASTER} [ip]: Set master node to be controlled with DS4 controller
-- {MSG_CMD_ORDER}: Assign platooning order based on time of conection (master is always first)
 - {MSG_CMD_CLEAR_SCREEN}: Clear the screen
 """

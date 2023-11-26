@@ -88,8 +88,22 @@ class Server:
                 HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
             self.__nodes[ip].start()
         elif cmd == MSG_CMD_MASTER_CONFIRM:
-            self.__master_node = ip
             print(f"** Node {ip} set to master **")
+            self.__master_node = ip
+
+            # Assign order to vehicles
+            current_id = 1
+            for node in self.__nodes.keys():
+                if node == self.__master_node:
+                    vehicle_id = 0
+                else:
+                    vehicle_id = current_id
+                    current_id += 1
+
+                self.__socket.sendto(
+                    str.encode(f"{MSG_CMD_ORDER}|{vehicle_id}"),
+                    (node, SOCKET_PORT)
+                )
         elif cmd == MSG_CMD_NOT_MASTER_CONFIRM:
             print(f"** Node {ip} set to slave **")
         elif cmd == MSG_CMD_ORDER_CONFIRM:
@@ -173,23 +187,6 @@ class Server:
                 (self.__broadcast_ip, SOCKET_PORT)
             )
             self.__is_running = False
-        elif cmd == MSG_CMD_ORDER:
-            if self.__master_node is None:
-                print("No master node set, cannot assign order")
-                return
-
-            current_id = 1
-            for node in self.__nodes.keys():
-                if node == self.__master_node:
-                    vehicle_id = 0
-                else:
-                    vehicle_id = current_id
-                    current_id += 1
-
-                self.__socket.sendto(
-                    str.encode(f"{MSG_CMD_ORDER}|{vehicle_id}"),
-                    (node, SOCKET_PORT)
-                )
         elif cmd == MSG_CMD_CLEAR_SCREEN:
             print("\033c")
             return
