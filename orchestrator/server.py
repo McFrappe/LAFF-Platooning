@@ -109,6 +109,10 @@ class Server:
         elif cmd == MSG_CMD_ORDER_CONFIRM:
             print(f"** Node {ip} assigned id {data} **")
             self.__ordered_nodes.add(ip)
+        elif cmd == MSG_CMD_DEBUG_CONFIRM:
+            print(f"** Node {ip} set debug mode {data} **")
+        elif cmd == MSG_CMD_DEBUG_MSG:
+            print(data)
         elif cmd == MSG_CMD_ERROR:
             print(
                 # TODO: this will break if not fixed
@@ -187,6 +191,15 @@ class Server:
                 (self.__broadcast_ip, SOCKET_PORT)
             )
             self.__is_running = False
+        elif cmd == MSG_CMD_DEBUG:
+            if data.lower() not in ["on", "off"]:
+                print("Invalid input, expected 'on' or 'off'")
+                return
+
+            self.__socket.sendto(
+                str.encode(f"{cmd}|{data}"),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
         elif cmd == MSG_CMD_CLEAR_SCREEN:
             print("\033c")
             return

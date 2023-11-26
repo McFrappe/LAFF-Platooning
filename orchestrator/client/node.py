@@ -5,6 +5,7 @@ import subprocess
 from threading import Timer
 from orchestrator.shared import *
 from orchestrator.utils import get_broadcast_ip
+from orchestrator.client.debug_thread import DebugThread
 
 
 class Node:
@@ -23,6 +24,7 @@ class Node:
         self.__start_time = -1
         self.__start_confirm_timer = Timer(
             MASTER_STARTUP_WAIT_TIME, self.__confirm_start)
+        self.__debug_thread = None
 
     def __confirm_start(self):
         self.__socket.sendto(
@@ -34,6 +36,12 @@ class Node:
     def __broadcast_error(self, error):
         self.__socket.sendto(
             str.encode(f"{MSG_CMD_ERROR}|{error}"),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
+
+    def __broadcast_debug_msg(self, msg):
+        self.__socket.sendto(
+            str.encode(f"{MSG_CMD_DEBUG_MSG}|{msg}"),
             (self.__broadcast_ip, SOCKET_PORT)
         )
 
@@ -166,6 +174,22 @@ class Node:
         )
         return OK
 
+    def set_debug(self, new_state):
+        """
+        Enables/disables debug mode.
+        """
+        if new_state == "on":
+            if self.__debug_thread is not None:
+                return
+            self.__debug_thread = DebugThread(self.__broadcast_debug_msg)
+            self.__debug_thread.start()
+        else:
+            if self.__debug_thread is None:
+                return
+            self.__debug_thread.stop()
+            self.__debug_thread = None
+
+
     def send_heartbeat(self):
         """
         Sends a heartbeat message to the master node.
@@ -198,3 +222,6 @@ class Node:
         elif cmd == MSG_CMD_ORDER:
             print(f"Received order command with assigned id {data}")
             self.set_id(data)
+        elif cmd == MSG_CMD_DEBUG:
+            print(f"Received debug command with new state {data}")
+            self.set_debug(data)
