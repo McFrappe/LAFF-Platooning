@@ -2,12 +2,17 @@ import curses
 from orchestrator.shared import *
 
 class GUI:
+
     def __init__(self, std_scr):
         self.__std_scr = std_scr
+        self.__title_win = None
         self.__out_win = None
         self.__client_win = None
         self.__status_win = None
         self.__setup()
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
+        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED)
+        curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_GREEN)
 
     def __setup(self):
         curses.use_default_colors()
@@ -16,21 +21,41 @@ class GUI:
 
         sidebar_width = int((curses.COLS-1) / 3)
         socket_win_height = int((curses.LINES - 2) / 2)
+
+        # Create the windows
+        self.__title_win = curses.newwin(
+                curses.LINES - 1,
+                curses.COLS - sidebar_width - 1, 0, 0)
         self.__out_win = curses.newwin(
-            curses.LINES - 1, curses.COLS - sidebar_width - 1, 0, 0)
+                curses.LINES - 1,
+                curses.COLS - sidebar_width - 1, 1, 0)
         self.__client_win = curses.newwin(
-            socket_win_height, sidebar_width, 0, curses.COLS - sidebar_width)
+                socket_win_height,
+                sidebar_width, 0, curses.COLS -
+                sidebar_width)
         self.__socket_win = curses.newwin(
-            socket_win_height, sidebar_width, socket_win_height, curses.COLS - sidebar_width)
+                socket_win_height, sidebar_width, socket_win_height,
+                curses.COLS - sidebar_width)
         self.__cli_win = curses.newwin(
-            1, curses.COLS - sidebar_width, curses.LINES - 1, 0)
+                1, curses.COLS - sidebar_width, curses.LINES - 1, 0)
         self.__status_win = curses.newwin(
-            1, sidebar_width, curses.LINES - 1, curses.COLS - sidebar_width)
+                1, sidebar_width,
+                curses.LINES - 1, curses.COLS -
+                sidebar_width)
+
+        # Seperate the windows by a line
+        self.__std_scr.hline(
+                socket_win_height, 0, curses.ACS_HLINE, curses.COLS)
+        self.__std_scr.vline(
+                0, curses.COLS - sidebar_width - 1,
+                curses.ACS_VLINE, curses.LINES - 1)
+        self.__std_scr.refresh()
 
         curses.nocbreak()
         curses.curs_set(0)
         curses.echo()
 
+        self.__title_win.scrollok(True)
         self.__out_win.scrollok(True)
         self.__client_win.scrollok(True)
         self.__socket_win.scrollok(True)
@@ -39,21 +64,27 @@ class GUI:
 
     def help(self):
         self.output(AVAILABLE_COMMANDS_STR)
+        if self.__out_win is None:
+            return
+
         self.__out_win.refresh()
 
     def welcome(self):
-        self.output("Console", bold=True)
+        self.output("Console", win=self.__title_win, bold=True)
         self.output(f"LAFF orchestrator, listening on port {SOCKET_PORT}\n")
         self.help()
 
     def output(self, msg, win=None, bold=False):
         if win is None:
             win = self.__out_win
-        msg_to_show = f"{msg}\n"
+
+        msg_to_show = f" {msg} \n"
+
         if bold:
-            win.addstr(msg_to_show, curses.A_BOLD)
+            win.addstr(msg_to_show, curses.color_pair(1) | curses.A_BOLD )
         else:
             win.addstr(msg_to_show)
+
         win.refresh()
 
     def socket_output(self, msg):
@@ -79,14 +110,16 @@ class GUI:
         self.__status_win.clear()
         running_state = "yes" if running else "no"
         debug_state = "yes" if debug else "no"
+
         self.__status_win.addstr(f"running: {running_state}")
         self.__status_win.addstr(" | ")
         self.__status_win.addstr(f"debug: {debug_state}")
+
         self.__status_win.refresh()
 
     def prompt(self):
         self.__cli_win.clear()
-        self.__cli_win.addstr(0, 0, "cmd>", curses.A_BOLD)
+        self.__cli_win.addstr(0, 0, "cmd>", curses.color_pair(2) | curses.A_BOLD)
         self.__cli_win.move(0, 5)
         msg = self.__cli_win.getstr().decode("utf-8")
         self.__out_win.addstr("execute> ", curses.A_BOLD)
