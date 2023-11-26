@@ -6,6 +6,7 @@
     <node name="pid_controller" pkg="rcv" type="pid_controller.py" respawn="true" />
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
     <node name="object_follower_node" pkg="common" type="object_follower.py" respawn="true" />
+    <node name="debug_node" pkg="common" type="debug.py" respawn="true" />
     <node name="pixy2_node" pkg="pixy2_node" type="pixy2_node" respawn="true">
         <param name="rate" value="60.0"/>
         <param name="use_servos" value="false"/>
@@ -32,6 +33,7 @@
     <param name="SERVO_PIN" type="int" value="32" />
 
     <!-- Publisher periods -->
+    <param name="DEBUG_PUBLISH_PERIOD" type="double" value="1" />
     <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
     <param name="OBJECT_FOLLOWER_PERIOD" type="double" value="0.0167" />
     <param name="PID_CONTROL_PERIOD" type="double" value="0.1" />
