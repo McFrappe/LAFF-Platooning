@@ -12,7 +12,7 @@ class VelocityController:
         self.id = rospy.get_param("VEHICLE_ID")
         self.wheel_radius_cm = rospy.get_param("VEHICLE_WHEEL_RADIUS_CM")
 
-        self.wait_time_Us = rospy.get_param("VELOCITY_WAIT_TIME_US")
+        self.wait_time_us = rospy.get_param("VELOCITY_WAIT_TIME_US")
         self.reflectance_threshold_us = rospy.get_param(
             "VELOCITY_REFLECTANCE_THRESHOLD_US")
 
