@@ -28,11 +28,12 @@ class DebugThread(threading.Thread):
                 count += 1
                 continue
 
-            if "," not in msg:
+            parsed_msg = msg.decode("utf-8")
+            if "," not in parsed_msg:
                 continue
 
             # Only broadcast the data, not the timestamp
-            self.__broadcast_cb(msg[msg.index(",")+1:])
+            self.__broadcast_cb(parsed_msg[parsed_msg.index(",")+1:].strip("\n"))
             time.sleep(1)
 
     def stop(self):
