@@ -24,7 +24,7 @@ class DebugThread(threading.Thread):
         while not self.__stop_event.is_set():
             msg = self.__proc.stdout.readline()
 
-            if count < skip_count:
+            if count < self.__skip_count:
                 count += 1
                 continue
 
