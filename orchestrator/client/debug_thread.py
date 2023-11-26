@@ -15,11 +15,13 @@ class DebugThread(threading.Thread):
         self.__proc = subprocess.Popen(
             f"make debug_listener", shell=True, stdout=subprocess.PIPE,
             cwd=REPO_PATH, executable="/bin/bash")
-        time.sleep(2)
+        first = True
         while not self.__stop_event.is_set():
             msg = self.__proc.stdout.readline()
-            if not msg:
-                break
+            # First msg will be when starting
+            if first:
+                first = False
+                continue
             self.__broadcast_cb(msg)
 
     def stop(self):

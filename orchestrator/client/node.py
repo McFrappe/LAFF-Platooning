@@ -178,17 +178,26 @@ class Node:
         """
         Enables/disables debug mode.
         """
-        if new_state == "on":
-            if self.__debug_thread is not None:
-                return
-            self.__debug_thread = DebugThread(self.__broadcast_debug_msg)
-            self.__debug_thread.start()
-        else:
-            if self.__debug_thread is None:
-                return
-            self.__debug_thread.stop()
-            self.__debug_thread = None
+        try:
+            if new_state == "on":
+                if self.__debug_thread is not None:
+                    return
+                self.__debug_thread = DebugThread(self.__broadcast_debug_msg)
+                self.__debug_thread.start()
+            else:
+                if self.__debug_thread is None:
+                    return
+                self.__debug_thread.stop()
+                self.__debug_thread = None
+        except Exception as e:
+            self.__broadcast_error(e)
+            return ERROR
 
+         self.__socket.sendto(
+            str.encode(f"{MSG_CMD_DEBUG_CONFIRM}|{new_state}"),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
+        return OK
 
     def send_heartbeat(self):
         """
