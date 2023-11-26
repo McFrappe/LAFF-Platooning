@@ -14,11 +14,14 @@ class GUI:
         if curses.has_colors():
             curses.start_color()
 
-        sidebar_width = int(curses.COLS / 3) - 1
+        sidebar_width = int((curses.COLS-1) / 3)
+        socket_win_height = int((curses.LINES - 2) / 2)
         self.__out_win = curses.newwin(
             curses.LINES - 1, curses.COLS - sidebar_width - 1, 0, 0)
         self.__client_win = curses.newwin(
-            curses.LINES - 2, sidebar_width, 0, curses.COLS - sidebar_width)
+            socket_win_height, sidebar_width, 0, curses.COLS - sidebar_width)
+        self.__socket_win = curses.newwin(
+            socket_win_height, sidebar_width, socket_win_height, curses.COLS - sidebar_width)
         self.__cli_win = curses.newwin(
             1, curses.COLS - sidebar_width, curses.LINES - 1, 0)
         self.__status_win = curses.newwin(
@@ -29,8 +32,9 @@ class GUI:
         curses.echo()
 
         self.__out_win.scrollok(True)
+        self.__client_win.scrollok(True)
+        self.__socket_win.scrollok(True)
         self.__cli_win.keypad(True)
-        self.__status_win.bkgd(curses.COLOR_WHITE, curses.COLOR_BLACK)
         self.__std_scr.clear()
 
     def help(self):
@@ -51,6 +55,9 @@ class GUI:
         else:
             win.addstr(msg_to_show)
         win.refresh()
+
+    def socket_output(self, msg):
+        self.output(f"[ACK] {msg}", win=self.__socket_win)
 
     def update_nodes(self, nodes, master_node):
         self.__client_win.clear()
@@ -79,9 +86,13 @@ class GUI:
 
     def prompt(self):
         self.__cli_win.clear()
-        self.__cli_win.addstr(0, 0, "cmd>")
+        self.__cli_win.addstr(0, 0, "cmd>", curses.A_BOLD)
         self.__cli_win.move(0, 5)
-        return self.__cli_win.getstr().decode("utf-8")
+        msg = self.__cli_win.getstr().decode("utf-8")
+        self.__out_win.addstr("execute> ", curses.A_BOLD)
+        self.__out_win.addstr(f"{msg}\n")
+        self.__out_win.refresh()
+        return msg
 
     def clear_output(self):
         self.__out_win.clear()

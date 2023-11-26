@@ -50,7 +50,7 @@ class Node:
         Starts the node process and sets the master flag if the node is the
         master node. If the node is already running, this method does nothing.
         """
-        if self.__running:
+        if self.__running or self.__start_confirm_timer.alive():
             return OK
 
         if self.__id is None:

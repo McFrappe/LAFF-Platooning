@@ -26,7 +26,7 @@ class Server:
 
         del self.__nodes[ip]
         self.gui.output(
-            f"** Node {ip} removed from list of nodes due to timeout. **")
+            f"Node {ip} removed from list of nodes due to timeout.")
 
     def update_nodes(self):
         """
@@ -63,28 +63,27 @@ class Server:
             self.__nodes[ip] = Timer(
                 HEARTBEAT_TIMEOUT, self.__remove_node, args=[ip])
             self.__nodes[ip].start()
-
-            self.__gui.output(f"** Registered node {ip} to list of nodes **")
             self.update_nodes()
         elif cmd == MSG_CMD_START_CONFIRM:
-            self.__gui.output(f"** Node {ip} started **")
             if self.__master_node == ip:
-                self.__gui.output("Starting slaves")
+                self.__gui.socket_output(f"{ip} started, starting slaves")
                 self.__socket.sendto(
                     str.encode(MSG_CMD_START),
                     (self.__broadcast_ip, SOCKET_PORT)
                 )
+            else:
+                self.__gui.socket_output(f"{ip} started")
         elif cmd == MSG_CMD_STOP_CONFIRM:
-            self.__gui.output(f"** Node {ip} stopped **")
+            self.__gui.socket_output(f"{ip} stopped")
         elif cmd == MSG_CMD_UPDATE_START_CONFIRM:
-            self.__gui.output(f"** Node {ip} started update **")
+            self.__gui.socket_output(f"{ip} started update")
         elif cmd == MSG_CMD_UPDATE_CONFIRM:
-            self.__gui.output(f"** Node {ip} updated **")
+            self.__gui.socket_output(f"{ip} updated")
             self.__nodes[ip] = Timer(
                 HEARTBEAT_TIMEOUT, self.__remove_node, args=[ip])
             self.__nodes[ip].start()
         elif cmd == MSG_CMD_MASTER_CONFIRM:
-            self.__gui.output(f"** Node {ip} set to master **")
+            self.__gui.socket_output(f"{ip} set to master")
             self.__master_node = ip
             self.update_nodes()
 
@@ -102,17 +101,17 @@ class Server:
                     (node, SOCKET_PORT)
                 )
         elif cmd == MSG_CMD_NOT_MASTER_CONFIRM:
-            self.__gui.output(f"** Node {ip} set to slave **")
+            self.__gui.socket_output(f"{ip} set to slave")
         elif cmd == MSG_CMD_ORDER_CONFIRM:
-            self.__gui.output(f"** Node {ip} assigned id {data} **")
+            self.__gui.socket_output(f"{ip} assigned id {data}")
             self.__ordered_nodes.add(ip)
         elif cmd == MSG_CMD_DEBUG_CONFIRM:
-            self.__gui.output(f"** Node {ip} set debug mode {data} **")
+            self.__gui.socket_output(f"{ip} set debug mode {data}")
         elif cmd == MSG_CMD_DEBUG_MSG:
-            self.__gui.output(data)
+            self.__gui.socket_output(data)
         elif cmd == MSG_CMD_ERROR:
-            self.__gui.output(f"** Node {ip} error **")
-            self.__gui.output(data)
+            self.__gui.socket_output(f"{ip} got error")
+            self.__gui.output(f"{ip} {data}")
         else:
             return
 
