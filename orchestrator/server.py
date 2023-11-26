@@ -1,6 +1,7 @@
+import curses
 from threading import Timer
 from orchestrator.shared import *
-from orchestrator.utils import get_broadcast_ip, prompt
+from orchestrator.utils import get_broadcast_ip
 
 
 class Server:
@@ -9,13 +10,32 @@ class Server:
     other nodes.
     """
 
-    def __init__(self, socket):
+    def __init__(self, socket, gui):
+        self.__gui = gui
         self.__broadcast_ip = get_broadcast_ip()
         self.__master_node = None
         self.__is_running = False
+        self.__is_debug = False
         self.__nodes = dict()
         self.__socket = socket
         self.__ordered_nodes = set()
+
+    def __remove_node(self, ip):
+        if ip not in self.__nodes.keys():
+            return
+
+        del self.__nodes[ip]
+        self.gui.output(
+            f"** Node {ip} removed from list of nodes due to timeout. **")
+
+    def update_nodes(self):
+        """
+        Updates the list of connected nodes
+        """
+        self.__gui.update_nodes(self.__nodes.keys(), self.__master_node)
+
+    def update_status(self):
+        self.__gui.update_status(self.__is_running, self.__is_debug)
 
     def stop_node_timers(self):
         """
@@ -23,30 +43,6 @@ class Server:
         """
         for node in self.__nodes.keys():
             self.__nodes[node].cancel()
-
-    def print_nodes(self):
-        """
-        Prints all connected nodes
-        """
-        if len(self.__nodes) == 0:
-            print("No connected nodes")
-            return
-
-        for idx, node in enumerate(self.__nodes):
-            if node == self.__master_node:
-                print(
-                    f"{idx}: {node} (master)")
-                continue
-
-            print(f"{idx}: {node}")
-
-    def remove_node(self, ip):
-        if ip not in self.__nodes.keys():
-            return
-
-        del self.__nodes[ip]
-        print(f"** Node {ip} removed from list of nodes due to timeout. **")
-        prompt()
 
     def handle_message(self, msg, addr):
         """
@@ -60,36 +56,37 @@ class Server:
             if ip in self.__nodes.keys():
                 self.__nodes[ip].cancel()
                 self.__nodes[ip] = Timer(
-                    HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
+                    HEARTBEAT_TIMEOUT, self.__remove_node, args=[ip])
                 self.__nodes[ip].start()
                 return
 
-            # Set a timer for that specific node address to be removed if it times out after HEARTBEAT_TIMEOUT seconds
             self.__nodes[ip] = Timer(
-                HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
+                HEARTBEAT_TIMEOUT, self.__remove_node, args=[ip])
             self.__nodes[ip].start()
 
-            print(f"** Registered node {ip} to list of nodes **")
+            self.__gui.output(f"** Registered node {ip} to list of nodes **")
+            self.update_nodes()
         elif cmd == MSG_CMD_START_CONFIRM:
-            print(f"** Node {ip} started **")
+            self.__gui.output(f"** Node {ip} started **")
             if self.__master_node == ip:
-                print("Starting slaves")
+                self.__gui.output("Starting slaves")
                 self.__socket.sendto(
                     str.encode(MSG_CMD_START),
                     (self.__broadcast_ip, SOCKET_PORT)
                 )
         elif cmd == MSG_CMD_STOP_CONFIRM:
-            print(f"** Node {ip} stopped **")
+            self.__gui.output(f"** Node {ip} stopped **")
         elif cmd == MSG_CMD_UPDATE_START_CONFIRM:
-            print(f"** Node {ip} started update **")
+            self.__gui.output(f"** Node {ip} started update **")
         elif cmd == MSG_CMD_UPDATE_CONFIRM:
-            print(f"** Node {ip} updated **")
+            self.__gui.output(f"** Node {ip} updated **")
             self.__nodes[ip] = Timer(
-                HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
+                HEARTBEAT_TIMEOUT, self.__remove_node, args=[ip])
             self.__nodes[ip].start()
         elif cmd == MSG_CMD_MASTER_CONFIRM:
-            print(f"** Node {ip} set to master **")
+            self.__gui.output(f"** Node {ip} set to master **")
             self.__master_node = ip
+            self.update_nodes()
 
             # Assign order to vehicles
             current_id = 1
@@ -105,21 +102,19 @@ class Server:
                     (node, SOCKET_PORT)
                 )
         elif cmd == MSG_CMD_NOT_MASTER_CONFIRM:
-            print(f"** Node {ip} set to slave **")
+            self.__gui.output(f"** Node {ip} set to slave **")
         elif cmd == MSG_CMD_ORDER_CONFIRM:
-            print(f"** Node {ip} assigned id {data} **")
+            self.__gui.output(f"** Node {ip} assigned id {data} **")
             self.__ordered_nodes.add(ip)
         elif cmd == MSG_CMD_DEBUG_CONFIRM:
-            print(f"** Node {ip} set debug mode {data} **")
+            self.__gui.output(f"** Node {ip} set debug mode {data} **")
         elif cmd == MSG_CMD_DEBUG_MSG:
-            print(data)
+            self.__gui.output(data)
         elif cmd == MSG_CMD_ERROR:
-            print(f"** Node {ip} error **\n\033[2;31m{data}\033[0;0m")
+            self.__gui.output(f"** Node {ip} error **")
+            self.__gui.output(data)
         else:
-            # Only update prompt if we actually print something
             return
-
-        prompt()
 
     def handle_user_cmd(self, msg):
         """
@@ -130,12 +125,12 @@ class Server:
         data = "" if len(msg) == 1 else msg[1]
 
         if cmd not in AVAILABLE_COMMANDS:
-            print(f"Unsupported command: {cmd}")
+            self.__gui.output(f"Unsupported command: {cmd}")
             return
 
         if cmd == MSG_CMD_SET_MASTER:
             if len(data) == 0 or len(self.__nodes) == 0:
-                print("Invalid address, see registered nodes with 'ls'")
+                self.__gui.output("Invalid address")
                 return
 
             ips = list(self.__nodes.keys())
@@ -146,12 +141,12 @@ class Server:
                 try:
                     val = int(data)
                     if val >= len(self.__nodes):
-                        print(
-                            "Node index out of range, see registered nodes with 'ls'")
+                        self.__gui.output(
+                            "Node index out of range")
                         return
                     node = ips[val]
                 except:
-                    print("Invalid node index, see registered nodes with 'ls'")
+                    self.__gui.output("Invalid node index")
                     return
 
             self.__socket.sendto(
@@ -160,7 +155,7 @@ class Server:
             )
         elif cmd == MSG_CMD_UPDATE:
             if len(data) == 0 or " " in data:
-                print("Invalid branch name")
+                self.__gui.output("Invalid branch name")
                 return
 
             self.stop_node_timers()
@@ -183,16 +178,11 @@ class Server:
             self.__is_running = False
         elif cmd == MSG_CMD_DEBUG:
             if data.lower() not in ["on", "off"]:
-                print("Invalid input, expected 'on' or 'off'")
+                self.__gui.output("Invalid input, expected 'on' or 'off'")
                 return
 
+            self.__is_debug = data.lower() == "on"
             self.__socket.sendto(
                 str.encode(f"{cmd}|{data}"),
                 (self.__broadcast_ip, SOCKET_PORT)
             )
-        elif cmd == MSG_CMD_CLEAR_SCREEN:
-            print("\033c")
-            return
-        elif cmd == MSG_CMD_LIST_NODES:
-            self.print_nodes()
-            return

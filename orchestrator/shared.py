@@ -42,19 +42,16 @@ MSG_CMD_CLEAR_SCREEN = "cls"
 AVAILABLE_COMMANDS = [
     MSG_CMD_START,
     MSG_CMD_STOP,
-    MSG_CMD_LIST_NODES,
     MSG_CMD_UPDATE,
     MSG_CMD_SET_MASTER,
     MSG_CMD_DEBUG,
     MSG_CMD_CLEAR_SCREEN,
 ]
 
-AVAILABLE_COMMANDS_STR = f"""
-Available commands:
+AVAILABLE_COMMANDS_STR = f"""Available commands:
 - q: Quit the program.
 - {MSG_CMD_START}: Start ROS on all nodes.
 - {MSG_CMD_STOP}: Stop ROS on all nodes.
-- {MSG_CMD_LIST_NODES}: List the nodes connected to the server.
 - {MSG_CMD_UPDATE} [branch]: Update all nodes to latest code on <branch>
 - {MSG_CMD_SET_MASTER} [ip]: Set master node to be controlled with DS4 controller
 - {MSG_CMD_DEBUG} [on/off]: Get debug information from all connected vehicles
