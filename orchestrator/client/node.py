@@ -193,7 +193,7 @@ class Node:
             self.__broadcast_error(e)
             return ERROR
 
-         self.__socket.sendto(
+        self.__socket.sendto(
             str.encode(f"{MSG_CMD_DEBUG_CONFIRM}|{new_state}"),
             (self.__broadcast_ip, SOCKET_PORT)
         )
