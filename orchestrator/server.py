@@ -86,8 +86,22 @@ class Server:
             print(f"** Node {ip} updated **")
             self.start_node_timer(ip)
         elif cmd == MSG_CMD_MASTER_CONFIRM:
-            self.__master_node = ip
             print(f"** Node {ip} set to master **")
+            self.__master_node = ip
+
+            # Assign order to vehicles
+            current_id = 1
+            for node in self.__nodes.keys():
+                if node == self.__master_node:
+                    vehicle_id = 0
+                else:
+                    vehicle_id = current_id
+                    current_id += 1
+
+                self.__socket.sendto(
+                    str.encode(f"{MSG_CMD_ORDER}|{vehicle_id}"),
+                    (node, SOCKET_PORT)
+                )
         elif cmd == MSG_CMD_NOT_MASTER_CONFIRM:
             print(f"** Node {ip} set to slave **")
         elif cmd == MSG_CMD_ORDER_CONFIRM:
@@ -122,7 +136,8 @@ class Server:
                 print("Invalid address, see registered nodes with 'ls'")
                 return
 
-            node = self.__nodes[0].key
+            ips = list(self.__nodes.keys())
+            node = ips[0]
             if "." in data:
                 node = data
             else:
@@ -132,7 +147,7 @@ class Server:
                         print(
                             "Node index out of range, see registered nodes with 'ls'")
                         return
-                    node = self.__nodes[val].key
+                    node = ips[val]
                 except:
                     print("Invalid node index, see registered nodes with 'ls'")
                     return
