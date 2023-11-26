@@ -192,7 +192,7 @@ class Server:
             )
             self.__is_running = False
         elif cmd == MSG_CMD_DEBUG:
-            if not self.__running:
+            if not self.__is_running:
                 print("ROS is not running, please run 'start' first")
                 return
 
