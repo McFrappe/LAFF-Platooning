@@ -122,7 +122,8 @@ class Server:
                 print("Invalid address, see registered nodes with 'ls'")
                 return
 
-            node = self.__nodes[0].key
+            ips = list(self.__nodes.keys())
+            node = ips[0]
             if "." in data:
                 node = data
             else:
@@ -132,7 +133,7 @@ class Server:
                         print(
                             "Node index out of range, see registered nodes with 'ls'")
                         return
-                    node = self.__nodes[val].key
+                    node = ips[val]
                 except:
                     print("Invalid node index, see registered nodes with 'ls'")
                     return
