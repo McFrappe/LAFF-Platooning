@@ -114,8 +114,7 @@ class Server:
         elif cmd == MSG_CMD_DEBUG_MSG:
             print(data)
         elif cmd == MSG_CMD_ERROR:
-            print(
-                f"** Node {ip} got an unhandled error **\n\033[2;31m{data}\033[0;0m")
+            print(f"\n[{ip}] \033[2;31m{data}\033[0;0m")
         else:
             # Only update prompt if we actually print something
             return
@@ -170,14 +169,6 @@ class Server:
                 (self.__broadcast_ip, SOCKET_PORT)
             )
         elif cmd == MSG_CMD_START:
-            if self.__master_node is None:
-                print("No master node set, cannot start")
-                return
-
-            if len(self.__ordered_nodes) != len(self.__nodes):
-                print("Run 'order' first to assign ids to each vehicle")
-                return
-
             # Start master first, slaves started on confirm
             self.__socket.sendto(
                 str.encode(cmd),

@@ -53,6 +53,10 @@ class Node:
         if self.__running:
             return OK
 
+        if self.__id is None:
+            self.__broadcast_error("Please assign vehicle id before starting")
+            return ERROR
+
         if self.__is_master:
             make_cmd = "run_rcv_joystick_pi"
         else:
@@ -73,7 +77,7 @@ class Node:
             return OK
         except Exception as e:
             print(f"Failed to start process:\n{e}")
-            self.__broadcast_error(e)
+            self.__broadcast_error(f"Failed to start ROS:\n{e}")
             return ERROR
 
     def stop(self):
@@ -89,6 +93,7 @@ class Node:
         # before stopping.
         time_since_start = time.time() - self.__start_time
         if self.__start_time != -1 and time_since_start < MINIMUM_RUNNING_TIME:
+            self.__broadcast_error("Need to wait for ROS to fully start before stopping")
             return ERROR
 
         try:
@@ -101,7 +106,7 @@ class Node:
             )
         except Exception as e:
             print(f"Failed to stop process:\n{e}")
-            self.__broadcast_error(e)
+            self.__broadcast_error(f"Failed to stop ROS:\n{e}")
 
         # Assume the process is already dead
         self.__running = False
@@ -128,7 +133,7 @@ class Node:
             )
         except Exception as e:
             print(f"Failed to update to branch {branch}:\n{e}")
-            self.__broadcast_error(e)
+            self.__broadcast_error(f"Failed to update on branch {branch}:\n{e}")
             return ERROR
 
         if was_running:
@@ -146,7 +151,7 @@ class Node:
             with open(ROS_MASTER_URI_PATH, "w") as f:
                 f.write(f"http://{new_master}:11311")
         except Exception as e:
-            self.__broadcast_error(e)
+            self.__broadcast_error(f"Failed to set master:\n{e}")
             return ERROR
 
         cmd = MSG_CMD_MASTER_CONFIRM if self.__is_master else MSG_CMD_NOT_MASTER_CONFIRM
@@ -164,7 +169,7 @@ class Node:
             with open(VEHICLE_ID_PATH, "w") as f:
                 f.write(f"vehicle_{new_id}")
         except Exception as e:
-            self.__broadcast_error(e)
+            self.__broadcast_error(f"Failed to set vehicle id:\n{e}")
             return ERROR
 
         self.__id = new_id
@@ -190,7 +195,7 @@ class Node:
                 self.__debug_thread.stop()
                 self.__debug_thread = None
         except Exception as e:
-            self.__broadcast_error(e)
+            self.__broadcast_error(f"Failed to turn debug mode {new_state}:\n{e}")
             return ERROR
 
         self.__socket.sendto(
