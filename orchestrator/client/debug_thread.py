@@ -14,7 +14,7 @@ class DebugThread(threading.Thread):
         # The number of stdout lines to skip.
         # This will stop the node from broadcasting the
         # commands in the Makefile.
-        self.__skip_count = 2
+        self.__skip_count = 3
 
     def run(self):
         self.__proc = subprocess.Popen(
@@ -28,7 +28,11 @@ class DebugThread(threading.Thread):
                 count += 1
                 continue
 
-            self.__broadcast_cb(msg)
+            if "," not in msg:
+                continue
+
+            # Only broadcast the data, not the timestamp
+            self.__broadcast_cb(msg[msg.index(",")+1:])
             time.sleep(1)
 
     def stop(self):

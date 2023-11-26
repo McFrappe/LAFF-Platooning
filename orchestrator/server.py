@@ -114,7 +114,7 @@ class Server:
         elif cmd == MSG_CMD_DEBUG_MSG:
             print(data)
         elif cmd == MSG_CMD_ERROR:
-            print(f"\n[{ip}] \033[2;31m{data}\033[0;0m")
+            print(f"** Node {ip} error **\n\033[2;31m{data}\033[0;0m")
         else:
             # Only update prompt if we actually print something
             return

@@ -61,7 +61,7 @@ cat:
 
 debug_listener:
 	source devel/setup.bash
-	ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) rostopic echo /$(VEHICLE_ID)/debug
+	ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) rostopic echo /$(VEHICLE_ID)/debug -p
 
 run_joyit:
 	source devel/setup.bash
