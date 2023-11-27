@@ -25,6 +25,7 @@ class ReflectiveSensorDriver:
         while GPIO.input(self.pin) and time.time_ns() - start < self.wait_time:
             pass
         diff = time.time_ns() - start
+        rospy.loginfo(f"Diff: {diff/10**3}")
         return diff / 10**3
 
     def cleanup(self):

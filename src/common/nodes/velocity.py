@@ -30,7 +30,7 @@ class VelocityController:
         rospy.Timer(rospy.Duration(self.wait_time_us / 10**6), self.get_velocity)
         rospy.Timer(rospy.Duration(self.publish_period), self.publish_velocity)
 
-    def get_velocity(self):
+    def get_velocity(self, event):
         """
         Returns the velocity of the vehicle in m/s.
         """
