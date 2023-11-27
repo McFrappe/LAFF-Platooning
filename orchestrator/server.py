@@ -109,7 +109,8 @@ class Server:
         elif cmd == MSG_CMD_DEBUG_CONFIRM:
             self.__gui.socket_output(f"{ip} set debug mode {data}")
         elif cmd == MSG_CMD_DEBUG_MSG:
-            self.__gui.socket_output(data)
+            if self.__is_debug:
+                self.__gui.output(data)
         elif cmd == MSG_CMD_ERROR:
             self.__gui.socket_output(f"{ip} got error")
             self.__gui.output(f"{ip} {data}")

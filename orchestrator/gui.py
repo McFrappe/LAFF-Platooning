@@ -29,7 +29,7 @@ class GUI:
         self.__title_win = curses.newwin(
             0, curses.COLS - sidebar_width - 1, 0, 0)
         self.__out_win = curses.newwin(
-            curses.LINES - 1, curses.COLS - sidebar_width - 1, 1, 0)
+            curses.LINES - 2, curses.COLS - sidebar_width - 1, 1, 0)
         self.__client_win = curses.newwin(
             socket_win_height, sidebar_width, 0, curses.COLS - sidebar_width)
         self.__socket_win = curses.newwin(
