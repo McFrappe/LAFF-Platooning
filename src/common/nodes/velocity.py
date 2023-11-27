@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import time
 import rospy
 import numpy as np
 
@@ -52,9 +53,13 @@ class VelocityController:
         """
         Publishes the current velocity to the velocity topic.
         """
-        avg_diff = np.average(self.readings)
-        rospy.loginfo(f"Avg diff: {avg_diff}")
-        velocity_ms = ((self.wheel_radius_cm / 100) * 2 * np.pi) / avg_diff
+        if len(self.readings) == 0:
+            velocity_ms = 0
+        else:
+            avg_diff = np.average(self.readings)
+            rospy.loginfo(f"Avg diff: {avg_diff}")
+            velocity_ms = ((self.wheel_radius_cm / 100) * 2 * np.pi) / avg_diff
+
         rospy.loginfo(f"Velocity (m/s): {velocity_ms}")
         self.publisher.publish(Float32(data=velocity_ms))
         self.readings = []
