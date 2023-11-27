@@ -41,7 +41,7 @@
 
     <!-- Velocity node -->
     <param name="VELOCITY_WAIT_TIME_US" type="double" value="3000" />
-    <param name="VELOCITY_REFLECTANCE_THRESHOLD_US" type="int" value="500" />
+    <param name="VELOCITY_REFLECTANCE_THRESHOLD_US" type="int" value="70" />
 
     <!-- Publisher periods -->
     <param name="DEBUG_PUBLISH_PERIOD" type="double" value="1" />
