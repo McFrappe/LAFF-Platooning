@@ -36,6 +36,7 @@ def run(std_scr):
     thread.daemon = True
     thread.start()
 
+    gui.draw_borders()
     gui.welcome()
 
     while True:
@@ -54,6 +55,8 @@ def run(std_scr):
             gui.clear_output()
         elif len(parsed_msg[0]) > 0:
             server.handle_user_cmd(parsed_msg)
+
+        gui.draw_borders()
 
     server.stop_node_timers()
     running = False

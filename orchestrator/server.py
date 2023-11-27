@@ -112,8 +112,8 @@ class Server:
         elif cmd == MSG_CMD_ERROR:
             self.__gui.socket_output(f"{ip} got error")
             self.__gui.output(f"{ip} {data}")
-        else:
-            return
+
+        self.update_status()
 
     def handle_user_cmd(self, msg):
         """
