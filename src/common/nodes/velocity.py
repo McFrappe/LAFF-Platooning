@@ -17,7 +17,7 @@ class VelocityController:
             "VELOCITY_REFLECTANCE_THRESHOLD_US")
 
         self.driver = ReflectiveSensorDriver(
-            rospy.get_param("REFLECTIVE_SENSOR_PIN"), self.wait_time_ms)
+            rospy.get_param("REFLECTIVE_SENSOR_PIN"), self.wait_time_us)
 
         self.publish_period = rospy.get_param("VELOCITY_PUBLISH_PERIOD")
 
