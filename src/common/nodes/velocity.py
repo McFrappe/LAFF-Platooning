@@ -40,7 +40,7 @@ class VelocityController:
         """
         Publishes the current velocity to the velocity topic.
         """
-        detections = len(filter(lambda x: x < self.reflectance_threshold_us, self.readings))
+        detections = len(list(filter(lambda x: x < self.reflectance_threshold_us, self.readings)))
         rospy.loginfo(f"Detections: {detections}")
         if detections == 0:
             return 0
