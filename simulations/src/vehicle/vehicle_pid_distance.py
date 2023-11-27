@@ -9,9 +9,6 @@ class VehiclePidDistance(Vehicle):
         self.distance = init_distance
         self.travel_distance = init_travel_distance
 
-        # senario 3
-        self.leader_accelerating = True
-        self.leader_initial_accelerating = True
 
     # This should be called each tick
     def update_speed(self, tick):
@@ -22,8 +19,9 @@ class VehiclePidDistance(Vehicle):
         if derivative >= 0: # accelerating
             max_acceleration  = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
             kp = max_acceleration/15
-            ki = 0.002
-            kd = 3
+            #ki = 0.002
+            ki = 0.1
+            kd = 4
         elif distance_from_min < 0.2: # safety margin break with maximum deceleration
             max_deceleration = self.vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
             kp = max_deceleration*100
