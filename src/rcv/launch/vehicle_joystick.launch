@@ -5,6 +5,7 @@
     <node name="servo_node" pkg="rcv" type="servo.py" respawn="true" />
     <node name="joystick_controller_node" pkg="rcv" type="joystick_controller.py" respawn="true" />
     <node name="velocity_node" pkg="common" type="velocity.py" respawn="true" />
+    <node name="debug_node" pkg="common" type="debug.py" respawn="true" />
     <node name="ds4_controller_node" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true">
         <!-- Hidraw backend does not work with DS4 -->
         <param name="~backend" type="string" value="bluetooth" />
@@ -39,15 +40,24 @@
 
     <!-- Publisher periods -->
     <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="1" />
+    <param name="DEBUG_PUBLISH_PERIOD" type="double" value="1" />
     <param name="JOYSTICK_CONTROL_PERIOD" type="double" value="0.1" />
     <param name="MESSAGE_QUEUE_SIZE" type="int" value="10" />
 
     <!-- Motor node -->
     <param name="MAX_FORWARD_MOTOR" type="int" value="88" />
-    <param name="MAX_REVERSE_MOTOR" type="int" value="10" />
+    <param name="MAX_REVERSE_MOTOR" type="int" value="50" />
     <param name="IDLE_MOTOR" type="int" value="57" />
     <param name="PWM_FREQUENCY_MOTOR" type="int" value="500" />
     <param name="MAX_RIGHT_ANGLE" type="int" value="87" />
     <param name="MAX_LEFT_ANGLE" type="int" value="27" />
-    <param name="ZERO_ANGLE" type="int" value="57" />
+    <param name="ZERO_ANGLE" type="int" value="56" />
+
+    <param name="ULTRASONIC_SAMPLES_PER_PUBLISH" type="int" value="5" />
+    <param name="ULTRASONIC_PING_PULSE_LENGTH" type="double" value="0.00001" />
+    <param name="ULTRASONIC_TIMEOUT_LENGTH" type="double" value="0.05" />
+    <param name="ULTRASONIC_MIN_RANGE" type="int" value="3" />
+    <param name="ULTRASONIC_MAX_RANGE" type="int" value="400" />
+    <param name="ULTRASONIC_FOV" type="double" value="0.26179938779915" />
+>>>>>>> debug
 </launch>

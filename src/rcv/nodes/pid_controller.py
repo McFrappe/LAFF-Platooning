@@ -2,8 +2,8 @@
 import rospy
 import numpy as np
 
-from std_msgs.msg import Int32
 from sensor_msgs.msg import Range
+from std_msgs.msg import Int32, Float32
 
 from controller.pid import PID
 
@@ -32,8 +32,21 @@ class PIDController:
 
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
 
-        self.speed_publisher = rospy.Publisher(f"{self.__id}/speed", Int32, queue_size=self.__message_queue_size)
-        self.steering_angle_publisher = rospy.Publisher(f"{self.__id}/steering_angle", Int32, queue_size=self.__message_queue_size)
+        self.speed_publisher = rospy.Publisher(
+            f"{self.__id}/speed",
+            Int32,
+            queue_size=self.__message_queue_size)
+
+        self.pid_publisher = rospy.Publisher(
+            f"{self.__id}/pid",
+            Float32,
+            queue_size=self.__message_queue_size)
+
+        self.steering_angle_publisher = rospy.Publisher(
+            f"{self.__id}/steering_angle",
+            Int32,
+            queue_size=self.__message_queue_size)
+
         self.distance_subscriber = rospy.Subscriber(
             f"{self.__id}/distance",
             Range,
@@ -50,13 +63,13 @@ class PIDController:
 
     def __perform_step(self, event):
         updated_control = self.__pid.update(self.__current_distance)
-        rospy.loginfo(f"PID controller output for distance {self.__current_distance}: {updated_control}")
         self.current_speed = int(np.interp(
             updated_control,
             [self.__pid_min, self.__pid_max],
             [self.__idle, self.__max_forward]
         ))
         self.speed_publisher.publish(self.current_speed)
+        self.pid_publisher.publish(updated_control)
 
     def stop(self):
         self.speed_publisher.publish(self.__idle)

@@ -1,10 +1,10 @@
 import os
 import time
-import signal
 import subprocess
 from threading import Timer
 from orchestrator.shared import *
 from orchestrator.utils import get_broadcast_ip
+from orchestrator.client.debug_thread import DebugThread
 
 
 class Node:
@@ -23,6 +23,7 @@ class Node:
         self.__start_time = -1
         self.__start_confirm_timer = Timer(
             MASTER_STARTUP_WAIT_TIME, self.__confirm_start)
+        self.__debug_thread = None
 
     def __confirm_start(self):
         self.__socket.sendto(
@@ -37,13 +38,23 @@ class Node:
             (self.__broadcast_ip, SOCKET_PORT)
         )
 
+    def __broadcast_debug_msg(self, msg):
+        self.__socket.sendto(
+            str.encode(f"{MSG_CMD_DEBUG_MSG}|{msg}"),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
+
     def start(self):
         """
         Starts the node process and sets the master flag if the node is the
         master node. If the node is already running, this method does nothing.
         """
-        if self.__running:
+        if self.__running or self.__start_confirm_timer.is_alive():
             return OK
+
+        if self.__id is None:
+            self.__broadcast_error("Please assign vehicle id before starting")
+            return ERROR
 
         if self.__is_master:
             make_cmd = "run_rcv_joystick_pi"
@@ -65,7 +76,7 @@ class Node:
             return OK
         except Exception as e:
             print(f"Failed to start process:\n{e}")
-            self.__broadcast_error(e)
+            self.__broadcast_error(f"Failed to start ROS:\n{e}")
             return ERROR
 
     def stop(self):
@@ -81,6 +92,7 @@ class Node:
         # before stopping.
         time_since_start = time.time() - self.__start_time
         if self.__start_time != -1 and time_since_start < MINIMUM_RUNNING_TIME:
+            self.__broadcast_error("Need to wait for ROS to fully start before stopping")
             return ERROR
 
         try:
@@ -93,7 +105,7 @@ class Node:
             )
         except Exception as e:
             print(f"Failed to stop process:\n{e}")
-            self.__broadcast_error(e)
+            self.__broadcast_error(f"Failed to stop ROS:\n{e}")
 
         # Assume the process is already dead
         self.__running = False
@@ -120,7 +132,7 @@ class Node:
             )
         except Exception as e:
             print(f"Failed to update to branch {branch}:\n{e}")
-            self.__broadcast_error(e)
+            self.__broadcast_error(f"Failed to update on branch {branch}:\n{e}")
             return ERROR
 
         if was_running:
@@ -138,7 +150,7 @@ class Node:
             with open(ROS_MASTER_URI_PATH, "w") as f:
                 f.write(f"http://{new_master}:11311")
         except Exception as e:
-            self.__broadcast_error(e)
+            self.__broadcast_error(f"Failed to set master:\n{e}")
             return ERROR
 
         cmd = MSG_CMD_MASTER_CONFIRM if self.__is_master else MSG_CMD_NOT_MASTER_CONFIRM
@@ -156,7 +168,7 @@ class Node:
             with open(VEHICLE_ID_PATH, "w") as f:
                 f.write(f"vehicle_{new_id}")
         except Exception as e:
-            self.__broadcast_error(e)
+            self.__broadcast_error(f"Failed to set vehicle id:\n{e}")
             return ERROR
 
         self.__id = new_id
@@ -165,6 +177,51 @@ class Node:
             (self.__broadcast_ip, SOCKET_PORT)
         )
         return OK
+
+    def set_debug(self, new_state):
+        """
+        Enables/disables debug mode.
+        """
+        try:
+            if new_state == "on":
+                if self.__debug_thread is not None:
+                    return
+                self.__debug_thread = DebugThread(self.__broadcast_debug_msg)
+                self.__debug_thread.start()
+            else:
+                if self.__debug_thread is None:
+                    return
+                self.__debug_thread.stop()
+                self.__debug_thread = None
+        except Exception as e:
+            self.__broadcast_error(f"Failed to turn debug mode {new_state}:\n{e}")
+            return ERROR
+
+        self.__socket.sendto(
+            str.encode(f"{MSG_CMD_DEBUG_CONFIRM}|{new_state}"),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
+        return OK
+
+    def set_lights(self, data):
+        """
+        Toggles the LED lights on the Pixy2 camera on/off based on
+        the value of data.
+        """
+        try:
+            state = "true" if data == "on" else "false"
+            proc = subprocess.Popen(
+                f"make PUBLISH_CMD_ARGS='/lights std_msgs/Bool {state}' publish",
+                shell=True, cwd=REPO_PATH, executable="/bin/bash")
+            proc.wait()
+            self.__socket.sendto(
+                str.encode(f"{MSG_CMD_LIGHTS_CONFIRM}|{data}"),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
+            return OK
+        except Exception as e:
+            self.__broadcast_error(e)
+            return ERROR
 
     def send_heartbeat(self):
         """
@@ -198,3 +255,9 @@ class Node:
         elif cmd == MSG_CMD_ORDER:
             print(f"Received order command with assigned id {data}")
             self.set_id(data)
+        elif cmd == MSG_CMD_DEBUG:
+            print(f"Received debug command with new state {data}")
+            self.set_debug(data)
+        elif cmd == MSG_CMD_LIGHTS:
+            print(f"Received lights command with data {data}")
+            self.set_lights(data)
