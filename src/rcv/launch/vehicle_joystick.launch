@@ -13,7 +13,7 @@
     </node>
 
     <param name="VEHICLE_ID" type="string" value="$(arg vehicle_id)" />
-    <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="5" />
+    <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="3.25" />
 
     <!-- PID controller -->
     <param name="K_P" type="double" value="0.00294" />
