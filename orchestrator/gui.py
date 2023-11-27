@@ -10,9 +10,6 @@ class GUI:
         self.__client_win = None
         self.__status_win = None
         self.__setup()
-        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
-        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED)
-        curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_GREEN)
 
     def __setup(self):
         curses.use_default_colors()
@@ -37,7 +34,7 @@ class GUI:
                 socket_win_height, sidebar_width, socket_win_height,
                 curses.COLS - sidebar_width)
         self.__cli_win = curses.newwin(
-                1, curses.COLS - sidebar_width, curses.LINES - 1, 0)
+                1, curses.COLS - sidebar_width - 1, curses.LINES - 1, 0)
         self.__status_win = curses.newwin(
                 1, sidebar_width,
                 curses.LINES - 1, curses.COLS -
@@ -48,7 +45,7 @@ class GUI:
                 socket_win_height, 0, curses.ACS_HLINE, curses.COLS)
         self.__std_scr.vline(
                 0, curses.COLS - sidebar_width - 1,
-                curses.ACS_VLINE, curses.LINES - 1)
+                curses.ACS_VLINE, curses.LINES)
         self.__std_scr.refresh()
 
         curses.nocbreak()
@@ -64,9 +61,6 @@ class GUI:
 
     def help(self):
         self.output(AVAILABLE_COMMANDS_STR)
-        if self.__out_win is None:
-            return
-
         self.__out_win.refresh()
 
     def welcome(self):
@@ -78,10 +72,10 @@ class GUI:
         if win is None:
             win = self.__out_win
 
-        msg_to_show = f" {msg} \n"
+        msg_to_show = f"{msg}\n"
 
         if bold:
-            win.addstr(msg_to_show, curses.color_pair(1) | curses.A_BOLD )
+            win.addstr(msg_to_show, curses.A_BOLD)
         else:
             win.addstr(msg_to_show)
 
@@ -111,15 +105,13 @@ class GUI:
         running_state = "yes" if running else "no"
         debug_state = "yes" if debug else "no"
 
-        self.__status_win.addstr(f"running: {running_state}")
-        self.__status_win.addstr(" | ")
-        self.__status_win.addstr(f"debug: {debug_state}")
-
+        self.__status_win.addstr(
+            f"running: {running_state} | debug: {debug_state}")
         self.__status_win.refresh()
 
     def prompt(self):
         self.__cli_win.clear()
-        self.__cli_win.addstr(0, 0, "cmd>", curses.color_pair(2) | curses.A_BOLD)
+        self.__cli_win.addstr(0, 0, "cmd>", curses.A_BOLD)
         self.__cli_win.move(0, 5)
         msg = self.__cli_win.getstr().decode("utf-8")
         self.__out_win.addstr("execute> ", curses.A_BOLD)
