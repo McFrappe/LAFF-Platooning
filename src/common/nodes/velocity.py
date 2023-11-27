@@ -27,6 +27,8 @@ class VelocityController:
             queue_size=rospy.get_param("MESSAGE_QUEUE_SIZE"))
 
         self.readings = []
+        self.prev_time = None
+        self.outside = False
         rospy.Timer(rospy.Duration(self.wait_time_us / 10**6), self.get_velocity)
         rospy.Timer(rospy.Duration(self.publish_period), self.publish_velocity)
 
@@ -34,18 +36,25 @@ class VelocityController:
         """
         Returns the velocity of the vehicle in m/s.
         """
-        self.readings.append(self.driver.get_value())
+        val = self.driver.get_value()
+        if val <= self.reflectance_threshold_us:
+            if self.prev_time is None:
+                self.prev_time = time.time_ns()
+            elif self.outside is True:
+                # Convert to us and save
+                self.readings.append((time.time_ns() - self.prev_time)/10**9)
+                self.prev_time = None
+            self.outside = False
+        else:
+            self.outside = True
 
     def publish_velocity(self, event):
         """
         Publishes the current velocity to the velocity topic.
         """
-        detections = len(list(filter(lambda x: x < self.reflectance_threshold_us, self.readings)))
-        rospy.loginfo(f"Detections: {detections}")
-        velocity_ms = 0
-        if detections != 0:
-            rotations_per_second = (1 / self.publish_period) / detections
-            velocity_ms = ((self.wheel_radius_cm / 100) * 2 * np.pi) * (rotations_per_second / 60)
+        avg_diff = np.average(self.readings)
+        rospy.loginfo(f"Avg diff: {avg_diff}")
+        velocity_ms = ((self.wheel_radius_cm / 100) * 2 * np.pi) / avg_diff
         rospy.loginfo(f"Velocity (m/s): {velocity_ms}")
         self.publisher.publish(Float32(data=velocity_ms))
         self.readings = []
