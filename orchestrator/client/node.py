@@ -1,6 +1,5 @@
 import os
 import time
-import signal
 import subprocess
 from threading import Timer
 from orchestrator.shared import *
