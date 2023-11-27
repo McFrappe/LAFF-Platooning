@@ -192,7 +192,7 @@ class Server:
             )
         elif cmd == MSG_CMD_LIGHTS:
             if data.lower() not in ["on", "off"]:
-                print("Invalid input, expected 'on' or 'off'")
+                self.__gui.output("Invalid input, expected 'on' or 'off'")
                 return
 
             self.stop_node_timers()
