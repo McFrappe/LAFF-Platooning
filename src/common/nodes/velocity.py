@@ -42,12 +42,10 @@ class VelocityController:
         """
         detections = len(list(filter(lambda x: x < self.reflectance_threshold_us, self.readings)))
         rospy.loginfo(f"Detections: {detections}")
-        if detections == 0:
-            return 0
-
-        rotations_per_second = (1 / self.publish_period) / detections
-        velocity_ms = ((self.wheel_radius_cm / 100) * 2 * np.pi) * (rotations_per_second / 60)
-
+        velocity_ms = 0
+        if detections != 0:
+            rotations_per_second = (1 / self.publish_period) / detections
+            velocity_ms = ((self.wheel_radius_cm / 100) * 2 * np.pi) * (rotations_per_second / 60)
         rospy.loginfo(f"Velocity (m/s): {velocity_ms}")
         self.publisher.publish(Float32(data=velocity_ms))
         self.readings = []
