@@ -1,5 +1,6 @@
-import RPi.GPIO as GPIO
 import time
+import rospy
+import RPi.GPIO as GPIO
 
 
 class ReflectiveSensorDriver:
