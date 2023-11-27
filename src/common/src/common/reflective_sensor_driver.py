@@ -22,7 +22,7 @@ class ReflectiveSensorDriver:
         GPIO.setup(self.pin, GPIO.IN)
 
         start = time.time_ns()
-        while GPIO.digitalRead(self.pin) and time.time_ns() - start < self.wait_time:
+        while GPIO.input(self.pin) and time.time_ns() - start < self.wait_time:
             pass
         diff = time.time_ns() - start
         return diff / 10**3
