@@ -56,8 +56,6 @@ def run(std_scr):
         elif len(parsed_msg[0]) > 0:
             server.handle_user_cmd(parsed_msg)
 
-        gui.draw_borders()
-
     server.stop_node_timers()
     running = False
 

@@ -22,9 +22,6 @@ class DebugThread(threading.Thread):
             f"make debug_listener", shell=True, stdout=subprocess.PIPE,
             cwd=REPO_PATH, executable="/bin/bash")
 
-        with open(DEBUG_PID_PATH, "w") as f:
-            f.write(str(self.__proc.pid))
-
         count = 0
         while not self.__stop_event.is_set():
             msg = self.__proc.stdout.readline()
@@ -45,7 +42,6 @@ class DebugThread(threading.Thread):
         if self.__proc is not None:
             self.__proc.terminate()
         self.__stop_event.set()
-        os.remove(DEBUG_PID_PATH)
 
     def stopped(self):
         return self.__stop_event.is_set()

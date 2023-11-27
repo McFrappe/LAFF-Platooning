@@ -184,7 +184,7 @@ class Node:
         """
         try:
             if new_state == "on":
-                if self.__debug_thread is not None or os.path.exists(DEBUG_PID_PATH):
+                if self.__debug_thread is not None:
                     return
                 self.__debug_thread = DebugThread(self.__broadcast_debug_msg)
                 self.__debug_thread.start()

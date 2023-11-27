@@ -27,6 +27,7 @@ class Server:
         del self.__nodes[ip]
         self.__gui.output(
             f"Node {ip} removed from list of nodes due to timeout.")
+        self.update_nodes()
 
     def update_nodes(self):
         """

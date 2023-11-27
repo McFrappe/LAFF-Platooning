@@ -3,7 +3,6 @@ BUFFER_SIZE = 1024
 
 REPO_PATH = "/home/laff/laff-platooning"
 PID_PATH = "/tmp/laff.pid"
-DEBUG_PID_PATH = "/tmp/laff-debug.pid"
 ROS_MASTER_URI_PATH = "/tmp/ROS_MASTER_URI"
 VEHICLE_ID_PATH = "/tmp/VEHICLE_ID"
 
