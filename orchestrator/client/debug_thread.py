@@ -23,7 +23,7 @@ class DebugThread(threading.Thread):
             cwd=REPO_PATH, executable="/bin/bash")
 
         with open(DEBUG_PID_PATH, "w") as f:
-            f.write(self.__proc.pid)
+            f.write(str(self.__proc.pid))
 
         count = 0
         while not self.__stop_event.is_set():
