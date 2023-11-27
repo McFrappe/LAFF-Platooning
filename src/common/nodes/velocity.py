@@ -56,9 +56,8 @@ class VelocityController:
         if len(self.readings) == 0:
             velocity_ms = 0
         else:
-            avg_diff = np.average(self.readings)
-            rospy.loginfo(f"Avg diff: {avg_diff}")
-            velocity_ms = ((self.wheel_radius_cm / 100) * 2 * np.pi) / avg_diff
+            avg_diff = np.mean(self.readings)
+            velocity_ms = ((self.wheel_radius_cm / 100) * 2 * np.pi) / mean_diff
 
         rospy.loginfo(f"Velocity (m/s): {velocity_ms}")
         self.publisher.publish(Float32(data=velocity_ms))
