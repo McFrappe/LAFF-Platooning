@@ -39,9 +39,11 @@ class VelocityController:
         while len(self.readings) < self.readings_per_publish_period:
             self.readings.append(self.driver.get_value())
 
-        rotations_per_second = (1 / self.publish_period) / sum(filter(
-            lambda x: x < self.reflectance_threshold_us, self.readings))
+        detections = sum(filter(lambda x: x < self.reflectance_threshold_us, self.readings))
+        if detections == 0:
+            return 0
 
+        rotations_per_second = (1 / self.publish_period) / detections
         return (self.wheel_radius_cm / 100) * \
             (2 * np.pi / 60) * rotations_per_second
 
