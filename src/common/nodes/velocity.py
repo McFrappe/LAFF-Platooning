@@ -27,31 +27,27 @@ class VelocityController:
             queue_size=rospy.get_param("MESSAGE_QUEUE_SIZE"))
 
         self.readings = []
-        self.readings_per_publish_period = self.publish_period / \
-            (self.wait_time_us / 10**6)
-
+        rospy.Timer(rospy.Duration(self.wait_time_us / 10**6), self.get_velocity)
         rospy.Timer(rospy.Duration(self.publish_period), self.publish_velocity)
 
     def get_velocity(self):
         """
         Returns the velocity of the vehicle in m/s.
         """
-        while len(self.readings) < self.readings_per_publish_period:
-            self.readings.append(self.driver.get_value())
-
-        detections = sum(filter(lambda x: x < self.reflectance_threshold_us, self.readings))
-        if detections == 0:
-            return 0
-
-        rotations_per_second = (1 / self.publish_period) / detections
-        return (self.wheel_radius_cm / 100) * \
-            (2 * np.pi / 60) * rotations_per_second
+        self.readings.append(self.driver.get_value())
 
     def publish_velocity(self, event):
         """
         Publishes the current velocity to the velocity topic.
         """
-        velocity_ms = self.get_velocity()
+        detections = sum(filter(lambda x: x < self.reflectance_threshold_us, self.readings))
+        rospy.loginfo(f"Detections: {detections}")
+        if detections == 0:
+            return 0
+
+        rotations_per_second = (1 / self.publish_period) / detections
+        velocity_ms = ((self.wheel_radius_cm / 100) * 2 * np.pi) * (rotations_per_second / 60)
+
         rospy.loginfo(f"Velocity (m/s): {velocity_ms}")
         self.publisher.publish(Float32(data=velocity_ms))
         self.readings = []
