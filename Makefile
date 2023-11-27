@@ -14,7 +14,7 @@ install:
 	curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add
 	sudo apt update
 	sudo apt -y install ros-noetic-ros-base
-	sudo apt -y install python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential g++ libusb-1.0-0-dev libwiringpi-dev tightvncserver
+	sudo apt -y install python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential g++ libusb-1.0-0-dev libwiringpi-dev tightvncserver bluez
 	echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 	source ~/.bashrc
 	sudo rosdep init
@@ -60,6 +60,9 @@ cat:
 	sudo rm -rf build
 	catkin_make
 
+debug_listener:
+	source devel/setup.bash && ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) rostopic echo /$(VEHICLE_ID)/debug -p
+
 publish:
 	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash || source /opt/ros/noetic/setup.bash; rostopic pub -1 $(PUBLISH_CMD_ARGS)"
 
@@ -68,7 +71,7 @@ run_joyit:
 	ROS_IP=$(IP) roslaunch joyit vehicle.launch
 
 run_joyit_pi:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(DEVICE_ID)"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"
 
 run_rcv:
 	source devel/setup.bash

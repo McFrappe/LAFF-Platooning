@@ -1,12 +1,26 @@
 import sys
 import select
 import socket
-from orchestrator.shared import *
+import curses
+import threading
+
+from orchestrator.gui import GUI
 from orchestrator.utils import *
+from orchestrator.shared import *
 from orchestrator.server import Server
 
+running = True
 
-def run():
+def run_server(sock, server):
+    while running:
+        (msg, addr) = sock.recvfrom(BUFFER_SIZE)
+        if addr[0].endswith("255"):
+            continue
+
+        parsed_msg = msg.decode("utf-8").split("|")
+        server.handle_message(parsed_msg, addr)
+
+def run(std_scr):
     """
     Main entry point for the orchestrator. Creates a UDP socket and listens for
     incoming messages
@@ -16,48 +30,34 @@ def run():
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     s.bind(("0.0.0.0", SOCKET_PORT))
 
-    print(("================================\n"
-           "Welcome to the LAFF orchestrator\n"
-           "================================\n\n"
-           "'h' or 'help' for list of commands.\n"
-          "'q' or 'quit' to exit.\n\n"
-           f"Listening on port {SOCKET_PORT}"))
+    gui = GUI(std_scr)
+    server = Server(s, gui)
+    thread = threading.Thread(target=run_server, args=(s, server))
+    thread.daemon = True
+    thread.start()
 
-    server = Server(s)
+    gui.draw_borders()
+    gui.welcome()
 
-    try:
-        prompt()
-        while True:
-            fds = [sys.stdin, s]
-            rs, _, _ = select.select(fds, [], [])
+    while True:
+        server.update_nodes()
+        server.update_status()
 
-            for sock in rs:
-                if sock == s:
-                    (msg, addr) = sock.recvfrom(BUFFER_SIZE)
-                    if addr[0].endswith("255"):
-                        continue
+        msg = gui.prompt()
+        parsed_msg = [x.strip("\n").lower() for x in msg.split(" ")]
 
-                    parsed_msg = msg.decode("utf-8").split("|")
-                    server.handle_message(parsed_msg, addr)
-                else:
-                    msg = sys.stdin.readline()
-                    parsed_msg = [x.strip("\n").lower()
-                                  for x in msg.split(" ")]
+        if parsed_msg[0] == "q" or parsed_msg[0] == "quit":
+            server.stop_node_timers()
+            break
+        elif parsed_msg[0] == "h" or parsed_msg[0] == "help":
+            gui.help()
+        elif parsed_msg[0] == MSG_CMD_CLEAR_SCREEN:
+            gui.clear_output()
+        elif len(parsed_msg[0]) > 0:
+            server.handle_user_cmd(parsed_msg)
 
-                    if parsed_msg[0] == "q" or parsed_msg[0] == "quit":
-                        server.stop_node_timers()
-                        sys.exit(1)
-                    elif parsed_msg[0] == "h" or parsed_msg[0] == "help":
-                        print(AVAILABLE_COMMANDS_STR)
-                    elif len(parsed_msg[0]) > 0:
-                        server.handle_user_cmd(parsed_msg)
-
-                    prompt()
-    except KeyboardInterrupt:
-        print("\nExiting...")
-        server.stop_node_timers()
-        sys.exit(1)
-
+    server.stop_node_timers()
+    running = False
 
 if __name__ == "__main__":
-    run()
+    curses.wrapper(run)

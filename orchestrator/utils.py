@@ -1,4 +1,3 @@
-import sys
 import socket
 
 
@@ -18,12 +17,3 @@ def get_ip():
 def get_broadcast_ip():
     local_ip = get_ip()
     return f"{str.join('.', local_ip.split('.')[0:-1])}.255"
-
-
-def prompt():
-    """
-    Prints the prompt for the user to enter a command and flushes the stdout
-    buffer.
-    """
-    sys.stdout.write("> ")
-    sys.stdout.flush()
