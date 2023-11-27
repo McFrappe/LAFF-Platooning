@@ -47,9 +47,10 @@ class Server:
             self.__nodes[node] = None
 
     def start_node_timer(self, ip):
-        self.__nodes[ip].cancel()
+        if ip in self.__nodes:
+            self.__nodes[ip].cancel()
         self.__nodes[ip] = Timer(
-            HEARTBEAT_TIMEOUT, self.remove_node, args=[ip])
+            HEARTBEAT_TIMEOUT, self.__remove_node, args=[ip])
         self.__nodes[ip].start()
 
     def handle_message(self, msg, addr):
