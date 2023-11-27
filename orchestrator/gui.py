@@ -34,7 +34,7 @@ class GUI:
             socket_win_height, sidebar_width, 0, curses.COLS - sidebar_width)
         self.__socket_win = curses.newwin(
             curses.LINES - socket_win_height - 1, sidebar_width,
-            curses.LINES - socket_win_height - 2, curses.COLS - sidebar_width)
+            curses.LINES - socket_win_height - 1, curses.COLS - sidebar_width)
         self.__cli_win = curses.newwin(
             1, curses.COLS - sidebar_width - 1, curses.LINES - 1, 0)
         self.__status_win = curses.newwin(
@@ -116,10 +116,11 @@ class GUI:
         sidebar_width = self.__get_sidebar_width()
         socket_win_height = self.__get_socket_win_height()
         self.__std_scr.hline(
-                socket_win_height, curses.COLS - sidebar_width, curses.ACS_HLINE, sidebar_width)
+            socket_win_height, curses.COLS - sidebar_width,
+            curses.ACS_HLINE, sidebar_width)
         self.__std_scr.vline(
-                0, curses.COLS - sidebar_width - 1,
-                curses.ACS_VLINE, curses.LINES)
+            0, curses.COLS - sidebar_width - 1,
+            curses.ACS_VLINE, curses.LINES)
         self.__status_win.refresh()
         self.__socket_win.refresh()
         self.__cli_win.refresh()
