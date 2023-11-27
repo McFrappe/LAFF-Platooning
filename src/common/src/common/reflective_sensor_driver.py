@@ -10,6 +10,7 @@ class ReflectiveSensorDriver:
     def __init__(self, pin, wait_time_us):
         self.pin = pin
         self.wait_time = wait_time_us * 10**3
+        GPIO.setmode(GPIO.BOARD)
 
     def get_value(self):
         """
