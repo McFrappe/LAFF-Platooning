@@ -44,7 +44,7 @@ class GUI:
 
         curses.cbreak()
         curses.curs_set(0)
-        curses.echo()
+        curses.noecho()
 
         self.__title_win.scrollok(True)
         self.__out_win.scrollok(True)
@@ -52,7 +52,6 @@ class GUI:
         self.__socket_win.scrollok(True)
         self.__std_scr.keypad(True)
         self.__cli_win.keypad(True)
-        self.__cli_win.nodelay(True)
         self.__std_scr.clear()
 
     def __write_prompt(self):
@@ -147,7 +146,7 @@ class GUI:
                 if char == "\n":
                     terminator_found = True
                     break
-                elif char == "\b":
+                elif char == "\b" or key == 127:
                     msg = msg[0:-1]
                     continue
 
