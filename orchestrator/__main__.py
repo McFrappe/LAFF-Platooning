@@ -1,5 +1,3 @@
-import sys
-import select
 import socket
 import curses
 import threading
@@ -45,7 +43,6 @@ def run(std_scr):
 
         msg = gui.prompt()
         parsed_msg = [x.strip("\n").lower() for x in msg.split(" ")]
-
         if parsed_msg[0] == "q" or parsed_msg[0] == "quit":
             server.stop_node_timers()
             break

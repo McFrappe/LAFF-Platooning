@@ -9,6 +9,8 @@ class GUI:
         self.__out_win = None
         self.__client_win = None
         self.__status_win = None
+        self.__history = []
+        self.__history_index = -1
         self.__setup()
 
     def __get_socket_win_height(self):
@@ -40,7 +42,7 @@ class GUI:
         self.__status_win = curses.newwin(
             1, sidebar_width, curses.LINES - 1, curses.COLS - sidebar_width)
 
-        curses.nocbreak()
+        curses.cbreak()
         curses.curs_set(0)
         curses.echo()
 
@@ -48,8 +50,31 @@ class GUI:
         self.__out_win.scrollok(True)
         self.__client_win.scrollok(True)
         self.__socket_win.scrollok(True)
+        self.__std_scr.keypad(True)
         self.__cli_win.keypad(True)
+        self.__cli_win.nodelay(True)
         self.__std_scr.clear()
+
+    def __write_prompt(self):
+        self.__cli_win.clear()
+        self.__cli_win.addstr(0, 0, "cmd>", curses.A_BOLD)
+        self.__cli_win.move(0, 5)
+
+    def __get_input_from_history(self, key):
+        if len(self.__history) == 0:
+            return ""
+
+        if key == curses.KEY_UP:
+            self.__history_index = min(self.__history_index + 1, len(self.__history) - 1)
+        else:
+            if self.__history_index == -1:
+                return ""
+            self.__history_index -= 1
+
+        if self.__history_index == -1:
+            return ""
+
+        return self.__history[self.__history_index]
 
     def help(self):
         self.output(AVAILABLE_COMMANDS_STR)
@@ -102,13 +127,39 @@ class GUI:
         self.__status_win.refresh()
 
     def prompt(self):
-        self.__cli_win.clear()
-        self.__cli_win.addstr(0, 0, "cmd>", curses.A_BOLD)
-        self.__cli_win.move(0, 5)
-        msg = self.__cli_win.getstr().decode("utf-8")
+        msg = ""
+        terminator_found = False
+        while not terminator_found:
+            self.__write_prompt()
+            self.__cli_win.addstr(msg)
+            self.__cli_win.refresh()
+
+            key = self.__cli_win.getch()
+            if key == -1:
+                continue
+
+            if key == curses.KEY_UP or key == curses.KEY_DOWN:
+                msg = self.__get_input_from_history(key)
+                continue
+
+            try:
+                char = chr(key)
+                if char == "\n":
+                    terminator_found = True
+                    break
+                elif char == "\b":
+                    msg = msg[0:-1]
+                    continue
+
+                msg += char
+            except:
+                continue
+
+        self.__history.insert(0, msg)
         self.__out_win.addstr("execute> ", curses.A_BOLD)
         self.__out_win.addstr(f"{msg}\n")
         self.__out_win.refresh()
+        self.__history_index = -1
         return msg
 
     def draw_borders(self):
