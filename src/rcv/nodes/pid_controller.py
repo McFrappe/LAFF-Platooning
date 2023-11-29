@@ -73,7 +73,7 @@ class PIDController:
         if self.__current_distance <= self.__pid_reference:
             self.speed_publisher.publish(self.__idle)
         else:
-            self.speed_publisher.publish(self.__idle + 10)
+            self.speed_publisher.publish(self.__idle + rospy.get_param("TEST_SPEED_MOD"))
 
     def stop(self):
         self.speed_publisher.publish(self.__idle)

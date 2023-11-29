@@ -60,7 +60,7 @@ class ObjectFollowerController:
         center_pos = self.__resolution_x / 2
         target_left_edge = int(center_pos - (avg_width / 2))
 
-        return avg_x_offset - target_left_edge
+        return avg_width, avg_x_offset - target_left_edge
 
     def __update(self, event):
         """
@@ -82,18 +82,20 @@ class ObjectFollowerController:
             return
 
         new_angle = self.__zero
-        hoffset = self.__calculate_horizontal_offset(self.__collected_blocks)
+        avg_width, hoffset = self.__calculate_horizontal_offset(self.__collected_blocks)
+        max_value = int((self.__resolution_x / 2) - avg_width)
+        rospy.loginfo(f"hoffset: {hoffset}, avg_width: {avg_width}")
         if hoffset < 0:
             # Turn left
             new_angle = int(np.interp(
                 abs(hoffset),
-                [0, self.__resolution_x],
+                [0, max_value],
                 [self.__zero, self.__max_left]))
         elif hoffset > 0:
             # Turn right
             new_angle = int(np.interp(
                 abs(hoffset),
-                [0, self.__resolution_x],
+                [0, max_value],
                 [self.__zero, self.__max_right]))
 
         self.__steering_angle_publisher.publish(new_angle)

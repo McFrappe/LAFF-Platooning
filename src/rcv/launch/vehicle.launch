@@ -15,13 +15,14 @@
 
     <param name="VEHICLE_ID" type="string" value="$(arg vehicle_id)" />
     <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="3.25" />
-    <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="3" />
+    <param name="TEST_SPEED_MOD" type="int" value="7" />
+    <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="1" />
 
     <!-- PID controller -->
     <param name="K_P" type="double" value="0.00294" />
     <param name="K_I" type="double" value="0.01" />
     <param name="K_D" type="double" value="3" />
-    <param name="PID_REFERENCE" type="double" value="10" />
+    <param name="PID_REFERENCE" type="double" value="40" />
 
     <!-- Affects how the output of the PID controller maps to changes in speed. -->
     <!-- If the output is below or equal to PID_MIN, the speed will be 0, and if the output -->
@@ -58,7 +59,7 @@
     <param name="PWM_FREQUENCY_MOTOR" type="int" value="500" />
     <param name="MAX_RIGHT_ANGLE" type="int" value="87" />
     <param name="MAX_LEFT_ANGLE" type="int" value="27" />
-    <param name="ZERO_ANGLE" type="int" value="57" />
+    <param name="ZERO_ANGLE" type="int" value="56" />
 
     <!-- Ultrasonic node -->
     <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />
