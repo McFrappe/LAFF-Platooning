@@ -97,7 +97,7 @@ class ObjectFollowerController:
 
         if abs(hoffset) <= self.__max_steering_threshold:
             max_value = int(self.__resolution_x / self.__fine_adjust_divider)
-        else
+        else:
             max_value = int(self.__resolution_x / self.__large_adjust_divider)
 
         rospy.loginfo(f"hoffset: {hoffset}, avg_width: {avg_width}")
