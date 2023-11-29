@@ -19,6 +19,7 @@ class ObjectFollowerController:
             "OBJECT_FOLLOWER_BLOCKS_PER_UPDATE")
 
         self.__resolution_x = 315
+        self.__mapping_divider = rospy.get_param("OBJECT_FOLLOWER_RESOLUTION_MAPPING_DIVIDER")
         self.__detected_blocks: list[PixyBlock] = []
         self.__collected_blocks: list[PixyBlock] = []
         self.__collected_blocks_count = 0
@@ -88,7 +89,7 @@ class ObjectFollowerController:
 
         new_angle = self.__zero
         avg_width, hoffset = self.__calculate_horizontal_offset(self.__collected_blocks)
-        max_value = int((self.__resolution_x / 2) - avg_width)
+        max_value = int(self.__resolution_x / self.__mapping_divider)
         rospy.loginfo(f"hoffset: {hoffset}, avg_width: {avg_width}")
         if hoffset < 0:
             # Turn left
