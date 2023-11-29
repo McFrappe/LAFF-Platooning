@@ -10,14 +10,15 @@ from controller.pid import PID
 class PIDController:
     def __init__(self):
         self.__id = rospy.get_param("VEHICLE_ID")
+        self.__pid_min = rospy.get_param("PID_MIN")
+        self.__pid_max = rospy.get_param("PID_MAX")
+        self.__pid_reference = rospy.get_param("PID_REFERENCE")
+
         self.__pid = PID(
             rospy.get_param("K_P"),
             rospy.get_param("K_I"),
             rospy.get_param("K_D"),
-            rospy.get_param("PID_REFERENCE"))
-
-        self.__pid_min = rospy.get_param("PID_MIN")
-        self.__pid_max = rospy.get_param("PID_MAX")
+            self.__pid_reference)
 
         self.__max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
         self.__max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
@@ -62,14 +63,17 @@ class PIDController:
         self.__current_distance = data.range
 
     def __perform_step(self, event):
-        updated_control = self.__pid.update(self.__current_distance)
-        self.current_speed = int(np.interp(
-            updated_control,
-            [self.__pid_min, self.__pid_max],
-            [self.__idle, self.__max_forward]
-        ))
-        self.speed_publisher.publish(self.current_speed)
-        self.pid_publisher.publish(updated_control)
+        # updated_control = self.__pid.update(self.__current_distance)
+        # self.current_speed = int(np.interp(
+        #     updated_control,
+        #     [self.__pid_min, self.__pid_max],
+        #     [self.__idle, self.__max_forward]
+        # ))
+        # self.pid_publisher.publish(updated_control)
+        if self.__current_distance <= self.__pid_reference:
+            self.__speed_publisher.publish(self.__idle)
+        else:
+            self.speed_publisher.publish(self.__idle + 10)
 
     def stop(self):
         self.speed_publisher.publish(self.__idle)
