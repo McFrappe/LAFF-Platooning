@@ -95,7 +95,7 @@ class ObjectFollowerController:
         new_angle = self.__zero
         avg_width, hoffset = self.__calculate_horizontal_offset(self.__collected_blocks)
 
-        if abs(hoffset) <= self.__max_steering_threshold:
+        if abs(hoffset) <= self.__large_adjust_threshold:
             max_value = int(self.__resolution_x / self.__fine_adjust_divider)
         else:
             max_value = int(self.__resolution_x / self.__large_adjust_divider)
