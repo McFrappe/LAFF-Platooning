@@ -71,7 +71,7 @@ class PIDController:
         # ))
         # self.pid_publisher.publish(updated_control)
         if self.__current_distance <= self.__pid_reference:
-            self.__speed_publisher.publish(self.__idle)
+            self.speed_publisher.publish(self.__idle)
         else:
             self.speed_publisher.publish(self.__idle + 10)
 
