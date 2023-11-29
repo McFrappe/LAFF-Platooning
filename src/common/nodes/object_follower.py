@@ -59,7 +59,7 @@ class ObjectFollowerController:
         avg_x_offset = sum([b.roi.x_offset for b in blocks]) / len(blocks)
         center_pos = self.__resolution_x / 2
 
-        return avg_width, (avg_x_offset + (avg_width / 2)) - center_pos)
+        return avg_width, ((avg_x_offset + (avg_width / 2)) - center_pos)
 
     def __update(self, event):
         """
