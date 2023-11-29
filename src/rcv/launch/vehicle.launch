@@ -17,9 +17,9 @@
     <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="3.25" />
     <param name="TEST_SPEED_MOD" type="int" value="7" />
     <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="10" />
-    <param name="OBJECT_FOLLOWER_LARGE_ADJUST_THRESHOLD_PX" type="double" value="80" />
+    <param name="OBJECT_FOLLOWER_LARGE_ADJUST_THRESHOLD_PX" type="double" value="40" />
     <param name="OBJECT_FOLLOWER_RESOLUTION_FINE_ADJUST_DIVIDER" type="double" value="0.8" />
-    <param name="OBJECT_FOLLOWER_RESOLUTION_LARGE_ADJUST_DIVIDER" type="double" value="1.5" />
+    <param name="OBJECT_FOLLOWER_RESOLUTION_LARGE_ADJUST_DIVIDER" type="double" value="4" />
 
     <!-- PID controller -->
     <param name="K_P" type="double" value="0.00294" />
