@@ -27,6 +27,7 @@ class PIDController:
         self.__max_left = rospy.get_param("MAX_LEFT_ANGLE")
         self.__zero = rospy.get_param("ZERO_ANGLE")
 
+        self.__has_target = False
         self.__steering_angle = self.__zero
         self.__current_speed = self.__idle
         self.__current_distance = 0
@@ -54,6 +55,12 @@ class PIDController:
             self.__callback_distance,
             queue_size=self.__message_queue_size)
 
+        self.has_target_subscriber = rospy.Subscriber(
+            f"{self.__id}/has_target",
+            Bool,
+            self.__callback_has_target,
+            queue_size=self.__message_queue_size)
+
         rospy.Timer(rospy.Duration(rospy.get_param("PID_CONTROL_PERIOD")), self.__perform_step)
 
     def __callback_distance(self, data: Range):
@@ -61,6 +68,9 @@ class PIDController:
         Callback for the distance subscriber.
         """
         self.__current_distance = data.range
+
+    def __callback_has_target(self, data: Bool):
+        self.__has_target = data.data
 
     def __perform_step(self, event):
         # updated_control = self.__pid.update(self.__current_distance)
@@ -70,6 +80,10 @@ class PIDController:
         #     [self.__idle, self.__max_forward]
         # ))
         # self.pid_publisher.publish(updated_control)
+        if not self.__has_target:
+            self.speed_publisher.publish(self.__idle)
+            return
+
         if self.__current_distance <= self.__pid_reference:
             self.speed_publisher.publish(self.__idle)
         else:

@@ -2,7 +2,7 @@
 import rospy
 import numpy as np
 
-from std_msgs.msg import Int32
+from std_msgs.msg import Int32, Bool
 from sensor_msgs.msg import RegionOfInterest
 from pixy2_msgs.msg import PixyData, PixyBlock, PixyResolution
 
@@ -22,6 +22,11 @@ class ObjectFollowerController:
         self.__detected_blocks: list[PixyBlock] = []
         self.__collected_blocks: list[PixyBlock] = []
         self.__collected_blocks_count = 0
+
+        self.__has_target_publisher = rospy.Publisher(
+            f"{self.__id}/has_target",
+            Bool,
+            queue_size=self.__message_queue_size)
 
         self.__steering_angle_publisher = rospy.Publisher(
             f"{self.__id}/steering_angle",
@@ -76,6 +81,7 @@ class ObjectFollowerController:
 
         # No blocks detected during the period, reset
         if len(self.__collected_blocks) == 0:
+            self.__has_target_publisher.publish(False)
             self.__steering_angle_publisher.publish(self.__zero)
             self.__collected_blocks_count = 0
             return
@@ -97,6 +103,7 @@ class ObjectFollowerController:
                 [0, max_value],
                 [self.__zero, self.__max_right]))
 
+        self.__has_target_publisher.publish(True)
         self.__steering_angle_publisher.publish(new_angle)
         self.__collected_blocks = []
         self.__collected_blocks_count = 0
