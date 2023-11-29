@@ -5,6 +5,7 @@
     <node name="servo_node" pkg="rcv" type="servo.py" respawn="true" />
     <node name="pid_controller" pkg="rcv" type="pid_controller.py" respawn="true" />
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
+    <node name="velocity_node" pkg="common" type="velocity.py" respawn="true" />
     <node name="object_follower_node" pkg="common" type="object_follower.py" respawn="true" />
     <node name="debug_node" pkg="common" type="debug.py" respawn="true" />
     <node name="pixy2_node" pkg="pixy2_node" type="pixy2_node" respawn="true">
@@ -13,7 +14,8 @@
     </node>
 
     <param name="VEHICLE_ID" type="string" value="$(arg vehicle_id)" />
-    <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="10" />
+    <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="3.25" />
+    <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="3" />
 
     <!-- PID controller -->
     <param name="K_P" type="double" value="0.00294" />
@@ -27,26 +29,29 @@
     <param name="PID_MIN" type="int" value="-1" />
     <param name="PID_MAX" type="int" value="1" />
 
+    <!-- GPIO for Ultrasonic -->
+    <param name="ULTRASONIC_TRIGGER" type="int" value="29" />
+    <param name="ULTRASONIC_ECHO" type="int" value="31" />
     <!-- GPIO for motor (PWM1) -->
     <param name="MOTOR_PIN" type="int" value="33" />
     <!-- GPIO for servo motor (PWM0) -->
     <param name="SERVO_PIN" type="int" value="32" />
+    <!-- GPIO for Reflective sensor -->
+    <param name="REFLECTIVE_SENSOR_PIN" type="int" value="37" />
+
+    <!-- Velocity node -->
+    <param name="VELOCITY_WAIT_TIME_US" type="double" value="2000" />
+    <param name="VELOCITY_REFLECTANCE_THRESHOLD_US" type="int" value="200" />
 
     <!-- Publisher periods -->
     <param name="DEBUG_PUBLISH_PERIOD" type="double" value="1" />
     <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
+    <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="0.5" />
     <param name="OBJECT_FOLLOWER_PERIOD" type="double" value="0.0167" />
     <param name="PID_CONTROL_PERIOD" type="double" value="0.1" />
+    <param name="MESSAGE_QUEUE_SIZE" type="int" value="10" />
 
-    <!-- GPIO for IR -->
-    <param name="IR_LEFT" type="int" value="19" />
-    <param name="IR_MIDDLE" type="int" value="21" />
-    <param name="IR_RIGHT" type="int" value="23" />
-
-    <!-- GPIO for Ultrasonic -->
-    <param name="ULTRASONIC_TRIGGER" type="int" value="29" />
-    <param name="ULTRASONIC_ECHO" type="int" value="31" />
-
+    <!-- Motor node -->
     <param name="MAX_FORWARD_MOTOR" type="int" value="88" />
     <param name="MAX_REVERSE_MOTOR" type="int" value="10" />
     <param name="IDLE_MOTOR" type="int" value="57" />
@@ -55,9 +60,8 @@
     <param name="MAX_LEFT_ANGLE" type="int" value="27" />
     <param name="ZERO_ANGLE" type="int" value="57" />
 
+    <!-- Ultrasonic node -->
     <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />
-    <param name="MESSAGE_QUEUE_SIZE" type="int" value="10" />
-
     <param name="ULTRASONIC_SAMPLES_PER_PUBLISH" type="int" value="5" />
     <param name="ULTRASONIC_PING_PULSE_LENGTH" type="double" value="0.00001" />
     <param name="ULTRASONIC_TIMEOUT_LENGTH" type="double" value="0.05" />

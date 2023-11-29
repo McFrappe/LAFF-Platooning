@@ -187,3 +187,5 @@ build
 .direnv
 
 **/*.pyc
+
+.vscode/

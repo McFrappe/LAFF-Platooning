@@ -45,11 +45,11 @@ class DebugController:
             self.__callback_pid,
             queue_size=self.__message_queue_size)
 
-        # self.__velocity_subscriber = rospy.Subscriber(
-        #     f"{self.__id}/velocity",
-        #     Float32,
-        #     self.__callback_velocity,
-        #     queue_size=self.__message_queue_size)
+        self.__velocity_subscriber = rospy.Subscriber(
+            f"{self.__id}/velocity",
+            Float32,
+            self.__callback_velocity,
+            queue_size=self.__message_queue_size)
 
         rospy.Timer(rospy.Duration(self.__publish_period), self.__publish_debug)
 
@@ -65,13 +65,16 @@ class DebugController:
     def __callback_pid(self, msg: Float32):
         self.__pid = msg.data
 
+    def __callback_velocity(self, msg: Float32):
+        self.__velocity = msg.data
+
     def __publish_debug(self, event):
         msg = f"[{self.__id}]"
         msg += f" steering angle: {self.__steering_angle},"
         msg += f" distance: {self.__distance},"
         msg += f" speed: {self.__speed},"
         msg += f" PID: {self.__pid},"
-        msg += f" velocity: XX"
+        msg += f" velocity: {self.__velocity}"
         self.__debug_publisher.publish(msg)
 
     def cleanup(self):
@@ -79,7 +82,7 @@ class DebugController:
         self.__distance_subscriber.unregister()
         self.__speed_subscriber.unregister()
         self.__pid_subscriber.unregister()
-        # self.__velocity_subscriber.unregister()
+        self.__velocity_subscriber.unregister()
 
 
 if __name__ == "__main__":

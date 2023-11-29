@@ -1,4 +1,3 @@
-import curses
 from threading import Timer
 from orchestrator.shared import *
 from orchestrator.utils import get_broadcast_ip
