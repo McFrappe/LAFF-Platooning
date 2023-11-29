@@ -19,7 +19,12 @@ class ObjectFollowerController:
             "OBJECT_FOLLOWER_BLOCKS_PER_UPDATE")
 
         self.__resolution_x = 315
-        self.__mapping_divider = rospy.get_param("OBJECT_FOLLOWER_RESOLUTION_MAPPING_DIVIDER")
+        self.__fine_adjust_divider = rospy.get_param(
+            "OBJECT_FOLLOWER_RESOLUTION_FINE_ADJUST_DIVIDER")
+        self.__large_adjust_divider = rospy.get_param(
+            "OBJECT_FOLLOWER_RESOLUTION_LARGE_ADJUST_DIVIDER")
+        self.__large_adjust_threshold = rospy.get_param(
+            "OBJECT_FOLLOWER_LARGE_ADJUST_THRESHOLD_PX")
         self.__detected_blocks: list[PixyBlock] = []
         self.__collected_blocks: list[PixyBlock] = []
         self.__collected_blocks_count = 0
@@ -89,7 +94,12 @@ class ObjectFollowerController:
 
         new_angle = self.__zero
         avg_width, hoffset = self.__calculate_horizontal_offset(self.__collected_blocks)
-        max_value = int(self.__resolution_x / self.__mapping_divider)
+
+        if abs(hoffset) <= self.__max_steering_threshold:
+            max_value = int(self.__resolution_x / self.__fine_adjust_divider)
+        else
+            max_value = int(self.__resolution_x / self.__large_adjust_divider)
+
         rospy.loginfo(f"hoffset: {hoffset}, avg_width: {avg_width}")
         if hoffset < 0:
             # Turn left
