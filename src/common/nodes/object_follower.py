@@ -58,9 +58,8 @@ class ObjectFollowerController:
         avg_width = sum([b.roi.width for b in blocks]) / len(blocks)
         avg_x_offset = sum([b.roi.x_offset for b in blocks]) / len(blocks)
         center_pos = self.__resolution_x / 2
-        target_left_edge = int(center_pos - (avg_width / 2))
 
-        return avg_width, avg_x_offset - target_left_edge
+        return avg_width, (avg_x_offset + (avg_width / 2)) - center_pos)
 
     def __update(self, event):
         """
@@ -88,7 +87,7 @@ class ObjectFollowerController:
         if hoffset < 0:
             # Turn left
             new_angle = int(np.interp(
-                abs(hoffset),
+                (self.__resolution_x / 2) - abs(hoffset),
                 [0, max_value],
                 [self.__zero, self.__max_left]))
         elif hoffset > 0:
