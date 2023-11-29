@@ -15,10 +15,16 @@ class VehicleBidirectionalStateSpace(Vehicle):
         self.prev_velocity_error = 0
         self.delta = 0 
 
-        r = np.array([10000,10000,5000]) # [r_{i-1}, r_{i}, r_{i+1}] 
-        m = np.array([6000,6000,6000]) # [m_{i-1}, m_{i}, m_{i+1}] 
-        a = np.array([0,50000,20000]) # [a_{i-1} (not used), a_{i}, a_{i+1}] 
+        # continues time
+        #r = np.array([10000,10000,5000]) # [r_{i-1}, r_{i}, r_{i+1}] 
+        #m = np.array([6000,6000,6000]) # [m_{i-1}, m_{i}, m_{i+1}] 
+        #a = np.array([0,50000,20000]) # [a_{i-1} (not used), a_{i}, a_{i+1}] 
         h_p = 0.5
+
+        # discrete time
+        r = np.array([100000,100000,100000]) # [r_{i-1}, r_{i}, r_{i+1}] 
+        m = np.array([6000,6000,6000]) # [m_{i-1}, m_{i}, m_{i+1}] 
+        a = np.array([0,300000,50000]) # [a_{i-1} (not used), a_{i}, a_{i+1}] 
 
         self.mass = m[1]
 
@@ -28,11 +34,11 @@ class VehicleBidirectionalStateSpace(Vehicle):
         self.D_continuous = np.array([[0]])
 
         # Convert to discrete-time system
-        #self.A_discrete, self.B_discrete, self.C_discrete, self.D_discrete, _ = signal.cont2discrete(
-        #    (self.A_continuous, self.B_continuous, self.C_continuous, self.D_continuous),
-        #    dt=tick_in_s,
-        #    method='zoh'  # You can choose other discretization methods
-        #)
+        self.A_discrete, self.B_discrete, self.C_discrete, self.D_discrete, _ = signal.cont2discrete(
+            (self.A_continuous, self.B_continuous, self.C_continuous, self.D_continuous),
+            dt=tick_in_s,
+            method='zoh'  # You can choose other discretization methods
+        )
 
     def update_speed(self, tick, leader_speed, relative_position_infront, momentum_infront, momentum_behind, delta_infront, delta_behind):
         
@@ -40,8 +46,8 @@ class VehicleBidirectionalStateSpace(Vehicle):
         state_variables =  np.array([self.mass*self.speed, self.delta])
         input_variables =  np.array([leader_speed, momentum_infront, momentum_behind, delta_infront, delta_behind])
 
-        next_step = self.A_continuous @ state_variables + self.B_continuous @ input_variables
-        desired_speed = self.C_continuous @ next_step
+        next_step = self.A_discrete @ state_variables + self.B_discrete @ input_variables
+        desired_speed = self.C_discrete @ next_step
         self.speed = self.calculate_valid_speed(desired_speed[0]) # we want a scaler not a np array with single value
 
         return self.speed
