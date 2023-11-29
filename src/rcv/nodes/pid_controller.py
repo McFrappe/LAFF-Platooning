@@ -3,7 +3,7 @@ import rospy
 import numpy as np
 
 from sensor_msgs.msg import Range
-from std_msgs.msg import Int32, Float32
+from std_msgs.msg import Int32, Float32, Bool
 
 from controller.pid import PID
 
