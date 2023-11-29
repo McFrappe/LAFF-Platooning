@@ -1,5 +1,6 @@
 import sys, getopt
 from src.platoon.platoon_bidirectional_pid_truck import PlatoonBidirectionalPidTruckS3, PlatoonBidirectionalPidTruckS1, PlatoonBidirectionalPidTruckS2
+from src.platoon.platoon_bidirectional_state_space_truck import PlatoonBidirectionalStateSpaceTruckS1, PlatoonBidirectionalStateSpaceTruckS3
 from src.platoon.platoon_pid_distance_truck import PlatoonPidDistanceTruckS1, PlatoonPidDistanceTruckS2, PlatoonPidDistanceTruckS3, PlatoonPidDistanceTruckS4
 from src.platoon.platoon_pid_distance_rc_vehicle import PlatoonPidDistanceRcVehicleS1, PlatoonPidDistanceRcVehicleS2, PlatoonPidDistanceRcVehicleS3
 from src.common.plot import plot_speed, plot_travel_distance, plot_distances, plot_position
@@ -37,6 +38,12 @@ def simulate(num_tick, num_vehicles, scenario, type, model):
         case (3,1,2):
             p = PlatoonBidirectionalPidTruckS3(num_vehicles)
             suffix = "bidirectional-pid-model-s3-truck"
+        case (1,1,3):
+            p = PlatoonBidirectionalStateSpaceTruckS1(num_vehicles)
+            suffix = "bidirectional-state-space-model-s1-truck"
+        case (3,1,3):
+            p = PlatoonBidirectionalStateSpaceTruckS3(num_vehicles)
+            suffix = "bidirectional-state-space-model-s3-truck"
         case (_,_,_):
             print("Unknown option")
             exit(1)
@@ -92,8 +99,3 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-
-    # Examples
-    #simulate(20000, 5, 1)
-    #simulate(2000, 5, 2)
-    #simulate(20000, 5, 3)
