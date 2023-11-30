@@ -41,13 +41,16 @@ class Server:
         """
         Stops all node timers
         """
-        for node in self.__nodes.keys():
-            self.__nodes[node].cancel()
-            self.__nodes[node] = None
+        for ip in self.__nodes.keys():
+            if self.__nodes[ip] is None:
+                continue
+            self.__nodes[ip].cancel()
+            self.__nodes[ip] = None
 
     def start_node_timer(self, ip):
         if ip in self.__nodes:
-            self.__nodes[ip].cancel()
+            if self.__nodes[ip] is not None:
+                self.__nodes[ip].cancel()
         self.__nodes[ip] = Timer(
             HEARTBEAT_TIMEOUT, self.__remove_node, args=[ip])
         self.__nodes[ip].start()

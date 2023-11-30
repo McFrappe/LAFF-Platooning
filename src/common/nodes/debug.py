@@ -76,6 +76,7 @@ class DebugController:
         msg += f" PID: {self.__pid},"
         msg += f" velocity: {self.__velocity}"
         self.__debug_publisher.publish(msg)
+        rospy.loginfo(msg)
 
     def cleanup(self):
         self.__steering_angle_subscriber.unregister()

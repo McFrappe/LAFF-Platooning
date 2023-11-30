@@ -15,7 +15,10 @@
 
     <param name="VEHICLE_ID" type="string" value="$(arg vehicle_id)" />
     <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="3.25" />
-    <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="3" />
+    <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="10" />
+    <param name="OBJECT_FOLLOWER_LARGE_ADJUST_THRESHOLD_PX" type="double" value="40" />
+    <param name="OBJECT_FOLLOWER_RESOLUTION_FINE_ADJUST_DIVIDER" type="double" value="0.8" />
+    <param name="OBJECT_FOLLOWER_RESOLUTION_LARGE_ADJUST_DIVIDER" type="double" value="4" />
 
     <!-- PID platooning controller -->
     <param name="K_PP" type="double" value="0.08" />
@@ -70,7 +73,7 @@
     <param name="PWM_FREQUENCY_MOTOR" type="int" value="500" />
     <param name="MAX_RIGHT_ANGLE" type="int" value="87" />
     <param name="MAX_LEFT_ANGLE" type="int" value="27" />
-    <param name="ZERO_ANGLE" type="int" value="57" />
+    <param name="ZERO_ANGLE" type="int" value="56" />
 
     <!-- Ultrasonic node -->
     <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />

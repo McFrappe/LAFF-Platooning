@@ -2,7 +2,7 @@
 import rospy
 import numpy as np
 
-from std_msgs.msg import Int32
+from std_msgs.msg import Int32, Bool
 from sensor_msgs.msg import RegionOfInterest
 from pixy2_msgs.msg import PixyData, PixyBlock, PixyResolution
 
@@ -19,9 +19,20 @@ class ObjectFollowerController:
             "OBJECT_FOLLOWER_BLOCKS_PER_UPDATE")
 
         self.__resolution_x = 315
+        self.__fine_adjust_divider = rospy.get_param(
+            "OBJECT_FOLLOWER_RESOLUTION_FINE_ADJUST_DIVIDER")
+        self.__large_adjust_divider = rospy.get_param(
+            "OBJECT_FOLLOWER_RESOLUTION_LARGE_ADJUST_DIVIDER")
+        self.__large_adjust_threshold = rospy.get_param(
+            "OBJECT_FOLLOWER_LARGE_ADJUST_THRESHOLD_PX")
         self.__detected_blocks: list[PixyBlock] = []
         self.__collected_blocks: list[PixyBlock] = []
         self.__collected_blocks_count = 0
+
+        self.__has_target_publisher = rospy.Publisher(
+            f"{self.__id}/has_target",
+            Bool,
+            queue_size=self.__message_queue_size)
 
         self.__steering_angle_publisher = rospy.Publisher(
             f"{self.__id}/steering_angle",
@@ -58,9 +69,8 @@ class ObjectFollowerController:
         avg_width = sum([b.roi.width for b in blocks]) / len(blocks)
         avg_x_offset = sum([b.roi.x_offset for b in blocks]) / len(blocks)
         center_pos = self.__resolution_x / 2
-        target_left_edge = int(center_pos - (avg_width / 2))
 
-        return avg_x_offset - target_left_edge
+        return avg_width, ((avg_x_offset + (avg_width / 2)) - center_pos)
 
     def __update(self, event):
         """
@@ -77,25 +87,34 @@ class ObjectFollowerController:
 
         # No blocks detected during the period, reset
         if len(self.__collected_blocks) == 0:
+            self.__has_target_publisher.publish(False)
             self.__steering_angle_publisher.publish(self.__zero)
             self.__collected_blocks_count = 0
             return
 
         new_angle = self.__zero
-        hoffset = self.__calculate_horizontal_offset(self.__collected_blocks)
+        avg_width, hoffset = self.__calculate_horizontal_offset(self.__collected_blocks)
+
+        if abs(hoffset) <= self.__large_adjust_threshold:
+            max_value = int(self.__resolution_x / self.__fine_adjust_divider)
+        else:
+            max_value = int(self.__resolution_x / self.__large_adjust_divider)
+
+        rospy.loginfo(f"hoffset: {hoffset}, avg_width: {avg_width}")
         if hoffset < 0:
             # Turn left
             new_angle = int(np.interp(
-                abs(hoffset),
-                [0, self.__resolution_x],
+                (self.__resolution_x / 2) - abs(hoffset),
+                [0, max_value],
                 [self.__zero, self.__max_left]))
         elif hoffset > 0:
             # Turn right
             new_angle = int(np.interp(
                 abs(hoffset),
-                [0, self.__resolution_x],
+                [0, max_value],
                 [self.__zero, self.__max_right]))
 
+        self.__has_target_publisher.publish(True)
         self.__steering_angle_publisher.publish(new_angle)
         self.__collected_blocks = []
         self.__collected_blocks_count = 0
