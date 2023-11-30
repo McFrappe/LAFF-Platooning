@@ -62,7 +62,7 @@
     <!-- Publisher periods -->
     <param name="DEBUG_PUBLISH_PERIOD" type="double" value="1" />
     <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
-    <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="0.02" />
+    <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="0.3" />
     <param name="OBJECT_FOLLOWER_PERIOD" type="double" value="0.0167" />
     <param name="PID_CONTROL_PERIOD" type="double" value="0.01" />
     <param name="MESSAGE_QUEUE_SIZE" type="int" value="10" />
