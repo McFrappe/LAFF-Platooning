@@ -100,7 +100,6 @@ class ObjectFollowerController:
         else:
             max_value = int(self.__resolution_x / self.__large_adjust_divider)
 
-        rospy.loginfo(f"hoffset: {hoffset}, avg_width: {avg_width}")
         if hoffset < 0:
             # Turn left
             new_angle = int(np.interp(

@@ -56,8 +56,6 @@ class DistanceController:
 
         distance = self.__average_distance / self.__readings_per_publish
         distance_m = distance / 100
-        rospy.loginfo(f"Distance: {distance:.2f} cm (avg. of {self.__readings_per_publish} samples)")
-
         self.distance_publisher.publish(self.create_range_message(distance_m))
 
         # Restore starting reading state
