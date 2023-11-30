@@ -20,17 +20,12 @@ class ESCController:
 
         rospy.Subscriber(f"{self.__id}/speed", Int32, self.__callback_speed)
         rospy.Timer(
-            rospy.Duration(10), self.__callback_calibration, oneshot=True)
-
-    def __callback_calibration(self, event):
-        self.__calibrated = True
+            rospy.Duration(10), self.__driver.stop_calibration, oneshot=True)
 
     def __callback_speed(self, msg: Int32):
         """
         Callback function for the speed.
         """
-        if not self.__calibrated:
-            return
         self.__driver.set_speed(msg.data)
 
     def stop(self):

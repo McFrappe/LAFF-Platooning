@@ -22,6 +22,7 @@ class ESCDriver:
         self.__idle = idle
         self.__max_forward = max_forward
         self.__max_reverse = max_reverse
+        self.__calibrated = False
         self.__setup_pins()
         self.__start_calibration()
 
@@ -41,10 +42,20 @@ class ESCDriver:
         """
         self.__pwm.ChangeDutyCycle(self.__idle)
 
+    def __stop_calibration(self) -> None:
+        """
+        Calibrate the ESC. This is done by setting the ESC to
+        the current speed for 10 seconds.
+        """
+        self.__calibrated = True
+
     def set_speed(self, speed: int) -> None:
         """
         Give a speed that the motor will try to reach.
         """
+        if not self.__calibrated:
+            return
+
         new_speed = max(self.__idle, min(speed, self.__max_forward))
         self.__pwm.ChangeDutyCycle(new_speed)
 

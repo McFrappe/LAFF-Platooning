@@ -3,7 +3,7 @@ class PID:
     def __init__(self, kp, ki, kd, dt: int, pid_min: float, pid_max: float):
         self.error = 0
         self.error_integral = 0
-        self.error_derivative = 0 
+        self.error_derivative = 0
         self.Kp = kp
         self.Ki = ki
         self.Kd = kd
@@ -19,4 +19,3 @@ class PID:
 
         u = self.Kp*error + self.Ki*self.error_integral + self.Kd*self.error_derivative
         return min(max(u, self.pid_min), self.pid_max)
-
