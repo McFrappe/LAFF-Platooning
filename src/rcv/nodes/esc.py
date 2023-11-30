@@ -21,7 +21,11 @@ class ESCController:
 
         rospy.Subscriber(f"{self.__id}/speed", Int32, self.__callback_speed)
         rospy.Timer(
-            rospy.Duration(10), self.__driver.stop_calibration, oneshot=True)
+            rospy.Duration(10), self.__callback_stop_calibration, oneshot=True)
+
+    def __callback_stop_calibration(self, event):
+        self.__driver.stop_calibration()
+        rospy.loginfo("Motor calibrated")
 
     def __callback_speed(self, msg: Int32):
         """
