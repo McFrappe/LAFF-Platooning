@@ -17,52 +17,40 @@ class ESCDriver:
         The ESC is connected to the electric motor och the RC vehicle.
         The ESC is used to control the elecric motor.
         """
-        self.pin  = out_pin
-        self.current_speed = idle
-        self.max_forward = max_forward
-        self.max_reverse = max_reverse
-        self.setup_pins()
+        self.__pin  = out_pin
+        self.__current_speed = idle
+        self.__idle = idle
+        self.__max_forward = max_forward
+        self.__max_reverse = max_reverse
+        self.__setup_pins()
+        self.__start_calibration()
 
-    def setup_pins(self) -> None:
+    def __setup_pins(self) -> None:
         """
-        Setup the pins for the IR array driver.
+        Setup the pins for the  array driver.
         """
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.pin, GPIO.OUT)
-        self.pwm = GPIO.PWM(self.pin, rospy.get_param("PWM_FREQUENCY_MOTOR"))
+        GPIO.setup(self.__pin, GPIO.OUT)
+        self.__pwm = GPIO.PWM(self.__pin, rospy.get_param("PWM_FREQUENCY_MOTOR"))
+        self.__pwm.start(0)
 
-        self.pwm.start(0) # Start with 0% duty cycle
-
-    def calibrate(self) -> None:
+    def __start_calibration(self) -> None:
         """
-        Calibrate the ESC. This is done by setting the ESC to the current speed for 10 seconds.
+        Calibrate the ESC. This is done by setting the ESC to
+        the current speed for 10 seconds.
         """
-        self.pwm.ChangeDutyCycle(self.current_speed)
-        time.sleep(10)
+        self.__pwm.ChangeDutyCycle(self.__idle)
 
     def set_speed(self, speed: int) -> None:
         """
         Give a speed that the motor will try to reach.
         """
-        self.current_speed = max(self.max_reverse, min(speed, self.max_forward))
-        self.pwm.ChangeDutyCycle(self.current_speed)
-
-    def get_speed(self) -> int:
-        """
-        Return current speed of the motor
-        """
-        return self.current_speed
-
-    def get_status(self):
-        """
-        Get hardware information from the motor
-        """
-        return {
-            'current_speed': self.current_speed,
-        }
+        new_speed = max(self.__idle, min(speed, self.__max_forward))
+        self.__pwm.ChangeDutyCycle(new_speed)
 
     def cleanup(self):
         """
         Cleanup the GPIO pins.
         """
+        self.set_speed(self.__idle)
         GPIO.cleanup()

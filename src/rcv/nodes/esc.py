@@ -10,34 +10,34 @@ class ESCController:
     Controller for the ESC.
      """
     def __init__(self):
-        self.id = rospy.get_param("VEHICLE_ID")
-        self.driver = ESCDriver(
+        self.__id = rospy.get_param("VEHICLE_ID")
+        self.__driver = ESCDriver(
             out_pin=rospy.get_param("MOTOR_PIN"))
 
-        self.speed = rospy.get_param("IDLE_MOTOR")
-        self.driver.calibrate()
-        self.setup_service()
+        self.__idle = rospy.get_param("IDLE_MOTOR")
+        self.__speed = self.__idle
+        self.__calibrated = False
 
-    def setup_service(self):
-        """
-        Setup the service for the ESC.
-        """
-        rospy.Subscriber(f"{self.id}/speed", Int32, self.callback_speed)
+        rospy.Subscriber(f"{self.__id}/speed", Int32, self.__callback_speed)
+        rospy.Timer(
+            rospy.Duration(10), self.__callback_calibration, oneshot=True)
 
-    def callback_speed(self, msg: Int32):
+    def __callback_calibration(self):
+        self.__calibrated = True
+
+    def __callback_speed(self, msg: Int32):
         """
         Callback function for the speed.
         """
-        self.speed = msg.data
-        self.driver.set_speed(self.speed)
-        #rospy.loginfo(f"Status of speed is {self.driver.get_status()}")
+        if not self.__calibrated:
+            return
+        self.__driver.set_speed(msg.data)
 
     def stop(self):
         """
         Stop the ESC.
         """
-        self.driver.set_speed(rospy.get_param("IDLE_MOTOR"))
-        self.driver.cleanup()
+        self.__driver.cleanup()
 
 if __name__ == "__main__":
     rospy.init_node("esc_node", anonymous=True)
