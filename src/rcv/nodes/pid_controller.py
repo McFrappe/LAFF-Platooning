@@ -103,10 +103,8 @@ class PIDController:
         speed_error = self.__reference_velocity - self.__current_velocity
         pwm_control_output = self.__pid_speed.update(speed_error)
         desired_pwm = self.__current_pwm + pwm_control_output
-        rospy.loginfo(f"\nidle: {self.__idle}\nbefore: {self.__current_pwm}")
-        self.__current_pwm = min(
-            max(desired_pwm, self.__idle), self.__max_forward)
-        rospy.loginfo(f"after: {self.__current_pwm}")
+        self.__current_pwm = int(min(
+            max(desired_pwm, self.__idle), self.__max_forward))
 
         self.speed_publisher.publish(self.__current_pwm)
         self.pid_publisher.publish(self.__reference_velocity)
