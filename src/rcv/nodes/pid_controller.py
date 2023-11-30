@@ -29,6 +29,7 @@ class PIDController:
 
         self.__velocity_min = rospy.get_param("VELOCITY_MIN")
         self.__velocity_max = rospy.get_param("VELOCITY_MAX")
+        self.__margin_in_m = rospy.get_param("PID_PLATOONING_MARGIN_M")
 
         self.__max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
         self.__max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
@@ -72,42 +73,41 @@ class PIDController:
             self.__callback_velocity,
             queue_size=self.__message_queue_size)
 
-
         rospy.Timer(rospy.Duration(self.__period), self.__perform_step)
 
-    def __callback_distance(self, data: Range):
+    def __callback_distance(self, msg: Range):
         """
         Callback for the distance subscriber.
         """
-        self.__current_distance = data.range
+        self.__current_distance = msg.range
 
-    def __callback_velocity(self, data: Float32):
+    def __callback_velocity(self, msg: Float32):
         """
         Callback for the velocity subscriber.
         """
-        self.__current_velocity = data.Float32 # FIXME: is this right?
+        self.__current_velocity = msg.data
 
     def __min_distance(self):
         speed_in_m_per_s = self.__current_velocity/3.6
-        margin_in_m = 0.2 # TODO: should be in vehicle.launch # TODO: should depend on speed and vehicle
-        self.min_distance = speed_in_m_per_s * self.__period *2 + margin_in_m 
+        # TODO: should depend on speed and vehicle
+        self.min_distance = speed_in_m_per_s * self.__period * 2 + self.__margin_in_m
         return self.min_distance
 
     def __perform_step(self, event):
         distance_error = self.__current_distance - self.__min_distance()
         platoon_control_output = self.__pid_platooning.update(distance_error)
         desired_velocity = self.__current_velocity+platoon_control_output
-        self.__reference_velocity = min(max(desired_velocity, self.__velocity_min), 
-                    self.__velocity_max)
+        self.__reference_velocity = min(
+            max(desired_velocity, self.__velocity_min), self.__velocity_max)
 
         speed_error = self.__reference_velocity - self.__current_velocity
         pwm_control_output = self.__pid_speed.update(speed_error)
-        desired_pwm = self.__current_pwm+pwm_control_output
-        self.__current_pwm = min(max(desired_pwm, self.__idle),
-                  self.__max_forward)
+        desired_pwm = self.__current_pwm + pwm_control_output
+        self.__current_pwm = min(
+            max(desired_pwm, self.__idle), self.__max_forward)
 
-        self.speed_publisher.publish(self.__current_pwm) # FIXME: is this correct
-        self.pid_publisher.publish(self.__reference_velocity) # FIXME: is this correct?
+        self.speed_publisher.publish(self.__current_pwm)
+        self.pid_publisher.publish(self.__reference_velocity)
 
     def stop(self):
         self.speed_publisher.publish(self.__idle)
