@@ -34,8 +34,10 @@ class ESCDriver:
         self.__pwm = GPIO.PWM(self.__pin, rospy.get_param("PWM_FREQUENCY_MOTOR"))
         self.__pwm.start(0)
 
-    def stop_calibration(self) -> None:
+    def start_calibration(self):
         self.__pwm.ChangeDutyCycle(self.__idle)
+
+    def stop_calibration(self) -> None:
         self.__calibrated = True
 
     def set_speed(self, speed: int) -> None:
