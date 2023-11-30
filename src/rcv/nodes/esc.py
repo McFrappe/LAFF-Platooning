@@ -17,6 +17,7 @@ class ESCController:
         self.__idle = rospy.get_param("IDLE_MOTOR")
         self.__speed = self.__idle
         self.__calibrated = False
+        self.__driver.start_calibration()
 
         rospy.Subscriber(f"{self.__id}/speed", Int32, self.__callback_speed)
         rospy.Timer(
