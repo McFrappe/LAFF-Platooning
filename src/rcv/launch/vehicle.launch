@@ -19,6 +19,7 @@
     <param name="OBJECT_FOLLOWER_LARGE_ADJUST_THRESHOLD_PX" type="double" value="40" />
     <param name="OBJECT_FOLLOWER_RESOLUTION_FINE_ADJUST_DIVIDER" type="double" value="0.8" />
     <param name="OBJECT_FOLLOWER_RESOLUTION_LARGE_ADJUST_DIVIDER" type="double" value="4" />
+    <param name="OBJECT_FOLLOWER_MAX_WIDTH_OF_RESOLUTION_MODIFIER" type="double" value="0.65" />
 
     <!-- PID platooning controller -->
     <param name="K_PP" type="double" value="0.08" />

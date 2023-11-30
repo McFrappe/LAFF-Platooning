@@ -25,6 +25,8 @@ class ObjectFollowerController:
             "OBJECT_FOLLOWER_RESOLUTION_LARGE_ADJUST_DIVIDER")
         self.__large_adjust_threshold = rospy.get_param(
             "OBJECT_FOLLOWER_LARGE_ADJUST_THRESHOLD_PX")
+        self.__max_width_of_resolution_modifier = rospy.get_param(
+            "OBJECT_FOLLOWER_MAX_WIDTH_OF_RESOLUTION_MODIFIER")
         self.__detected_blocks: list[PixyBlock] = []
         self.__collected_blocks: list[PixyBlock] = []
         self.__collected_blocks_count = 0
@@ -94,6 +96,10 @@ class ObjectFollowerController:
 
         new_angle = self.__zero
         avg_width, hoffset = self.__calculate_horizontal_offset(self.__collected_blocks)
+
+        if avg_width >= self.__max_width_of_resolution_modifier * self.__resolution_x:
+            self.__steering_angle_publisher.publish(self.__zero)
+            return
 
         if abs(hoffset) <= self.__large_adjust_threshold:
             max_value = int(self.__resolution_x / self.__fine_adjust_divider)
