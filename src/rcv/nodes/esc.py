@@ -22,7 +22,7 @@ class ESCController:
         rospy.Timer(
             rospy.Duration(10), self.__callback_calibration, oneshot=True)
 
-    def __callback_calibration(self):
+    def __callback_calibration(self, event):
         self.__calibrated = True
 
     def __callback_speed(self, msg: Int32):
