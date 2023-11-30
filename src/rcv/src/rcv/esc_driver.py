@@ -24,7 +24,6 @@ class ESCDriver:
         self.__max_reverse = max_reverse
         self.__calibrated = False
         self.__setup_pins()
-        self.__start_calibration()
 
     def __setup_pins(self) -> None:
         """
