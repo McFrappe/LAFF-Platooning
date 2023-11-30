@@ -3,22 +3,21 @@ import rospy
 import numpy as np
 
 from sensor_msgs.msg import Range
-from std_msgs.msg import Int32, Float32, Bool
+from std_msgs.msg import Int32, Float32
 
 from controller.pid import PID
 
 class PIDController:
     def __init__(self):
         self.__id = rospy.get_param("VEHICLE_ID")
-        self.__pid_min = rospy.get_param("PID_MIN")
-        self.__pid_max = rospy.get_param("PID_MAX")
-        self.__pid_reference = rospy.get_param("PID_REFERENCE")
-
         self.__pid = PID(
             rospy.get_param("K_P"),
             rospy.get_param("K_I"),
             rospy.get_param("K_D"),
-            self.__pid_reference)
+            rospy.get_param("PID_REFERENCE"))
+
+        self.__pid_min = rospy.get_param("PID_MIN")
+        self.__pid_max = rospy.get_param("PID_MAX")
 
         self.__max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
         self.__max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
@@ -27,7 +26,6 @@ class PIDController:
         self.__max_left = rospy.get_param("MAX_LEFT_ANGLE")
         self.__zero = rospy.get_param("ZERO_ANGLE")
 
-        self.__has_target = False
         self.__steering_angle = self.__zero
         self.__current_speed = self.__idle
         self.__current_distance = 0
@@ -55,12 +53,6 @@ class PIDController:
             self.__callback_distance,
             queue_size=self.__message_queue_size)
 
-        self.has_target_subscriber = rospy.Subscriber(
-            f"{self.__id}/has_target",
-            Bool,
-            self.__callback_has_target,
-            queue_size=self.__message_queue_size)
-
         rospy.Timer(rospy.Duration(rospy.get_param("PID_CONTROL_PERIOD")), self.__perform_step)
 
     def __callback_distance(self, data: Range):
@@ -69,25 +61,15 @@ class PIDController:
         """
         self.__current_distance = data.range
 
-    def __callback_has_target(self, data: Bool):
-        self.__has_target = data.data
-
     def __perform_step(self, event):
-        # updated_control = self.__pid.update(self.__current_distance)
-        # self.current_speed = int(np.interp(
-        #     updated_control,
-        #     [self.__pid_min, self.__pid_max],
-        #     [self.__idle, self.__max_forward]
-        # ))
-        # self.pid_publisher.publish(updated_control)
-        if not self.__has_target:
-            self.speed_publisher.publish(self.__idle)
-            return
-
-        if self.__current_distance <= self.__pid_reference:
-            self.speed_publisher.publish(self.__idle)
-        else:
-            self.speed_publisher.publish(self.__idle + rospy.get_param("TEST_SPEED_MOD"))
+        updated_control = self.__pid.update(self.__current_distance)
+        self.current_speed = int(np.interp(
+            updated_control,
+            [self.__pid_min, self.__pid_max],
+            [self.__idle, self.__max_forward]
+        ))
+        self.speed_publisher.publish(self.current_speed)
+        self.pid_publisher.publish(updated_control)
 
     def stop(self):
         self.speed_publisher.publish(self.__idle)
