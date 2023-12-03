@@ -15,7 +15,8 @@
 
     <param name="VEHICLE_ID" type="string" value="$(arg vehicle_id)" />
     <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="3.25" />
-    <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="1" />
+    <param name="VEHICLE_STOP_IF_NO_OBJECT_VISIBLE" type="bool" value="true" />
+    <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="3" />
     <param name="OBJECT_FOLLOWER_LARGE_ADJUST_THRESHOLD_PX" type="double" value="40" />
     <param name="OBJECT_FOLLOWER_RESOLUTION_FINE_ADJUST_DIVIDER" type="double" value="0.8" />
     <param name="OBJECT_FOLLOWER_RESOLUTION_LARGE_ADJUST_DIVIDER" type="double" value="4" />

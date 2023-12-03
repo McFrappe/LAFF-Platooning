@@ -30,6 +30,8 @@ class PIDController:
         self.__velocity_min = rospy.get_param("VELOCITY_MIN")
         self.__velocity_max = rospy.get_param("VELOCITY_MAX")
         self.__margin_in_m = rospy.get_param("PID_PLATOONING_MARGIN_M")
+        self.__stop_vehicle_if_no_target = rospy.get_param(
+            "VEHICLE_STOP_IF_NO_OBJECT_VISIBLE")
 
         self.__max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
         self.__max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
@@ -38,6 +40,7 @@ class PIDController:
         self.__max_left = rospy.get_param("MAX_LEFT_ANGLE")
         self.__zero = rospy.get_param("ZERO_ANGLE")
 
+        self.__has_target = False
         self.__esc_calibrated = False
         self.__steering_angle = self.__zero
         self.__current_velocity = 0
@@ -80,6 +83,12 @@ class PIDController:
             self.__callback_esc_calibrated,
             queue_size=self.__message_queue_size)
 
+        self.has_target_subscriber = rospy.Subscriber(
+            f"{self.__id}/has_target",
+            Bool,
+            self.__callback_has_target,
+            queue_size=self.__message_queue_size)
+
         rospy.Timer(rospy.Duration(self.__period), self.__perform_step)
 
     def __callback_esc_calibrated(self, msg: Bool):
@@ -100,6 +109,9 @@ class PIDController:
         """
         self.__current_velocity = msg.data
 
+    def __callback_has_target(self, msg: Bool):
+        self.__has_target = msg.data
+
     def __min_distance(self):
         speed_in_m_per_s = self.__current_velocity/3.6
         # TODO: should depend on speed and vehicle
@@ -110,17 +122,23 @@ class PIDController:
         if not self.__esc_calibrated:
             return
 
-        distance_error = self.__current_distance - self.__min_distance()
-        platoon_control_output = self.__pid_platooning.update(distance_error)
-        desired_velocity = self.__current_velocity+platoon_control_output
-        self.__reference_velocity = min(
-            max(desired_velocity, self.__velocity_min), self.__velocity_max)
+        # Only apply PID controller if we have an object to follow,
+        # and we have enabled the flag in the launch file.
+        if not self.__has_target and self.__stop_vehicle_if_no_target:
+            self.__current_pwm = self.__idle
+            self.__reference_velocity = 0
+        else:
+            distance_error = self.__current_distance - self.__min_distance()
+            platoon_control_output = self.__pid_platooning.update(distance_error)
+            desired_velocity = self.__current_velocity+platoon_control_output
+            self.__reference_velocity = min(
+                max(desired_velocity, self.__velocity_min), self.__velocity_max)
 
-        speed_error = self.__reference_velocity - self.__current_velocity
-        pwm_control_output = self.__pid_speed.update(speed_error)
-        desired_pwm = self.__current_pwm + pwm_control_output
-        self.__current_pwm = int(min(
-            max(desired_pwm, self.__idle), self.__max_forward))
+            speed_error = self.__reference_velocity - self.__current_velocity
+            pwm_control_output = self.__pid_speed.update(speed_error)
+            desired_pwm = self.__current_pwm + pwm_control_output
+            self.__current_pwm = int(min(
+                max(desired_pwm, self.__idle), self.__max_forward))
 
         self.speed_publisher.publish(self.__current_pwm)
         self.pid_publisher.publish(self.__reference_velocity)
