@@ -3,7 +3,7 @@ import rospy
 import numpy as np
 
 from sensor_msgs.msg import Range
-from std_msgs.msg import Int32, Float32
+from std_msgs.msg import Int32, Float32, Bool
 
 from controller.pid import PID
 
@@ -38,6 +38,7 @@ class PIDController:
         self.__max_left = rospy.get_param("MAX_LEFT_ANGLE")
         self.__zero = rospy.get_param("ZERO_ANGLE")
 
+        self.__esc_calibrated = False
         self.__steering_angle = self.__zero
         self.__current_velocity = 0
         self.__reference_velocity = 0
@@ -73,7 +74,19 @@ class PIDController:
             self.__callback_velocity,
             queue_size=self.__message_queue_size)
 
+        self.esc_calibrated_subscriber = rospy.Subscriber(
+            f"{self.__id}/esc_calibrated",
+            Bool,
+            self.__callback_esc_calibrated,
+            queue_size=self.__message_queue_size)
+
         rospy.Timer(rospy.Duration(self.__period), self.__perform_step)
+
+    def __callback_esc_calibrated(self, msg: Bool):
+        """
+        Callback for when the ESC has been calibrated.
+        """
+        self.__esc_calibrated = msg.data
 
     def __callback_distance(self, msg: Range):
         """
@@ -94,6 +107,9 @@ class PIDController:
         return self.min_distance
 
     def __perform_step(self, event):
+        if not self.__esc_calibrated:
+            return
+
         distance_error = self.__current_distance - self.__min_distance()
         platoon_control_output = self.__pid_platooning.update(distance_error)
         desired_velocity = self.__current_velocity+platoon_control_output

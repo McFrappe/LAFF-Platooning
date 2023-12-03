@@ -18,11 +18,9 @@ class ESCDriver:
         The ESC is used to control the elecric motor.
         """
         self.__pin  = out_pin
-        self.__current_speed = idle
         self.__idle = idle
         self.__max_forward = max_forward
         self.__max_reverse = max_reverse
-        self.__calibrated = False
         self.__setup_pins()
 
     def __setup_pins(self) -> None:
@@ -34,20 +32,11 @@ class ESCDriver:
         self.__pwm = GPIO.PWM(self.__pin, rospy.get_param("PWM_FREQUENCY_MOTOR"))
         self.__pwm.start(0)
 
-    def start_calibration(self):
-        self.__pwm.ChangeDutyCycle(self.__idle)
-
-    def stop_calibration(self) -> None:
-        self.__calibrated = True
-
     def set_speed(self, speed: int) -> None:
         """
         Give a speed that the motor will try to reach.
         """
-        if not self.__calibrated:
-            return
-
-        new_speed = max(self.__idle, min(speed, self.__max_forward))
+        new_speed = max(self.__max_reverse, min(speed, self.__max_forward))
         self.__pwm.ChangeDutyCycle(new_speed)
 
     def cleanup(self):
