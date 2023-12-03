@@ -6,14 +6,14 @@ except:
     import Mock.GPIO as GPIO
 
 class ServoDriver:
-    def __init__(self, 
-            out_pin: int, 
-            max_right=rospy.get_param("MAX_RIGHT_ANGLE"), 
-            max_left=rospy.get_param("MAX_LEFT_ANGLE"), 
+    def __init__(self,
+            out_pin: int,
+            max_right=rospy.get_param("MAX_RIGHT_ANGLE"),
+            max_left=rospy.get_param("MAX_LEFT_ANGLE"),
             zero=rospy.get_param("ZERO_ANGLE")) -> None:
         """
         Constructor for Servo driver.
-        The servo motor is connected to the steering rack on the RC vehicle. 
+        The servo motor is connected to the steering rack on the RC vehicle.
         The servo motor is used to steer the RC vehicle.
         """
         self.pin  = out_pin

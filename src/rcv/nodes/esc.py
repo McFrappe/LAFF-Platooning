@@ -23,26 +23,26 @@ class ESCController:
             Bool,
             queue_size=self.__message_queue_size)
 
-        rospy.Subscriber(f"{self.__id}/speed", Int32, self.__callback_speed)
+        rospy.Subscriber(f"{self.__id}/pwm", Int32, self.__callback_pwm)
         rospy.Timer(
             rospy.Duration(1), self.__callback_start_calibration, oneshot=True)
         rospy.Timer(
             rospy.Duration(2), self.__callback_stop_calibration, oneshot=True)
 
     def __callback_start_calibration(self, event):
-        self.__driver.set_speed(self.__idle)
+        self.__driver.set_pwm(self.__idle)
 
     def __callback_stop_calibration(self, event):
         self.__calibrated = True
         self.__calibrated_publisher.publish(True)
 
-    def __callback_speed(self, msg: Int32):
+    def __callback_pwm(self, msg: Int32):
         """
-        Callback function for the speed.
+        Callback function for the pwm.
         """
         if not self.__calibrated:
             return
-        self.__driver.set_speed(msg.data)
+        self.__driver.set_pwm(msg.data)
 
     def stop(self):
         """

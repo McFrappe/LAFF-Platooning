@@ -32,16 +32,16 @@ class ESCDriver:
         self.__pwm = GPIO.PWM(self.__pin, rospy.get_param("PWM_FREQUENCY_MOTOR"))
         self.__pwm.start(0)
 
-    def set_speed(self, speed: int) -> None:
+    def set_pwm(self, pwm: int) -> None:
         """
         Give a speed that the motor will try to reach.
         """
-        new_speed = max(self.__max_reverse, min(speed, self.__max_forward))
-        self.__pwm.ChangeDutyCycle(new_speed)
+        new_pwm = max(self.__max_reverse, min(pwm, self.__max_forward))
+        self.__pwm.ChangeDutyCycle(new_pwm)
 
     def cleanup(self):
         """
         Cleanup the GPIO pins.
         """
-        self.set_speed(self.__idle)
+        self.set_pwm(self.__idle)
         GPIO.cleanup()

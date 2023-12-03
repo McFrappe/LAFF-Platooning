@@ -12,7 +12,7 @@ class DebugController:
 
         self.__steering_angle = 0
         self.__distance = 0
-        self.__speed = 0
+        self.__pwm = 0
         self.__velocity = 0
         self.__pid = 0
 
@@ -33,10 +33,10 @@ class DebugController:
             self.__callback_distance,
             queue_size=self.__message_queue_size)
 
-        self.__speed_subscriber = rospy.Subscriber(
-            f"{self.__id}/speed",
+        self.__pwm_subscriber = rospy.Subscriber(
+            f"{self.__id}/pwm",
             Int32,
-            self.__callback_speed,
+            self.__callback_pwm,
             queue_size=self.__message_queue_size)
 
         self.__pid_subscriber = rospy.Subscriber(
@@ -59,8 +59,8 @@ class DebugController:
     def __callback_distance(self, msg: Range):
         self.__distance = msg.range
 
-    def __callback_speed(self, msg: Int32):
-        self.__speed = msg.data
+    def __callback_pwm(self, msg: Int32):
+        self.__pwm = msg.data
 
     def __callback_pid(self, msg: Float32):
         self.__pid = msg.data
@@ -72,7 +72,7 @@ class DebugController:
         msg = f"[{self.__id}]"
         msg += f" steering angle: {self.__steering_angle},"
         msg += f" distance: {self.__distance},"
-        msg += f" speed: {self.__speed},"
+        msg += f" pwm: {self.__pwm},"
         msg += f" PID: {self.__pid},"
         msg += f" velocity: {self.__velocity}"
         self.__debug_publisher.publish(msg)
@@ -81,7 +81,7 @@ class DebugController:
     def cleanup(self):
         self.__steering_angle_subscriber.unregister()
         self.__distance_subscriber.unregister()
-        self.__speed_subscriber.unregister()
+        self.__pwm_subscriber.unregister()
         self.__pid_subscriber.unregister()
         self.__velocity_subscriber.unregister()
 

@@ -19,7 +19,7 @@ class PIDController:
             rospy.get_param("PID_PMIN"),
             rospy.get_param("PID_PMAX"))
 
-        self.__pid_speed = PID(
+        self.__pid_pwm = PID(
             rospy.get_param("K_SP"),
             rospy.get_param("K_SI"),
             rospy.get_param("K_SD"),
@@ -50,12 +50,12 @@ class PIDController:
 
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
 
-        self.speed_publisher = rospy.Publisher( # TODO: change to pwm_speed
-            f"{self.__id}/speed",
+        self.pwm_publisher = rospy.Publisher(
+            f"{self.__id}/pwm",
             Int32,
             queue_size=self.__message_queue_size)
 
-        self.pid_publisher = rospy.Publisher( # TODO: change to velocity or something
+        self.pid_publisher = rospy.Publisher(
             f"{self.__id}/pid",
             Float32,
             queue_size=self.__message_queue_size)
@@ -135,16 +135,16 @@ class PIDController:
                 max(desired_velocity, self.__velocity_min), self.__velocity_max)
 
             speed_error = self.__reference_velocity - self.__current_velocity
-            pwm_control_output = self.__pid_speed.update(speed_error)
+            pwm_control_output = self.__pid_pwm.update(speed_error)
             desired_pwm = self.__current_pwm + pwm_control_output
             self.__current_pwm = int(min(
                 max(desired_pwm, self.__idle), self.__max_forward))
 
-        self.speed_publisher.publish(self.__current_pwm)
+        self.pwm_publisher.publish(self.__current_pwm)
         self.pid_publisher.publish(self.__reference_velocity)
 
     def stop(self):
-        self.speed_publisher.publish(self.__idle)
+        self.pwm_publisher.publish(self.__idle)
 
 if __name__ == "__main__":
     rospy.init_node("pid_controller_node", anonymous=True)
