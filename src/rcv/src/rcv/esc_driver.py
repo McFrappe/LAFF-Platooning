@@ -36,8 +36,7 @@ class ESCDriver:
         """
         Give a speed that the motor will try to reach.
         """
-        new_pwm = max(self.__max_reverse, min(pwm, self.__max_forward))
-        self.__pwm.ChangeDutyCycle(new_pwm)
+        self.__pwm.ChangeDutyCycle(pwm)
 
     def cleanup(self):
         """

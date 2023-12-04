@@ -131,12 +131,14 @@ class PIDController:
         else:
             distance_error = self.__current_distance - self.__min_distance()
             platoon_control_output = self.__pid_platooning.update(distance_error)
-            desired_velocity = self.__current_velocity+platoon_control_output
+            desired_velocity = self.__current_velocity + platoon_control_output
             self.__reference_velocity = min(
                 max(desired_velocity, self.__velocity_min), self.__velocity_max)
 
             speed_error = self.__reference_velocity - self.__current_velocity
             pwm_control_output = self.__pid_pwm.update(speed_error)
+            if self.__current_pwm == self.__idle:
+                self.__current_pwm = self.__min_forward
             desired_pwm = self.__current_pwm + pwm_control_output
             if desired_pwm < self.__min_forward:
                 self.__current_pwm = self.__idle
