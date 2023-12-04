@@ -7,20 +7,13 @@ except:
     import Mock.GPIO as GPIO
 
 class ESCDriver:
-    def __init__(self,
-            out_pin: int,
-            max_forward=rospy.get_param("MAX_FORWARD_MOTOR"),
-            max_reverse=rospy.get_param("MAX_REVERSE_MOTOR"),
-            idle=rospy.get_param("IDLE_MOTOR")) -> None:
+    def __init__(self, out_pin: int)
         """
         Constructor for ESC driver.
         The ESC is connected to the electric motor och the RC vehicle.
         The ESC is used to control the elecric motor.
         """
-        self.__pin  = out_pin
-        self.__idle = idle
-        self.__max_forward = max_forward
-        self.__max_reverse = max_reverse
+        self.__pin = out_pin
         self.__setup_pins()
 
     def __setup_pins(self) -> None:
@@ -37,10 +30,3 @@ class ESCDriver:
         Give a speed that the motor will try to reach.
         """
         self.__pwm.ChangeDutyCycle(pwm)
-
-    def cleanup(self):
-        """
-        Cleanup the GPIO pins.
-        """
-        self.set_pwm(self.__idle)
-        GPIO.cleanup()

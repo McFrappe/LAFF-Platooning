@@ -10,13 +10,16 @@ class ESCController:
     Controller for the ESC.
      """
     def __init__(self):
-        self.__driver = ESCDriver(
-            out_pin=rospy.get_param("MOTOR_PIN"))
-
         self.__id = rospy.get_param("VEHICLE_ID")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
+
         self.__idle = rospy.get_param("IDLE_MOTOR")
+        self.__min_forward = rospy.get_param("MIN_FORWARD_MOTOR")
+        self.__max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
+        self.__max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
         self.__calibrated = False
+
+        self.__driver = ESCDriver(rospy.get_param("MOTOR_PIN"))
 
         self.__calibrated_publisher = rospy.Publisher(
             f"{self.__id}/esc_calibrated",
@@ -55,7 +58,8 @@ class ESCController:
         """
         Stop the ESC.
         """
-        self.__driver.cleanup()
+        self.__driver.set_pwm(self.__idle)
+        GPIO.cleanup()
 
 if __name__ == "__main__":
     rospy.init_node("esc_node", anonymous=True)
