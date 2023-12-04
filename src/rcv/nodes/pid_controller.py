@@ -33,6 +33,7 @@ class PIDController:
         self.__stop_vehicle_if_no_target = rospy.get_param(
             "VEHICLE_STOP_IF_NO_OBJECT_VISIBLE")
 
+        self.__min_forward = rospy.get_param("MIN_FORWARD_MOTOR")
         self.__max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
         self.__max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
         self.__idle = rospy.get_param("IDLE_MOTOR")
@@ -137,8 +138,11 @@ class PIDController:
             speed_error = self.__reference_velocity - self.__current_velocity
             pwm_control_output = self.__pid_pwm.update(speed_error)
             desired_pwm = self.__current_pwm + pwm_control_output
-            self.__current_pwm = int(min(
-                max(desired_pwm, self.__idle), self.__max_forward))
+            if desired_pwm < self.__min_forward:
+                self.__current_pwm = self.__idle
+            else:
+                self.__current_pwm = int(min(
+                    max(desired_pwm, self.__min_forward), self.__max_forward))
 
         self.pwm_publisher.publish(self.__current_pwm)
         self.pid_publisher.publish(self.__reference_velocity)
