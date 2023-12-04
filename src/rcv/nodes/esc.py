@@ -28,9 +28,9 @@ class ESCController:
 
         rospy.Subscriber(f"{self.__id}/pwm", Int32, self.__callback_pwm)
         rospy.Timer(
-            rospy.Duration(10), self.__callback_start_calibration, oneshot=True)
+            rospy.Duration(1), self.__callback_start_calibration, oneshot=True)
         rospy.Timer(
-            rospy.Duration(15), self.__callback_broadcast_calibration, oneshot=True)
+            rospy.Duration(2), self.__callback_broadcast_calibration, oneshot=True)
 
     def __callback_start_calibration(self, event):
         self.__driver.set_pwm(self.__idle)
