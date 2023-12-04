@@ -1,10 +1,6 @@
 import rospy
 import time
-
-try:
-    import RPi.GPIO as GPIO
-except:
-    import Mock.GPIO as GPIO
+import pigpio
 
 class ESCDriver:
     def __init__(self, out_pin: int):
@@ -13,23 +9,24 @@ class ESCDriver:
         The ESC is connected to the electric motor och the RC vehicle.
         The ESC is used to control the elecric motor.
         """
-        self.__pin = out_pin
+        self.__pin = 13
+        self.__pi = pigpio.pi()
         self.__setup_pins()
 
     def __setup_pins(self) -> None:
         """
         Setup the pins for the  array driver.
         """
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.__pin, GPIO.OUT)
-        self.__pwm = GPIO.PWM(self.__pin, rospy.get_param("PWM_FREQUENCY_MOTOR"))
-        self.__pwm.start(0)
+        self.__pi.set_mode(self.__pin, pigpio.OUTPUT)
+        self.__pi.set_PWM_range(self.__pin, 100)
+        self.__pi.set_PWM_frequency(self.__pin, rospy.get_param("PWM_FREQUENCY_MOTOR"))
+        self.__pi.set_PWM_dutycycle(self.__pin, 0)
 
     def set_pwm(self, pwm: int) -> None:
         """
         Give a speed that the motor will try to reach.
         """
-        self.__pwm.ChangeDutyCycle(pwm)
+        self.__pi.set_PWM_dutycycle(self.__pin, pwm)
 
     def cleanup(self):
         GPIO.cleanup()
