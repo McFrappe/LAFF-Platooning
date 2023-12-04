@@ -7,7 +7,7 @@ except:
     import Mock.GPIO as GPIO
 
 class ESCDriver:
-    def __init__(self, out_pin: int)
+    def __init__(self, out_pin: int):
         """
         Constructor for ESC driver.
         The ESC is connected to the electric motor och the RC vehicle.
