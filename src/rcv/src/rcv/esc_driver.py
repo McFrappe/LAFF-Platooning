@@ -9,7 +9,7 @@ class ESCDriver:
         The ESC is connected to the electric motor och the RC vehicle.
         The ESC is used to control the elecric motor.
         """
-        self.__pin = 13
+        self.__pin = out_pin
         self.__pi = pigpio.pi()
         self.__setup_pins()
 

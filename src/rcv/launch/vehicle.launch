@@ -49,8 +49,8 @@
     <!-- GPIO for Ultrasonic -->
     <param name="ULTRASONIC_TRIGGER" type="int" value="29" />
     <param name="ULTRASONIC_ECHO" type="int" value="31" />
-    <!-- GPIO for motor (PWM1) -->
-    <param name="MOTOR_PIN" type="int" value="33" />
+    <!-- GPIO for motor (PWM1) NOT BOARD PIN, BUT BCM -->
+    <param name="MOTOR_PIN" type="int" value="13" />
     <!-- GPIO for servo motor (PWM0) -->
     <param name="SERVO_PIN" type="int" value="32" />
     <!-- GPIO for Reflective sensor -->
