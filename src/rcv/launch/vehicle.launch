@@ -39,8 +39,8 @@
     <param name="PID_PMAX" type="double" value="0.08" />
 
     <!-- Minimum and maximum PWM allowed from controller. -->
-    <param name="PID_SMIN" type="double" value="-1" />
-    <param name="PID_SMAX" type="double" value="1" />
+    <param name="PID_SMIN" type="double" value="-1000" />
+    <param name="PID_SMAX" type="double" value="1000" />
 
     <!-- Minimum and maximum velocity allowed. -->
     <param name="VELOCITY_MIN" type="int" value="0" />
@@ -65,14 +65,14 @@
     <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
     <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="0.3" />
     <param name="OBJECT_FOLLOWER_PERIOD" type="double" value="0.0167" />
-    <param name="PID_CONTROL_PERIOD" type="double" value="0.3" />
+    <param name="PID_CONTROL_PERIOD" type="double" value="0.01" />
     <param name="MESSAGE_QUEUE_SIZE" type="int" value="1" />
 
     <!-- Motor node -->
-    <param name="MAX_FORWARD_MOTOR" type="int" value="80" />
-    <param name="MIN_FORWARD_MOTOR" type="int" value="73" />
-    <param name="MAX_REVERSE_MOTOR" type="int" value="59" />
-    <param name="IDLE_MOTOR" type="int" value="66" />
+    <param name="MAX_FORWARD_MOTOR" type="int" value="750000" />
+    <param name="MIN_FORWARD_MOTOR" type="int" value="715000" />
+    <param name="MAX_REVERSE_MOTOR" type="int" value="600000" />
+    <param name="IDLE_MOTOR" type="int" value="660000" />
     <param name="PWM_FREQUENCY_MOTOR" type="int" value="500" />
     <param name="MAX_RIGHT_ANGLE" type="int" value="87" />
     <param name="MAX_LEFT_ANGLE" type="int" value="27" />
