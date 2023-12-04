@@ -28,16 +28,11 @@ class ESCController:
 
         rospy.Subscriber(f"{self.__id}/pwm", Int32, self.__callback_pwm)
         rospy.Timer(
-            rospy.Duration(1), self.__callback_start_calibration, oneshot=True)
+            rospy.Duration(10), self.__callback_start_calibration, oneshot=True)
         rospy.Timer(
-            rospy.Duration(6), self.__callback_stop_calibration, oneshot=True)
-        rospy.Timer(
-            rospy.Duration(11), self.__callback_broadcast_calibration, oneshot=True)
+            rospy.Duration(15), self.__callback_broadcast_calibration, oneshot=True)
 
     def __callback_start_calibration(self, event):
-        self.__driver.set_pwm(0)
-
-    def __callback_stop_calibration(self, event):
         self.__driver.set_pwm(self.__idle)
 
     def __callback_broadcast_calibration(self, event):
@@ -59,7 +54,7 @@ class ESCController:
         Stop the ESC.
         """
         self.__driver.set_pwm(self.__idle)
-        GPIO.cleanup()
+        self.__driver.cleanup()
 
 if __name__ == "__main__":
     rospy.init_node("esc_node", anonymous=True)

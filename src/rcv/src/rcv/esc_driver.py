@@ -30,3 +30,6 @@ class ESCDriver:
         Give a speed that the motor will try to reach.
         """
         self.__pwm.ChangeDutyCycle(pwm)
+
+    def cleanup(self):
+        GPIO.cleanup()
