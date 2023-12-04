@@ -69,10 +69,10 @@
     <param name="MESSAGE_QUEUE_SIZE" type="int" value="1" />
 
     <!-- Motor node -->
-    <param name="MAX_FORWARD_MOTOR" type="int" value="68" />
-    <param name="MIN_FORWARD_MOTOR" type="int" value="64" />
-    <param name="MAX_REVERSE_MOTOR" type="int" value="50" />
-    <param name="IDLE_MOTOR" type="int" value="57" />
+    <param name="MAX_FORWARD_MOTOR" type="int" value="80" />
+    <param name="MIN_FORWARD_MOTOR" type="int" value="73" />
+    <param name="MAX_REVERSE_MOTOR" type="int" value="59" />
+    <param name="IDLE_MOTOR" type="int" value="66" />
     <param name="PWM_FREQUENCY_MOTOR" type="int" value="500" />
     <param name="MAX_RIGHT_ANGLE" type="int" value="87" />
     <param name="MAX_LEFT_ANGLE" type="int" value="27" />
