@@ -26,7 +26,6 @@ class ESCDriver:
         """
         Give a speed that the motor will try to reach.
         """
-        rospy.loginfo(f"PWM: {pwm}, FREQ: {self.__pi.get_PWM_frequency(self.__pin)}, DC: {self.__pi.get_PWM_dutycycle(self.__pin)}")
         self.__pi.set_PWM_dutycycle(self.__pin, pwm)
 
     def cleanup(self):
