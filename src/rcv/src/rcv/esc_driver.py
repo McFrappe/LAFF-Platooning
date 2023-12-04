@@ -18,7 +18,6 @@ class ESCDriver:
         Setup the pins for the  array driver.
         """
         self.__pi.set_mode(self.__pin, pigpio.OUTPUT)
-        self.__pi.set_PWM_range(self.__pin, 100)
         self.__pi.set_PWM_frequency(self.__pin, rospy.get_param("PWM_FREQUENCY_MOTOR"))
         self.__pi.set_PWM_dutycycle(self.__pin, 0)
 
