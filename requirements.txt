@@ -3,3 +3,4 @@ Mock.GPIO
 simple-pid
 numpy
 linuxfd
+pigpio

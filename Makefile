@@ -14,11 +14,13 @@ install:
 	curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add
 	sudo apt update
 	sudo apt -y install ros-noetic-ros-base
-	sudo apt -y install python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential g++ libusb-1.0-0-dev libwiringpi-dev tightvncserver bluez
+	sudo apt -y install python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential g++ libusb-1.0-0-dev libwiringpi-dev tightvncserver bluez pigpio-tools python3-setuptools unzip
 	echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 	source ~/.bashrc
 	sudo rosdep init
 	rosdep update
+
+	cd /home/laff && wget https://github.com/joan2937/pigpio/archive/master.zip && unzip master.zip && cd pigpio-master && make && sudo make install
 
 	git clone https://github.com/naoki-mizuno/ds4drv --branch devel ~/ds4drv
 	cd ~/ds4drv && sudo python3 setup.py install && sudo cp udev/50-ds4drv.rules /etc/udev/rules.d/
@@ -32,9 +34,12 @@ install:
 	sudo udevadm control --reload-rules
 	sudo udevadm trigger
 
-	sudo cp ~/laff-platooning/orchestrator/laff.service /lib/systemd/system
+	sudo cp ~/laff-platooning/services/laff.service /lib/systemd/system
+	sudo cp ~/laff-platooning/services/pigpio.service /lib/systemd/system
 	sudo systemctl enable laff.service
+	sudo systemctl enable pigpio.service
 	sudo systemctl start laff.service
+	sudo systemctl start pigpio.service
 	sudo loginctl enable-linger laff
 
 	echo 'laff ALL=(ALL) NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo
