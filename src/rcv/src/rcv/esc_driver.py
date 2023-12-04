@@ -30,4 +30,4 @@ class ESCDriver:
         self.__pi.set_PWM_dutycycle(self.__pin, pwm)
 
     def cleanup(self):
-        GPIO.cleanup()
+        pigpio.stop()
