@@ -22,8 +22,11 @@ class VehicleBidirectionalStateSpace(Vehicle):
         h_p = 0.5
 
         # discrete time
-        r = np.array([100000,100000,100000]) # [r_{i-1}, r_{i}, r_{i+1}] 
+        r = np.array([200000,200000,200000]) # [r_{i-1}, r_{i}, r_{i+1}] 
+        #r = np.array([100000,100000,100000]) # [r_{i-1}, r_{i}, r_{i+1}] 
         m = np.array([6000,6000,6000]) # [m_{i-1}, m_{i}, m_{i+1}] 
+        #m = np.array([6000,6000,6000]) # [m_{i-1}, m_{i}, m_{i+1}] 
+        #a = np.array([0,300000,50000]) # [a_{i-1} (not used), a_{i}, a_{i+1}] 
         a = np.array([0,300000,50000]) # [a_{i-1} (not used), a_{i}, a_{i+1}] 
 
         self.mass = m[1]

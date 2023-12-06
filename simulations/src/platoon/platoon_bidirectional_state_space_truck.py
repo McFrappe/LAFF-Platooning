@@ -14,7 +14,7 @@ class VehicleLeaderTruckS1(Vehicle):
 
         self.leader_accelerating = True
         self.leader_initial_accelerating = True
-        self.mass = 1
+        self.mass = 6000
 
 
     def update_speed(self, tick, leader_speed, relative_position_infront, momentum_infront, momentum_behind, delta_infront, delta_behind):
@@ -32,7 +32,7 @@ class VehicleLeaderTruckS1(Vehicle):
         return self.speed
 
     def get_momentum(self):
-        return 0
+        return self.speed * self.mass
 
     def get_delta(self):
         return 0 # should never be called according to my calculations
@@ -105,7 +105,7 @@ class VehicleLeaderTruckS3(Vehicle):
 
         self.leader_accelerating = True
         self.leader_initial_accelerating = True
-        self.mass = 1
+        self.mass = 6000
 
     def update_speed(self, tick, leader_speed, relative_position_infront, momentum_infront, momentum_behind, delta_infront, delta_behind):
         if int(self.speed) == 60: # may fail?
@@ -123,7 +123,7 @@ class VehicleLeaderTruckS3(Vehicle):
         return self.speed
 
     def get_momentum(self):
-        return 0
+        return self.speed*self.mass
 
     def get_delta(self):
         return 0 # should never be called according to my calculations
