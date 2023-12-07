@@ -36,7 +36,7 @@ class ObjectFollowerController:
             setpoint=self.__pid_setpoint)
 
         self.__pid.sample_time = (
-            self.__update_period / self.__nr_blocks_to_collect)
+            self.__update_period / self.__nr_of_blocks_to_collect)
         self.__pid.output_limits = (self.__pid_min, self.__pid_max)
 
         self.__has_target_publisher = rospy.Publisher(
