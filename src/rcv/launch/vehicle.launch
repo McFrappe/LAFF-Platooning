@@ -12,7 +12,6 @@
     <!-- Object follower -->
     <param name="VEHICLE_STOP_IF_NO_OBJECT_VISIBLE" type="bool" value="false" />
     <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="1" />
-    <param name="OBJECT_FOLLOWER_MAX_WIDTH_OF_RESOLUTION_MODIFIER" type="double" value="0.65" />
     <param name="OBJECT_FOLLOWER_PID_KP" type="int" value="1" />
     <param name="OBJECT_FOLLOWER_PID_KI" type="int" value="0.1" />
     <param name="OBJECT_FOLLOWER_PID_KD" type="int" value="0.05" />

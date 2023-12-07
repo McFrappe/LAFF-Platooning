@@ -19,8 +19,6 @@ class ObjectFollowerController:
             "OBJECT_FOLLOWER_BLOCKS_PER_UPDATE")
 
         self.__resolution_x = 315
-        self.__max_width_of_resolution_modifier = rospy.get_param(
-            "OBJECT_FOLLOWER_MAX_WIDTH_OF_RESOLUTION_MODIFIER")
         self.__detected_blocks: list[PixyBlock] = []
         self.__collected_blocks: list[PixyBlock] = []
         self.__collected_blocks_count = 0
@@ -37,8 +35,8 @@ class ObjectFollowerController:
             self.__pid_kd,
             setpoint=self.__pid_setpoint)
 
-        # Use same sample time as the camera
-        self.__pid.sample_time = self.__update_period
+        self.__pid.sample_time = (
+            self.__update_period / self.__nr_blocks_to_collect)
         self.__pid.output_limits = (self.__pid_min, self.__pid_max)
 
         self.__has_target_publisher = rospy.Publisher(
@@ -99,18 +97,16 @@ class ObjectFollowerController:
 
         new_angle = self.__zero
         has_target = len(self.__collected_blocks) != 0
+
         # No blocks detected during the period, reset
         if has_target:
             avg_width, center_offset = self.__calculate_center_offset(
                 self.__collected_blocks)
-
-            # Only use PID if the object is not super close
-            if avg_width < self.__max_width_of_resolution_modifier * self.__resolution_x:
-                error = pid(center_offset)
-                new_angle = int(np.interp(
-                    error,
-                    [self.__pid_min, self.__pid_max],
-                    [self.__max_left, self.__max_right])
+            error = pid(center_offset)
+            new_angle = int(np.interp(
+                error,
+                [self.__pid_min, self.__pid_max],
+                [self.__max_left, self.__max_right])
 
         self.__has_target_publisher.publish(has_target)
         self.__steering_angle_publisher.publish(new_angle)
