@@ -12,12 +12,12 @@
     <!-- Object follower -->
     <param name="VEHICLE_STOP_IF_NO_OBJECT_VISIBLE" type="bool" value="false" />
     <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="1" />
-    <param name="OBJECT_FOLLOWER_PID_KP" type="double" value="1" />
-    <param name="OBJECT_FOLLOWER_PID_KI" type="double" value="0.1" />
-    <param name="OBJECT_FOLLOWER_PID_KD" type="double" value="0.05" />
+    <param name="OBJECT_FOLLOWER_PID_KP" type="double" value="2" />
+    <param name="OBJECT_FOLLOWER_PID_KI" type="double" value="0" />
+    <param name="OBJECT_FOLLOWER_PID_KD" type="double" value="0.025" />
     <param name="OBJECT_FOLLOWER_PID_SETPOINT" type="double" value="0" />
-    <param name="OBJECT_FOLLOWER_PID_MIN" type="double" value="-1" />
-    <param name="OBJECT_FOLLOWER_PID_MAX" type="double" value="1" />
+    <param name="OBJECT_FOLLOWER_PID_MIN" type="double" value="-200" />
+    <param name="OBJECT_FOLLOWER_PID_MAX" type="double" value="200" />
 
     <!-- PID platooning controller -->
     <param name="K_PP" type="double" value="1" />

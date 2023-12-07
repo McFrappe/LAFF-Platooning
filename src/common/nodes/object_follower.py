@@ -80,7 +80,7 @@ class ObjectFollowerController:
         avg_x_offset = sum([b.roi.x_offset for b in blocks]) / len(blocks)
         center_pos = self.__resolution_x / 2
 
-        return avg_width, ((avg_x_offset + (avg_width / 2)) - center_pos)
+        return avg_width, (avg_x_offset - center_pos)
 
     def __update(self, event):
         """
@@ -102,11 +102,11 @@ class ObjectFollowerController:
         if has_target:
             avg_width, center_offset = self.__calculate_center_offset(
                 self.__collected_blocks)
-            error = pid(center_offset)
+            error = self.__pid(center_offset)
             new_angle = int(np.interp(
                 error,
                 [self.__pid_min, self.__pid_max],
-                [self.__max_left, self.__max_right]))
+                [self.__max_right, self.__max_left]))
 
         self.__has_target_publisher.publish(has_target)
         self.__steering_angle_publisher.publish(new_angle)
