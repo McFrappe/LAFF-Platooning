@@ -1,0 +1,13 @@
+<launch>
+    <include file="$(find rcv)/launch/shared.launch" pass_all_args="true" />
+
+    <node name="joystick_controller_node" pkg="rcv" type="joystick_controller.py" respawn="true" />
+    <node name="ds4_controller_node" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true">
+        <!-- Hidraw backend does not work with DS4 -->
+        <param name="~backend" type="string" value="bluetooth" />
+        <param name="~use_standard_msgs" type="boolean" value="true" />
+    </node>
+
+    <!-- Publisher periods -->
+    <param name="JOYSTICK_CONTROL_PERIOD" type="double" value="0.1" />
+</launch>

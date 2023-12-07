@@ -14,6 +14,11 @@ This project will be carried out using a set of robotic cars that can be control
 
 ## Setup
 
+### Dependencies
+- rpi.gpio
+- rospy
+
+
 Get ROS in a docker container to run on a computer:
 
 ```zsh

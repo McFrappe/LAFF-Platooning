@@ -1,0 +1,13 @@
+[Unit]
+Description=LAFF Orchestrator Client
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+User=laff
+WorkingDirectory=/home/laff/laff-platooning
+ExecStart=/usr/bin/python3 -m orchestrator.client
+
+[Install]
+WantedBy=multi-user.target

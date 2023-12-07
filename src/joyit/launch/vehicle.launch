@@ -1,0 +1,57 @@
+<launch>
+    <node name="motor_node" pkg="joyit" type="motors.py" respawn="true" />
+    <node name="platooning_node" pkg="joyit" type="platooning.py" respawn="true" />
+    <node name="line_follower_node" pkg="common" type="line_follower.py" respawn="true" />
+    <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
+    <node name="ds4_controller" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true" />
+
+    <!-- Publisher periods -->
+    <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
+    <param name="RELATIVE_VELOCITY_PUBLISH_PERIOD" type="double" value="0.1" />
+    <param name="LINE_FOLLOWER_PUBLISH_PERIOD" type="double" value="0.1" />
+    <param name="PLATOONING_PERIOD" type="double" value="0.1" />
+
+    <!-- GPIO for Left motors -->
+    <param name="LEFT_MOTOR_ENA" type="int" value="33" />
+    <param name="LEFT_MOTOR_ENB" type="int" value="35" />
+    <param name="LEFT_MOTOR_IN1" type="int" value="37" />
+    <param name="LEFT_MOTOR_IN2" type="int" value="40" />
+    <param name="LEFT_MOTOR_IN3" type="int" value="38" />
+    <param name="LEFT_MOTOR_IN4" type="int" value="36" />
+
+    <!-- GPIO for Right motors -->
+    <param name="RIGHT_MOTOR_ENA" type="int" value="32" />
+    <param name="RIGHT_MOTOR_ENB" type="int" value="12" />
+    <param name="RIGHT_MOTOR_IN1" type="int" value="11" />
+    <param name="RIGHT_MOTOR_IN2" type="int" value="13" />
+    <param name="RIGHT_MOTOR_IN3" type="int" value="16" />
+    <param name="RIGHT_MOTOR_IN4" type="int" value="18" />
+
+    <!-- GPIO for IR -->
+    <param name="IR_LEFT" type="int" value="19" />
+    <param name="IR_MIDDLE" type="int" value="21" />
+    <param name="IR_RIGHT" type="int" value="23" />
+
+    <!-- GPIO for Ultrasonic -->
+    <param name="ULTRASONIC_TRIGGER" type="int" value="29" />
+    <param name="ULTRASONIC_ECHO" type="int" value="31" />
+
+    <!-- Misc -->
+    <param name="MAX_SPEED_MOTOR" type="int" value="100" />
+    <param name="PWM_FREQUENCY" type="int" value="50" />
+    <param name="DIR_FORWARD" type="int" value="1" />
+    <param name="DIR_BACKWARD" type="int" value="-1" />
+    <param name="TURN_LEFT" type="int" value="1" />
+    <param name="TURN_RIGHT" type="int" value="-1" />
+    <param name="NO_TURN" type="int" value="0" />
+
+    <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />
+    <param name="MESSAGE_QUEUE_SIZE" type="int" value="10" />
+
+    <param name="ULTRASONIC_SAMPLES_PER_PUBLISH" type="int" value="5" />
+    <param name="ULTRASONIC_PING_PULSE_LENGTH" type="double" value="0.00001" />
+    <param name="ULTRASONIC_TIMEOUT_LENGTH" type="double" value="0.05" />
+    <param name="ULTRASONIC_MIN_RANGE" type="int" value="3" />
+    <param name="ULTRASONIC_MAX_RANGE" type="int" value="400" />
+    <param name="ULTRASONIC_FOV" type="double" value="0.26179938779915" />
+</launch>

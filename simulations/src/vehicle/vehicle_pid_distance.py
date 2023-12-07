@@ -13,7 +13,7 @@ class VehiclePidDistance(Vehicle):
     # This should be called each tick
     def update_speed(self, tick):
         distance_from_min = (self.distance - self.min_distance)
-        integral = sum(self.array_distance_errors) # 1 tick * (sum of all distance_errors) gives area
+        integral = self.error_integral
         derivative = self.error_derivative
 
         if True: #derivative >= 0: # accelerating

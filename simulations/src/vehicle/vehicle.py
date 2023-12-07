@@ -16,6 +16,7 @@ class Vehicle:
         self.array_distance_errors = [0]*self.array_distance_errors_len
         self.array_distance_errors_pointer = 0
         self.error_derivative = 0
+        self.error_integral = 0
         self.prev_distance_error = 0
         self.min_distance = 9  # how close the vehicles should be to each other, depends on speed. (m)
 
@@ -43,7 +44,8 @@ class Vehicle:
             self.distance = travel_distance_of_vehicle_in_front - self.travel_distance
 
         error = self.distance - self.min_distance
-        self.error_derivative = error - self.prev_distance_error # ms
+        self.error_derivative = (error - self.prev_distance_error)/tick_in_s
+        self.error_integral += error*tick_in_s
         self.prev_distance_error = error
 
         self.array_distance_errors[self.array_distance_errors_pointer] = error
@@ -54,7 +56,7 @@ class Vehicle:
 
     def update_min_distance(self):
         speed_in_m_per_s = self.speed/3.6
-        margin_in_m = 0.2
+        margin_in_m = 0.2 # TODO: should depend on speed and vehicle?
         self.min_distance = speed_in_m_per_s * tick_in_s *2 + margin_in_m 
         return self.min_distance
 
