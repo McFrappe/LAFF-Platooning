@@ -1,67 +1,54 @@
 <launch>
-    <arg name="vehicle_id" default="vehicle" />
+    <include file="$(find rcv)/launch/shared.launch" pass_all_args="true" />
 
-    <node name="esc_node" pkg="rcv" type="esc.py" respawn="true" />
-    <node name="servo_node" pkg="rcv" type="servo.py" respawn="true" />
     <node name="pid_controller" pkg="rcv" type="pid_controller.py" respawn="true" />
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
-    <node name="velocity_node" pkg="common" type="velocity.py" respawn="true" />
     <node name="object_follower_node" pkg="common" type="object_follower.py" respawn="true" />
-    <node name="debug_node" pkg="common" type="debug.py" respawn="true" />
     <node name="pixy2_node" pkg="pixy2_node" type="pixy2_node" respawn="true">
         <param name="rate" value="60.0"/>
         <param name="use_servos" value="false"/>
     </node>
 
-    <param name="VEHICLE_ID" type="string" value="$(arg vehicle_id)" />
-    <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="3.25" />
-    <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="10" />
+    <!-- Object follower -->
+    <param name="VEHICLE_STOP_IF_NO_OBJECT_VISIBLE" type="bool" value="false" />
+    <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="3" />
     <param name="OBJECT_FOLLOWER_LARGE_ADJUST_THRESHOLD_PX" type="double" value="40" />
     <param name="OBJECT_FOLLOWER_RESOLUTION_FINE_ADJUST_DIVIDER" type="double" value="0.8" />
     <param name="OBJECT_FOLLOWER_RESOLUTION_LARGE_ADJUST_DIVIDER" type="double" value="4" />
+    <param name="OBJECT_FOLLOWER_MAX_WIDTH_OF_RESOLUTION_MODIFIER" type="double" value="0.65" />
 
-    <!-- PID controller -->
-    <param name="K_P" type="double" value="0.00294" />
-    <param name="K_I" type="double" value="0.01" />
-    <param name="K_D" type="double" value="3" />
-    <param name="PID_REFERENCE" type="double" value="30" />
+    <!-- PID platooning controller -->
+    <param name="K_PP" type="double" value="1" />
+    <param name="K_PI" type="double" value="0" />
+    <param name="K_PD" type="double" value="12" />
+    <param name="PID_PLATOONING_MARGIN_M" type="double" value="0.2" />
 
-    <!-- Affects how the output of the PID controller maps to changes in speed. -->
-    <!-- If the output is below or equal to PID_MIN, the speed will be 0, and if the output -->
-    <!-- is above or equal to PID_MAX, the speed will be set to the max speed. -->
-    <param name="PID_MIN" type="int" value="-1" />
-    <param name="PID_MAX" type="int" value="1" />
+    <!-- PID speed controller -->
+    <param name="K_SP" type="double" value="1" />
+    <param name="K_SI" type="double" value="20" />
+    <param name="K_SD" type="double" value="0.002" />
+    <param name="PID_SPEED_REFERENCE" type="double" value="10" />
 
-    <!-- GPIO for Ultrasonic -->
+    <!-- Minimum and maximum velocity for each step. -->
+    <param name="PID_PMIN" type="double" value="-9" />
+    <param name="PID_PMAX" type="double" value="5" />
+
+    <!-- Minimum and maximum PWM allowed from controller. -->
+    <param name="PID_SMIN" type="double" value="-20000" />
+    <param name="PID_SMAX" type="double" value="20000" />
+
+    <!-- Minimum and maximum velocity allowed. -->
+    <param name="VELOCITY_MIN" type="int" value="0" />
+    <param name="VELOCITY_MAX" type="int" value="8" />
+
+    <!-- GPIOs BOARD -->
     <param name="ULTRASONIC_TRIGGER" type="int" value="29" />
     <param name="ULTRASONIC_ECHO" type="int" value="31" />
-    <!-- GPIO for motor (PWM1) -->
-    <param name="MOTOR_PIN" type="int" value="33" />
-    <!-- GPIO for servo motor (PWM0) -->
-    <param name="SERVO_PIN" type="int" value="32" />
-    <!-- GPIO for Reflective sensor -->
-    <param name="REFLECTIVE_SENSOR_PIN" type="int" value="37" />
-
-    <!-- Velocity node -->
-    <param name="VELOCITY_WAIT_TIME_US" type="double" value="2000" />
-    <param name="VELOCITY_REFLECTANCE_THRESHOLD_US" type="int" value="200" />
 
     <!-- Publisher periods -->
-    <param name="DEBUG_PUBLISH_PERIOD" type="double" value="1" />
-    <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
-    <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="0.5" />
+    <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.01" />
     <param name="OBJECT_FOLLOWER_PERIOD" type="double" value="0.0167" />
-    <param name="PID_CONTROL_PERIOD" type="double" value="0.1" />
-    <param name="MESSAGE_QUEUE_SIZE" type="int" value="10" />
-
-    <!-- Motor node -->
-    <param name="MAX_FORWARD_MOTOR" type="int" value="88" />
-    <param name="MAX_REVERSE_MOTOR" type="int" value="10" />
-    <param name="IDLE_MOTOR" type="int" value="57" />
-    <param name="PWM_FREQUENCY_MOTOR" type="int" value="500" />
-    <param name="MAX_RIGHT_ANGLE" type="int" value="87" />
-    <param name="MAX_LEFT_ANGLE" type="int" value="27" />
-    <param name="ZERO_ANGLE" type="int" value="56" />
+    <param name="PID_CONTROL_PERIOD" type="double" value="0.4" />
 
     <!-- Ultrasonic node -->
     <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />
@@ -71,4 +58,8 @@
     <param name="ULTRASONIC_MIN_RANGE" type="int" value="3" />
     <param name="ULTRASONIC_MAX_RANGE" type="int" value="400" />
     <param name="ULTRASONIC_FOV" type="double" value="0.26179938779915" />
+
+    <!-- Motor node. -->
+    <!-- For some reason, this value is different for follower vehicles -->
+    <param name="IDLE_MOTOR" type="int" value="660000" />
 </launch>

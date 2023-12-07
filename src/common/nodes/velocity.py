@@ -60,7 +60,6 @@ class VelocityController:
             velocity_ms = ((self.wheel_radius_cm / 100) * 2 * np.pi) / mean_diff
 
         velocity_kmh = velocity_ms * 3.6
-        rospy.loginfo(f"Velocity (km/h): {velocity_kmh}")
         self.publisher.publish(Float32(data=velocity_kmh))
         self.readings = []
 

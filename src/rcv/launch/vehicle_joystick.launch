@@ -1,63 +1,13 @@
 <launch>
-    <arg name="vehicle_id" default="vehicle"/>
+    <include file="$(find rcv)/launch/shared.launch" pass_all_args="true" />
 
-    <node name="esc_node" pkg="rcv" type="esc.py" respawn="true" />
-    <node name="servo_node" pkg="rcv" type="servo.py" respawn="true" />
     <node name="joystick_controller_node" pkg="rcv" type="joystick_controller.py" respawn="true" />
-    <node name="velocity_node" pkg="common" type="velocity.py" respawn="true" />
-    <node name="debug_node" pkg="common" type="debug.py" respawn="true" />
     <node name="ds4_controller_node" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true">
         <!-- Hidraw backend does not work with DS4 -->
         <param name="~backend" type="string" value="bluetooth" />
         <param name="~use_standard_msgs" type="boolean" value="true" />
     </node>
 
-    <param name="VEHICLE_ID" type="string" value="$(arg vehicle_id)" />
-    <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="3.25" />
-
-    <!-- PID controller -->
-    <param name="K_P" type="double" value="0.00294" />
-    <param name="K_I" type="double" value="0.01" />
-    <param name="K_D" type="double" value="3" />
-    <param name="PID_REFERENCE" type="double" value="10" />
-
-    <!-- Affects how the output of the PID controller maps to changes in speed. -->
-    <!-- If the output is below or equal to PID_MIN, the speed will be 0, and if the output -->
-    <!-- is above or equal to PID_MAX, the speed will be set to the max speed. -->
-    <param name="PID_MIN" type="int" value="-1" />
-    <param name="PID_MAX" type="int" value="1" />
-
-    <!-- GPIO for motor (PWM1) -->
-    <param name="MOTOR_PIN" type="int" value="33" />
-    <!-- GPIO for servo motor (PWM0) -->
-    <param name="SERVO_PIN" type="int" value="32" />
-    <!-- GPIO for Reflective sensor -->
-    <param name="REFLECTIVE_SENSOR_PIN" type="int" value="37" />
-
-    <!-- Velocity -->
-    <param name="VELOCITY_WAIT_TIME_US" type="double" value="3000" />
-    <param name="VELOCITY_REFLECTANCE_THRESHOLD_US" type="int" value="500" />
-
     <!-- Publisher periods -->
-    <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="1" />
-    <param name="DEBUG_PUBLISH_PERIOD" type="double" value="1" />
     <param name="JOYSTICK_CONTROL_PERIOD" type="double" value="0.1" />
-    <param name="MESSAGE_QUEUE_SIZE" type="int" value="10" />
-
-    <!-- Motor node -->
-    <param name="MAX_FORWARD_MOTOR" type="int" value="88" />
-    <param name="MAX_REVERSE_MOTOR" type="int" value="50" />
-    <param name="IDLE_MOTOR" type="int" value="57" />
-    <param name="PWM_FREQUENCY_MOTOR" type="int" value="500" />
-    <param name="MAX_RIGHT_ANGLE" type="int" value="87" />
-    <param name="MAX_LEFT_ANGLE" type="int" value="27" />
-    <param name="ZERO_ANGLE" type="int" value="56" />
-
-    <param name="ULTRASONIC_SAMPLES_PER_PUBLISH" type="int" value="5" />
-    <param name="ULTRASONIC_PING_PULSE_LENGTH" type="double" value="0.00001" />
-    <param name="ULTRASONIC_TIMEOUT_LENGTH" type="double" value="0.05" />
-    <param name="ULTRASONIC_MIN_RANGE" type="int" value="3" />
-    <param name="ULTRASONIC_MAX_RANGE" type="int" value="400" />
-    <param name="ULTRASONIC_FOV" type="double" value="0.26179938779915" />
->>>>>>> debug
 </launch>

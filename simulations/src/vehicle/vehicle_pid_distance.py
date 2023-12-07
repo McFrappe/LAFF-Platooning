@@ -13,15 +13,14 @@ class VehiclePidDistance(Vehicle):
     # This should be called each tick
     def update_speed(self, tick):
         distance_from_min = (self.distance - self.min_distance)
-        integral = sum(self.array_distance_errors) # 1 tick * (sum of all distance_errors) gives area
+        integral = self.error_integral
         derivative = self.error_derivative
 
-        if derivative >= 0: # accelerating
+        if True: #derivative >= 0: # accelerating
             max_acceleration  = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
-            kp = max_acceleration/15
-            #ki = 0.002
-            ki = 0.1
-            kd = 4
+            kp = max_acceleration
+            ki = 0.3
+            kd = 2
         elif distance_from_min < 0.2: # safety margin break with maximum deceleration
             max_deceleration = self.vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
             kp = max_deceleration*100
