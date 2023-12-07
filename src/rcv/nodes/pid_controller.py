@@ -146,7 +146,6 @@ class PIDController:
         self.pwm_publisher.publish(self.__current_pwm)
         self.pid_publisher.publish(self.__reference_velocity)
 
-
     def stop(self):
         self.pwm_publisher.publish(self.__idle)
 

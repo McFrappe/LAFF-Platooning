@@ -58,4 +58,8 @@
     <param name="ULTRASONIC_MIN_RANGE" type="int" value="3" />
     <param name="ULTRASONIC_MAX_RANGE" type="int" value="400" />
     <param name="ULTRASONIC_FOV" type="double" value="0.26179938779915" />
+
+    <!-- Motor node. -->
+    <!-- For some reason, this value is different for follower vehicles -->
+    <param name="IDLE_MOTOR" type="int" value="660000" />
 </launch>
