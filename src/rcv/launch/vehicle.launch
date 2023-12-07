@@ -1,5 +1,5 @@
 <launch>
-    <include file="$(find rcv)/launch/shared.launch"/>
+    <include file="$(find rcv)/launch/shared.launch" pass_all_args="true" />
 
     <node name="pid_controller" pkg="rcv" type="pid_controller.py" respawn="true" />
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />

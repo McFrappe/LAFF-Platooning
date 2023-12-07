@@ -1,5 +1,5 @@
 <launch>
-    <include file="$(find rcv)/launch/shared.launch"/>
+    <include file="$(find rcv)/launch/shared.launch" pass_all_args="true" />
 
     <node name="joystick_controller_node" pkg="rcv" type="joystick_controller.py" respawn="true" />
     <node name="ds4_controller_node" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true">
