@@ -18,9 +18,9 @@
     <param name="OBJECT_FOLLOWER_MAX_WIDTH_OF_RESOLUTION_MODIFIER" type="double" value="0.65" />
 
     <!-- PID platooning controller -->
-    <param name="K_PP" type="double" value="0.08" />
-    <param name="K_PI" type="double" value="0.3" />
-    <param name="K_PD" type="double" value="2" />
+    <param name="K_PP" type="double" value="1" />
+    <param name="K_PI" type="double" value="0" />
+    <param name="K_PD" type="double" value="12" />
     <param name="PID_PLATOONING_MARGIN_M" type="double" value="0.2" />
 
     <!-- PID speed controller -->
@@ -30,25 +30,25 @@
     <param name="PID_SPEED_REFERENCE" type="double" value="10" />
 
     <!-- Minimum and maximum velocity for each step. -->
-    <param name="PID_PMIN" type="double" value="-0.3" />
-    <param name="PID_PMAX" type="double" value="0.08" />
+    <param name="PID_PMIN" type="double" value="-9" />
+    <param name="PID_PMAX" type="double" value="5" />
 
     <!-- Minimum and maximum PWM allowed from controller. -->
-    <param name="PID_SMIN" type="double" value="-1000" />
-    <param name="PID_SMAX" type="double" value="1000" />
+    <param name="PID_SMIN" type="double" value="-20000" />
+    <param name="PID_SMAX" type="double" value="20000" />
 
     <!-- Minimum and maximum velocity allowed. -->
     <param name="VELOCITY_MIN" type="int" value="0" />
-    <param name="VELOCITY_MAX" type="int" value="30" />
+    <param name="VELOCITY_MAX" type="int" value="8" />
 
     <!-- GPIOs BOARD -->
     <param name="ULTRASONIC_TRIGGER" type="int" value="29" />
     <param name="ULTRASONIC_ECHO" type="int" value="31" />
 
     <!-- Publisher periods -->
-    <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
+    <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.01" />
     <param name="OBJECT_FOLLOWER_PERIOD" type="double" value="0.0167" />
-    <param name="PID_CONTROL_PERIOD" type="double" value="0.01" />
+    <param name="PID_CONTROL_PERIOD" type="double" value="0.4" />
 
     <!-- Ultrasonic node -->
     <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />

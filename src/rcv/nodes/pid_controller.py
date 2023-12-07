@@ -135,19 +135,17 @@ class PIDController:
             self.__reference_velocity = min(
                 max(desired_velocity, self.__velocity_min), self.__velocity_max)
 
-            speed_error = self.__reference_velocity - self.__current_velocity
-            pwm_control_output = self.__pid_pwm.update(speed_error)
-            if self.__current_pwm == self.__idle:
-                self.__current_pwm = self.__min_forward
-            desired_pwm = self.__current_pwm + pwm_control_output
-            if desired_pwm < self.__min_forward:
-                self.__current_pwm = self.__idle
+            if self.__reference_velocity < 0.1:
+                desired_pwm = self.__idle
             else:
-                self.__current_pwm = int(min(
-                    max(desired_pwm, self.__min_forward), self.__max_forward))
+                desired_pwm = 1851.9 * self.__reference_velocity + 708888
+
+            self.__current_pwm = int(min(
+                max(desired_pwm, self.__idle), self.__max_forward))
 
         self.pwm_publisher.publish(self.__current_pwm)
         self.pid_publisher.publish(self.__reference_velocity)
+
 
     def stop(self):
         self.pwm_publisher.publish(self.__idle)
