@@ -106,7 +106,7 @@ class ObjectFollowerController:
             new_angle = int(np.interp(
                 error,
                 [self.__pid_min, self.__pid_max],
-                [self.__max_left, self.__max_right])
+                [self.__max_left, self.__max_right]))
 
         self.__has_target_publisher.publish(has_target)
         self.__steering_angle_publisher.publish(new_angle)
