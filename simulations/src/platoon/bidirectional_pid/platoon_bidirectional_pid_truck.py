@@ -1,4 +1,4 @@
-from src.platoon.platoon_bidirectional import PlatoonBidirectional
+from src.platoon.bidirectional_pid.platoon_bidirectional_pid import PlatoonBidirectional
 from src.vehicle.vehicle_bidirectional import VehicleBidirectional
 from src.vehicle.vehicle_specs import truck
 from src.vehicle.vehicle import Vehicle
