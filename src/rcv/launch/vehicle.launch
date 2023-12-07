@@ -46,15 +46,14 @@
     <param name="VELOCITY_MIN" type="int" value="0" />
     <param name="VELOCITY_MAX" type="int" value="30" />
 
-    <!-- GPIO for Ultrasonic -->
+    <!-- GPIOs BOARD -->
     <param name="ULTRASONIC_TRIGGER" type="int" value="29" />
     <param name="ULTRASONIC_ECHO" type="int" value="31" />
-    <!-- GPIO for motor (PWM1) NOT BOARD PIN, BUT BCM -->
-    <param name="MOTOR_PIN" type="int" value="13" />
-    <!-- GPIO for servo motor (PWM0) -->
-    <param name="SERVO_PIN" type="int" value="32" />
-    <!-- GPIO for Reflective sensor -->
     <param name="REFLECTIVE_SENSOR_PIN" type="int" value="37" />
+
+    <!-- GPIOs BCM (i.e. the number after GPIO) -->
+    <param name="SERVO_PIN" type="int" value="12" />
+    <param name="MOTOR_PIN" type="int" value="13" />
 
     <!-- Velocity node -->
     <param name="VELOCITY_WAIT_TIME_US" type="double" value="2000" />
@@ -74,9 +73,9 @@
     <param name="MAX_REVERSE_MOTOR" type="int" value="600000" />
     <param name="IDLE_MOTOR" type="int" value="660000" />
     <param name="PWM_FREQUENCY_MOTOR" type="int" value="500" />
-    <param name="MAX_RIGHT_ANGLE" type="int" value="87" />
-    <param name="MAX_LEFT_ANGLE" type="int" value="27" />
-    <param name="ZERO_ANGLE" type="int" value="56" />
+    <param name="MAX_RIGHT_ANGLE" type="int" value="870000" />
+    <param name="MAX_LEFT_ANGLE" type="int" value="270000" />
+    <param name="ZERO_ANGLE" type="int" value="560000" />
 
     <!-- Ultrasonic node -->
     <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />

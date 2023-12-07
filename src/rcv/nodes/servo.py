@@ -3,41 +3,40 @@ import rospy
 
 from std_msgs.msg import Int32
 
-from rcv.servo_driver import ServoDriver
+from common.pwm_driver import PWMDriver
 
 class ServoController:
     """
     Controller for the servo.
     """
-
     def __init__(self):
-        self.id = rospy.get_param("VEHICLE_ID")
-        self.driver = ServoDriver(
-            out_pin=rospy.get_param("SERVO_PIN"))
+        self.__id = rospy.get_param("VEHICLE_ID")
+        self.__driver = PWMDriver(
+            rospy.get_param("SERVO_PIN"),
+            rospy.get_param("PWM_FREQUENCY_MOTOR"))
 
-        self.angle = rospy.get_param("ZERO_ANGLE")
-        self.setup_service()
+        self.__zero = rospy.get_param("ZERO_ANGLE")
+        self.__max_right = rospy.get_param("MAX_RIGHT_ANGLE")
+        self.__max_left = rospy.get_param("MAX_LEFT_ANGLE")
 
-    def setup_service(self):
-        """
-        Setup the service for the servo steering.
-        """
-        rospy.Subscriber(f"{self.id}/steering_angle", Int32, self.callback_steering_angle)
+        rospy.Subscriber(
+            f"{self.__id}/steering_angle",
+            Int32,
+            self.__callback_steering_angle)
 
-    def callback_steering_angle(self, msg: Int32):
+    def __callback_steering_angle(self, msg: Int32):
         """
         Callback function for the steering angle.
         """
-        self.angle = msg.data
-        self.driver.set_angle(self.angle)
-        #rospy.loginfo(f"Status of steering angle is {self.driver.get_status()}")
+        new_angle = max(self.__max_left, min(msg.data, self.__max_right))
+        self.__driver.set_pwm(new_angle)
 
     def stop(self):
         """
         Stop the servo.
         """
-        self.driver.set_angle(rospy.get_param("ZERO_ANGLE"))
-        self.driver.cleanup()
+        self.__driver.set_pwm(self.__zero)
+        self.__driver.cleanup()
 
 if __name__ == "__main__":
     rospy.init_node("servo_node", anonymous=True)

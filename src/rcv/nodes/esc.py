@@ -3,7 +3,7 @@ import rospy
 
 from std_msgs.msg import Int32, Bool
 
-from rcv.esc_driver import ESCDriver
+from common.pwm_driver import PWMDriver
 
 class ESCController:
     """
@@ -19,7 +19,9 @@ class ESCController:
         self.__max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
         self.__calibrated = False
 
-        self.__driver = ESCDriver(rospy.get_param("MOTOR_PIN"))
+        self.__driver = PWMDriver(
+            rospy.get_param("MOTOR_PIN"),
+            rospy.get_param("PWM_FREQUENCY_MOTOR"))
 
         self.__calibrated_publisher = rospy.Publisher(
             f"{self.__id}/esc_calibrated",
@@ -28,9 +30,13 @@ class ESCController:
 
         rospy.Subscriber(f"{self.__id}/pwm", Int32, self.__callback_pwm)
         rospy.Timer(
-            rospy.Duration(1), self.__callback_start_calibration, oneshot=True)
+            rospy.Duration(1),
+            self.__callback_start_calibration,
+            oneshot=True)
         rospy.Timer(
-            rospy.Duration(2), self.__callback_broadcast_calibration, oneshot=True)
+            rospy.Duration(2),
+            self.__callback_broadcast_calibration,
+            oneshot=True)
 
     def __callback_start_calibration(self, event):
         self.__driver.set_pwm(self.__idle)
