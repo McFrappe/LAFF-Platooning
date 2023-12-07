@@ -115,9 +115,7 @@ class PIDController:
 
     def __min_distance(self):
         speed_in_m_per_s = self.__current_velocity/3.6
-        # TODO: should depend on speed and vehicle
-        self.min_distance = speed_in_m_per_s * self.__period * 2 + self.__margin_in_m
-        return self.min_distance
+        return speed_in_m_per_s * self.__period * 2 + self.__margin_in_m
 
     def __perform_step(self, event):
         if not self.__esc_calibrated:
@@ -131,14 +129,7 @@ class PIDController:
         else:
             distance_error = self.__current_distance - self.__min_distance()
             platoon_control_output = self.__pid_platooning.update(distance_error)
-            desired_velocity = self.__current_velocity + platoon_control_output
-            self.__reference_velocity = min(
-                max(desired_velocity, self.__velocity_min), self.__velocity_max)
-
-            if self.__reference_velocity < 0.1:
-                desired_pwm = self.__idle
-            else:
-                desired_pwm = 1851.9 * self.__reference_velocity + 708888
+            desired_pwm = self.__current_pwm + platoon_control_output * 10000
 
             self.__current_pwm = int(min(
                 max(desired_pwm, self.__idle), self.__max_forward))
