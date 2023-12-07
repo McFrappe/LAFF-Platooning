@@ -18,10 +18,11 @@ class VehiclePidDistance(Vehicle):
 
         if True: #derivative >= 0: # accelerating
             max_acceleration  = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
-            kp = max_acceleration/15
+            #kp = max_acceleration/15
+            kp = 1#max_acceleration/15
             #ki = 0.002
             ki = 0#.1
-            kd = 4
+            kd = 16
         elif distance_from_min < 0.2: # safety margin break with maximum deceleration
             max_deceleration = self.vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
             kp = max_deceleration*100

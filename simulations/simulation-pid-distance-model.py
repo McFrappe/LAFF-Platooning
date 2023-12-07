@@ -1,6 +1,6 @@
 import sys, getopt
 from src.platoon.platoon_bidirectional_pid_truck import PlatoonBidirectionalPidTruckS3, PlatoonBidirectionalPidTruckS1, PlatoonBidirectionalPidTruckS2
-from src.platoon.platoon_bidirectional_state_space_truck import PlatoonBidirectionalStateSpaceTruckS1, PlatoonBidirectionalStateSpaceTruckS3
+from src.platoon.platoon_bidirectional_state_space_truck import PlatoonBidirectionalStateSpaceTruckS1, PlatoonBidirectionalStateSpaceTruckS2, PlatoonBidirectionalStateSpaceTruckS3
 from src.platoon.platoon_bidirectional_mpc_truck import PlatoonBidirectionalMpcTruckS1, PlatoonBidirectionalMpcTruckS3
 from src.platoon.platoon_pid_distance_truck import PlatoonPidDistanceTruckS1, PlatoonPidDistanceTruckS2, PlatoonPidDistanceTruckS3, PlatoonPidDistanceTruckS4
 from src.platoon.platoon_pid_distance_rc_vehicle import PlatoonPidDistanceRcVehicleS1, PlatoonPidDistanceRcVehicleS2, PlatoonPidDistanceRcVehicleS3
@@ -42,6 +42,9 @@ def simulate(num_tick, num_vehicles, scenario, type, model):
         case (1,1,3):
             p = PlatoonBidirectionalStateSpaceTruckS1(num_vehicles)
             suffix = "bidirectional-state-space-model-s1-truck"
+        case (2,1,3):
+            p = PlatoonBidirectionalStateSpaceTruckS2(num_vehicles)
+            suffix = "bidirectional-state-space-model-s2-truck"
         case (3,1,3):
             p = PlatoonBidirectionalStateSpaceTruckS3(num_vehicles)
             suffix = "bidirectional-state-space-model-s3-truck"
