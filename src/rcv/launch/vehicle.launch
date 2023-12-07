@@ -1,20 +1,15 @@
 <launch>
-    <arg name="vehicle_id" default="vehicle" />
+    <include file="$(find rcv)/launch/shared.launch"/>
 
-    <node name="esc_node" pkg="rcv" type="esc.py" respawn="true" />
-    <node name="servo_node" pkg="rcv" type="servo.py" respawn="true" />
     <node name="pid_controller" pkg="rcv" type="pid_controller.py" respawn="true" />
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
-    <node name="velocity_node" pkg="common" type="velocity.py" respawn="true" />
     <node name="object_follower_node" pkg="common" type="object_follower.py" respawn="true" />
-    <node name="debug_node" pkg="common" type="debug.py" respawn="true" />
     <node name="pixy2_node" pkg="pixy2_node" type="pixy2_node" respawn="true">
         <param name="rate" value="60.0"/>
         <param name="use_servos" value="false"/>
     </node>
 
-    <param name="VEHICLE_ID" type="string" value="$(arg vehicle_id)" />
-    <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="3.25" />
+    <!-- Object follower -->
     <param name="VEHICLE_STOP_IF_NO_OBJECT_VISIBLE" type="bool" value="false" />
     <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="3" />
     <param name="OBJECT_FOLLOWER_LARGE_ADJUST_THRESHOLD_PX" type="double" value="40" />
@@ -49,33 +44,11 @@
     <!-- GPIOs BOARD -->
     <param name="ULTRASONIC_TRIGGER" type="int" value="29" />
     <param name="ULTRASONIC_ECHO" type="int" value="31" />
-    <param name="REFLECTIVE_SENSOR_PIN" type="int" value="37" />
-
-    <!-- GPIOs BCM (i.e. the number after GPIO) -->
-    <param name="SERVO_PIN" type="int" value="12" />
-    <param name="MOTOR_PIN" type="int" value="13" />
-
-    <!-- Velocity node -->
-    <param name="VELOCITY_WAIT_TIME_US" type="double" value="2000" />
-    <param name="VELOCITY_REFLECTANCE_THRESHOLD_US" type="int" value="200" />
 
     <!-- Publisher periods -->
-    <param name="DEBUG_PUBLISH_PERIOD" type="double" value="0.3" />
     <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.02" />
-    <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="0.3" />
     <param name="OBJECT_FOLLOWER_PERIOD" type="double" value="0.0167" />
     <param name="PID_CONTROL_PERIOD" type="double" value="0.01" />
-    <param name="MESSAGE_QUEUE_SIZE" type="int" value="1" />
-
-    <!-- Motor node -->
-    <param name="MAX_FORWARD_MOTOR" type="int" value="750000" />
-    <param name="MIN_FORWARD_MOTOR" type="int" value="715000" />
-    <param name="MAX_REVERSE_MOTOR" type="int" value="600000" />
-    <param name="IDLE_MOTOR" type="int" value="660000" />
-    <param name="PWM_FREQUENCY_MOTOR" type="int" value="500" />
-    <param name="MAX_RIGHT_ANGLE" type="int" value="870000" />
-    <param name="MAX_LEFT_ANGLE" type="int" value="270000" />
-    <param name="ZERO_ANGLE" type="int" value="560000" />
 
     <!-- Ultrasonic node -->
     <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />
