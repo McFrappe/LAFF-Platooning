@@ -2,10 +2,10 @@
     <arg name="vehicle_id" default="vehicle"/>
 
     <!-- Common nodes -->
-    <node name="esc_node" pkg="rcv" type="esc.py" respawn="true" />
-    <node name="servo_node" pkg="rcv" type="servo.py" respawn="true" />
-    <node name="velocity_node" pkg="common" type="velocity.py" respawn="true" />
-    <node name="debug_node" pkg="common" type="debug.py" respawn="true" />
+    <node name="$(eval vehicle_id + '-esc_node')" pkg="rcv" type="esc.py" respawn="true" />
+    <node name="$(eval vehicle_id + '-servo_node')" pkg="rcv" type="servo.py" respawn="true" />
+    <node name="$(eval vehicle_id + '-velocity_node')" pkg="common" type="velocity.py" respawn="true" />
+    <node name="$(eval vehicle_id + '-debug_node')" pkg="common" type="debug.py" respawn="true" />
 
     <param name="VEHICLE_ID" type="string" value="$(arg vehicle_id)" />
     <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="3.25" />
