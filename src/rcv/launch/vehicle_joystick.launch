@@ -12,7 +12,7 @@
     <param name="JOYSTICK_CONTROL_PERIOD" type="double" value="0.1" />
 
     <!-- Motor node -->
-    <param name="MAX_FORWARD_MOTOR" type="int" value="770000" />
+    <param name="MAX_FORWARD_MOTOR" type="int" value="780000" />
     <param name="MIN_FORWARD_MOTOR" type="int" value="715000" />
     <param name="MAX_RIGHT_ANGLE" type="int" value="780000" />
     <param name="MAX_LEFT_ANGLE" type="int" value="360000" />

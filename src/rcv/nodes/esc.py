@@ -33,10 +33,12 @@ class ESCController:
             rospy.Duration(1),
             self.__callback_start_calibration,
             oneshot=True)
+
+        # Continuously broadcast calibrated to ensure that every node
+        # receives it.
         rospy.Timer(
-            rospy.Duration(2),
-            self.__callback_broadcast_calibration,
-            oneshot=True)
+            rospy.Duration(3),
+            self.__callback_broadcast_calibration)
 
     def __callback_start_calibration(self, event):
         self.__driver.set_pwm(self.__idle)
