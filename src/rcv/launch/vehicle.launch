@@ -5,12 +5,13 @@
     <node name="distance_node" pkg="common" type="distance.py" respawn="true" />
     <node name="object_follower_node" pkg="common" type="object_follower.py" respawn="true" />
     <node name="pixy2_node" pkg="pixy2_node" type="pixy2_node" respawn="true">
-        <param name="rate" value="60.0"/>
-        <param name="use_servos" value="false"/>
+        <param name="rate" value="60.0" />
+        <param name="use_servos" value="false" />
+        <param name="enable_lamp" value="true" />
     </node>
 
     <!-- Object follower -->
-    <param name="VEHICLE_STOP_IF_NO_OBJECT_VISIBLE" type="bool" value="false" />
+    <param name="VEHICLE_STOP_IF_NO_OBJECT_VISIBLE" type="bool" value="true" />
     <param name="OBJECT_FOLLOWER_BLOCKS_PER_UPDATE" type="int" value="1" />
     <param name="OBJECT_FOLLOWER_PID_KP" type="double" value="2" />
     <param name="OBJECT_FOLLOWER_PID_KI" type="double" value="0" />
@@ -20,9 +21,9 @@
     <param name="OBJECT_FOLLOWER_PID_MAX" type="double" value="200" />
 
     <!-- PID platooning controller -->
-    <param name="K_PP" type="double" value="1" />
+    <param name="K_PP" type="double" value="5000" />
     <param name="K_PI" type="double" value="0" />
-    <param name="K_PD" type="double" value="4" />
+    <param name="K_PD" type="double" value="20000" />
     <param name="PID_PLATOONING_MARGIN_M" type="double" value="0.2" />
 
     <!-- PID speed controller -->
@@ -50,7 +51,7 @@
     <!-- Publisher periods -->
     <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.01" />
     <param name="OBJECT_FOLLOWER_PERIOD" type="double" value="0.0167" />
-    <param name="PID_CONTROL_PERIOD" type="double" value="0.1" />
+    <param name="PID_CONTROL_PERIOD" type="double" value="0.01" />
 
     <!-- Ultrasonic node -->
     <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />

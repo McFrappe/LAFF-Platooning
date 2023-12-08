@@ -44,9 +44,9 @@ class PIDController:
         self.__has_target = False
         self.__esc_calibrated = False
         self.__steering_angle = self.__zero
-        self.__current_velocity = 0
-        self.__reference_velocity = 0
+        self.__desired_pwm = self.__idle
         self.__current_pwm = self.__idle
+        self.__current_velocity = 0
         self.__current_distance = 0
 
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
@@ -125,17 +125,22 @@ class PIDController:
         # and we have enabled the flag in the launch file.
         if not self.__has_target and self.__stop_vehicle_if_no_target:
             self.__current_pwm = self.__idle
-            self.__reference_velocity = 0
         else:
             distance_error = self.__current_distance - self.__min_distance()
             platoon_control_output = self.__pid_platooning.update(distance_error)
-            desired_pwm = self.__current_pwm + platoon_control_output * 10000
+
+            if platoon_control_output <= 0:
+                self.__desired_pwm = self.__max_reverse
+            else:
+                self.__desired_pwm = max(
+                    self.__desired_pwm + platoon_control_output,
+                    self.__min_forward)
 
             self.__current_pwm = int(min(
-                max(desired_pwm, self.__idle), self.__max_forward))
+                max(self.__desired_pwm, self.__max_reverse), self.__max_forward))
 
         self.pwm_publisher.publish(self.__current_pwm)
-        self.pid_publisher.publish(self.__reference_velocity)
+        self.pid_publisher.publish(self.__desired_pwm)
 
     def stop(self):
         self.pwm_publisher.publish(self.__idle)
