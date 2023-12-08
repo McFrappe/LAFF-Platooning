@@ -1,59 +1,55 @@
 import sys, getopt
-from src.platoon.bidirectional_pid.platoon_bidirectional_pid_truck import PlatoonBidirectionalPidTruckS3, PlatoonBidirectionalPidTruckS1, PlatoonBidirectionalPidTruckS2
-from src.platoon.bidirectional_state_space.platoon_bidirectional_state_space_truck import PlatoonBidirectionalStateSpaceTruckS1, PlatoonBidirectionalStateSpaceTruckS2, PlatoonBidirectionalStateSpaceTruckS3
-from src.platoon.bidirectional_mpc.platoon_bidirectional_mpc_truck import PlatoonBidirectionalMpcTruckS1, PlatoonBidirectionalMpcTruckS3
-from src.platoon.distance_pid.platoon_pid_distance_truck import PlatoonPidDistanceTruckS1, PlatoonPidDistanceTruckS2, PlatoonPidDistanceTruckS3, PlatoonPidDistanceTruckS4
-from src.platoon.distance_pid.platoon_pid_distance_rc_vehicle import PlatoonPidDistanceRcVehicleS1, PlatoonPidDistanceRcVehicleS2, PlatoonPidDistanceRcVehicleS3
+from src.platoon.platoon_bidirectional_pid import PlatoonBidirectionalPidS3, PlatoonBidirectionalPidS1, PlatoonBidirectionalPidS2
+from src.platoon.platoon_bidirectional_state_space import PlatoonBidirectionalStateSpaceS1, PlatoonBidirectionalStateSpaceS2, PlatoonBidirectionalStateSpaceS3
+from src.platoon.platoon_pid_distance import PlatoonPidDistanceS1, PlatoonPidDistanceS2, PlatoonPidDistanceS3, PlatoonPidDistanceS4
 from src.common.plot import plot_speed, plot_travel_distance, plot_distances, plot_position
+from src.vehicle.vehicle_specs import truck, kit_car, rc_car
 
 
 def simulate(num_tick, num_vehicles, scenario, type, model):
     match (scenario, type, model):
         case (1,1,1):
-            p = PlatoonPidDistanceTruckS1(num_vehicles)
+            p = PlatoonPidDistanceS1(num_vehicles, truck)
             suffix = "pid-distance-model-s1-truck"
         case (2,1,1):
-            p = PlatoonPidDistanceTruckS2(num_vehicles)
+            p = PlatoonPidDistanceS2(num_vehicles, truck)
             suffix = "pid-distance-model-s2-truck"
         case (3,1,1):
-            p = PlatoonPidDistanceTruckS3(num_vehicles)
+            p = PlatoonPidDistanceS3(num_vehicles, truck)
             suffix = "pid-distance-model-s3-truck"
         case (4,1,1):
-            p = PlatoonPidDistanceTruckS4(num_vehicles)
+            p = PlatoonPidDistanceS4(num_vehicles, truck)
             suffix = "pid-distance-model-s4-truck"
         case (1,3,1):
-            p = PlatoonPidDistanceRcVehicleS1(num_vehicles)
+            p = PlatoonPidDistanceS1(num_vehicles, rc_car)
             suffix = "pid-distance-model-s1-rc-vehicle"
         case (2,3,1):
-            p = PlatoonPidDistanceRcVehicleS2(num_vehicles)
+            p = PlatoonPidDistanceS2(num_vehicles, rc_car)
             suffix = "pid-distance-model-s2-rc-vehicle"
         case (3,3,1):
-            p = PlatoonPidDistanceRcVehicleS3(num_vehicles)
+            p = PlatoonPidDistanceS3(num_vehicles, rc_car)
             suffix = "pid-distance-model-s3-rc-vehicle"
         case (1,1,2):
-            p = PlatoonBidirectionalPidTruckS1(num_vehicles)
+            p = PlatoonBidirectionalPidS1(num_vehicles, truck)
             suffix = "bidirectional-pid-model-s1-truck"
         case (2,1,2):
-            p = PlatoonBidirectionalPidTruckS2(num_vehicles)
+            p = PlatoonBidirectionalPidS2(num_vehicles, truck)
             suffix = "bidirectional-pid-model-s2-truck"
         case (3,1,2):
-            p = PlatoonBidirectionalPidTruckS3(num_vehicles)
+            p = PlatoonBidirectionalPidS3(num_vehicles, truck)
             suffix = "bidirectional-pid-model-s3-truck"
         case (1,1,3):
-            p = PlatoonBidirectionalStateSpaceTruckS1(num_vehicles)
+            p = PlatoonBidirectionalStateSpaceS1(num_vehicles, truck)
             suffix = "bidirectional-state-space-model-s1-truck"
         case (2,1,3):
-            p = PlatoonBidirectionalStateSpaceTruckS2(num_vehicles)
+            p = PlatoonBidirectionalStateSpaceS2(num_vehicles, truck)
             suffix = "bidirectional-state-space-model-s2-truck"
         case (3,1,3):
-            p = PlatoonBidirectionalStateSpaceTruckS3(num_vehicles)
+            p = PlatoonBidirectionalStateSpaceS3(num_vehicles, truck)
             suffix = "bidirectional-state-space-model-s3-truck"
-        case (1,1,4):
-            p = PlatoonBidirectionalMpcTruckS3(num_vehicles)
-            suffix = "bidirectional-mpc-model-s1-truck"
-        case (3,1,4):
-            p = PlatoonBidirectionalMpcTruckS3(num_vehicles)
-            suffix = "bidirectional-mpc-model-s3-truck"
+        case (1,3,3):
+            p = PlatoonBidirectionalStateSpaceS1(num_vehicles, rc_car)
+            suffix = "bidirectional-state-space-model-s1-rc-vehicle"
         case (_,_,_):
             print("Unknown option")
             exit(1)
