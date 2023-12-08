@@ -46,8 +46,10 @@ class PIDController:
         self.__steering_angle = self.__zero
         self.__desired_pwm = self.__idle
         self.__current_pwm = self.__idle
-        self.__current_velocity = 0
         self.__current_distance = 0
+        self.__current_velocity = 0
+        self.__current_leader_velocity = 0
+        self.__is_leader = self.__id == "vehicle_0"
 
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
 
@@ -71,6 +73,13 @@ class PIDController:
             Range,
             self.__callback_distance,
             queue_size=self.__message_queue_size)
+
+        if self.__is_leader:
+            self.leader_velocity_subscriber = rospy.Subscriber(
+                "/vehicle_0/velocity",
+                Float32,
+                self.__callback_leader_velocity,
+                queue_size=self.__message_queue_size)
 
         self.velocity_subscriber = rospy.Subscriber(
             f"{self.__id}/velocity",
@@ -109,6 +118,13 @@ class PIDController:
         Callback for the velocity subscriber.
         """
         self.__current_velocity = msg.data
+
+    def __callback_leader_velocity(self, msg: Float32):
+        """
+        Callback for the leader velocity subscriber.
+        """
+        rospy.loginfo(f"Leader velocity: {msg.data}")
+        self.__current_leader_velocity = msg.data
 
     def __callback_has_target(self, msg: Bool):
         self.__has_target = msg.data
