@@ -17,7 +17,7 @@ install:
 	sudo apt -y install python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential g++ libusb-1.0-0-dev libwiringpi-dev tightvncserver bluez pigpio-tools python3-setuptools unzip
 	echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 	source ~/.bashrc
-	sudo rosdep init
+	sudo rosdep init || echo "Already initialized"
 	rosdep update
 
 	cd /home/laff && wget https://github.com/joan2937/pigpio/archive/master.zip && unzip master.zip && cd pigpio-master && make && sudo make install
