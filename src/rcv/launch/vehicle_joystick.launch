@@ -1,8 +1,8 @@
 <launch>
     <include file="$(find rcv)/launch/shared.launch" pass_all_args="true" />
 
-    <node name="$(eval vehicle_id + '-joystick_controller_node')" pkg="rcv" type="joystick_controller.py" respawn="true" />
-    <node name="$(eval vehicle_id + '-ds4_controller_node')" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true">
+    <node name="$(eval vehicle_id + '_joystick_controller_node')" pkg="rcv" type="joystick_controller.py" respawn="true" />
+    <node name="$(eval vehicle_id + '_ds4_controller_node')" pkg="ds4_driver" type="ds4_driver_node.py" respawn="true">
         <!-- Hidraw backend does not work with DS4 -->
         <param name="~backend" type="string" value="bluetooth" />
         <param name="~use_standard_msgs" type="boolean" value="true" />
