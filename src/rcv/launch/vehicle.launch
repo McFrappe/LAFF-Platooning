@@ -21,24 +21,20 @@
     <param name="OBJECT_FOLLOWER_PID_MAX" type="double" value="200" />
 
     <!-- PID platooning controller -->
-    <param name="K_PP" type="double" value="5000" />
+    <param name="K_PP" type="double" value="500" />
     <param name="K_PI" type="double" value="0" />
-    <param name="K_PD" type="double" value="20000" />
+    <param name="K_PD" type="double" value="2000" />
+    <param name="PID_PMIN" type="double" value="-9000" />
+    <param name="PID_PMAX" type="double" value="5000" />
     <param name="PID_PLATOONING_MARGIN_M" type="double" value="0.2" />
 
     <!-- PID speed controller -->
     <param name="K_SP" type="double" value="1" />
     <param name="K_SI" type="double" value="20" />
     <param name="K_SD" type="double" value="0.002" />
-    <param name="PID_SPEED_REFERENCE" type="double" value="10" />
-
-    <!-- Minimum and maximum velocity for each step. -->
-    <param name="PID_PMIN" type="double" value="-9" />
-    <param name="PID_PMAX" type="double" value="5" />
-
-    <!-- Minimum and maximum PWM allowed from controller. -->
     <param name="PID_SMIN" type="double" value="-20000" />
     <param name="PID_SMAX" type="double" value="20000" />
+    <param name="PID_SPEED_REFERENCE" type="double" value="10" />
 
     <!-- Minimum and maximum velocity allowed. -->
     <param name="VELOCITY_MIN" type="int" value="0" />
