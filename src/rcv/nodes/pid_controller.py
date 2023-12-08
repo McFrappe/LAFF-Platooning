@@ -74,7 +74,7 @@ class PIDController:
             self.__callback_distance,
             queue_size=self.__message_queue_size)
 
-        if self.__is_leader:
+        if not self.__is_leader:
             self.leader_velocity_subscriber = rospy.Subscriber(
                 "/vehicle_0/velocity",
                 Float32,
