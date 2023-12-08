@@ -44,9 +44,9 @@ class PIDController:
         self.__has_target = False
         self.__esc_calibrated = False
         self.__steering_angle = self.__zero
-        self.__current_velocity = 0
-        self.__reference_velocity = 0
+        self.__desired_pwm = self.__idle
         self.__current_pwm = self.__idle
+        self.__current_velocity = 0
         self.__current_distance = 0
 
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
@@ -115,9 +115,7 @@ class PIDController:
 
     def __min_distance(self):
         speed_in_m_per_s = self.__current_velocity/3.6
-        # TODO: should depend on speed and vehicle
-        self.min_distance = speed_in_m_per_s * self.__period * 2 + self.__margin_in_m
-        return self.min_distance
+        return speed_in_m_per_s * self.__period * 2 + self.__margin_in_m
 
     def __perform_step(self, event):
         if not self.__esc_calibrated:
@@ -127,24 +125,22 @@ class PIDController:
         # and we have enabled the flag in the launch file.
         if not self.__has_target and self.__stop_vehicle_if_no_target:
             self.__current_pwm = self.__idle
-            self.__reference_velocity = 0
         else:
             distance_error = self.__current_distance - self.__min_distance()
             platoon_control_output = self.__pid_platooning.update(distance_error)
-            desired_velocity = self.__current_velocity + platoon_control_output
-            self.__reference_velocity = min(
-                max(desired_velocity, self.__velocity_min), self.__velocity_max)
 
-            if self.__reference_velocity < 0.1:
-                desired_pwm = self.__idle
+            if platoon_control_output <= 0:
+                self.__desired_pwm = self.__max_reverse
             else:
-                desired_pwm = 1851.9 * self.__reference_velocity + 708888
+                self.__desired_pwm = max(
+                    self.__desired_pwm + platoon_control_output,
+                    self.__min_forward)
 
             self.__current_pwm = int(min(
-                max(desired_pwm, self.__idle), self.__max_forward))
+                max(self.__desired_pwm, self.__max_reverse), self.__max_forward))
 
         self.pwm_publisher.publish(self.__current_pwm)
-        self.pid_publisher.publish(self.__reference_velocity)
+        self.pid_publisher.publish(self.__desired_pwm)
 
     def stop(self):
         self.pwm_publisher.publish(self.__idle)

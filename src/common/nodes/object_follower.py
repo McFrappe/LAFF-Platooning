@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import rospy
+from simple_pid import PID
 import numpy as np
 
 from std_msgs.msg import Int32, Bool
 from sensor_msgs.msg import RegionOfInterest
 from pixy2_msgs.msg import PixyData, PixyBlock, PixyResolution
-
 
 class ObjectFollowerController:
     def __init__(self):
@@ -19,17 +19,25 @@ class ObjectFollowerController:
             "OBJECT_FOLLOWER_BLOCKS_PER_UPDATE")
 
         self.__resolution_x = 315
-        self.__fine_adjust_divider = rospy.get_param(
-            "OBJECT_FOLLOWER_RESOLUTION_FINE_ADJUST_DIVIDER")
-        self.__large_adjust_divider = rospy.get_param(
-            "OBJECT_FOLLOWER_RESOLUTION_LARGE_ADJUST_DIVIDER")
-        self.__large_adjust_threshold = rospy.get_param(
-            "OBJECT_FOLLOWER_LARGE_ADJUST_THRESHOLD_PX")
-        self.__max_width_of_resolution_modifier = rospy.get_param(
-            "OBJECT_FOLLOWER_MAX_WIDTH_OF_RESOLUTION_MODIFIER")
         self.__detected_blocks: list[PixyBlock] = []
         self.__collected_blocks: list[PixyBlock] = []
         self.__collected_blocks_count = 0
+
+        self.__pid_kp = rospy.get_param("OBJECT_FOLLOWER_PID_KP")
+        self.__pid_ki = rospy.get_param("OBJECT_FOLLOWER_PID_KI")
+        self.__pid_kd = rospy.get_param("OBJECT_FOLLOWER_PID_KD")
+        self.__pid_setpoint = rospy.get_param("OBJECT_FOLLOWER_PID_SETPOINT")
+        self.__pid_min = rospy.get_param("OBJECT_FOLLOWER_PID_MIN")
+        self.__pid_max = rospy.get_param("OBJECT_FOLLOWER_PID_MAX")
+        self.__pid = pid = PID(
+            self.__pid_kp,
+            self.__pid_ki,
+            self.__pid_kd,
+            setpoint=self.__pid_setpoint)
+
+        self.__pid.sample_time = (
+            self.__update_period / self.__nr_of_blocks_to_collect)
+        self.__pid.output_limits = (self.__pid_min, self.__pid_max)
 
         self.__has_target_publisher = rospy.Publisher(
             f"{self.__id}/has_target",
@@ -61,7 +69,7 @@ class ObjectFollowerController:
     def __callback_blocks(self, data: PixyData):
         self.__detected_blocks = data.blocks
 
-    def __calculate_horizontal_offset(self, blocks):
+    def __calculate_center_offset(self, blocks):
         """
         Calculates the average offset of a list of objects from the center of the
         image. A negative offset indicates that the object is too
@@ -72,7 +80,7 @@ class ObjectFollowerController:
         avg_x_offset = sum([b.roi.x_offset for b in blocks]) / len(blocks)
         center_pos = self.__resolution_x / 2
 
-        return avg_width, ((avg_x_offset + (avg_width / 2)) - center_pos)
+        return avg_width, (avg_x_offset - center_pos)
 
     def __update(self, event):
         """
@@ -87,39 +95,20 @@ class ObjectFollowerController:
 
             return
 
-        # No blocks detected during the period, reset
-        if len(self.__collected_blocks) == 0:
-            self.__has_target_publisher.publish(False)
-            self.__steering_angle_publisher.publish(self.__zero)
-            self.__collected_blocks_count = 0
-            return
-
         new_angle = self.__zero
-        avg_width, hoffset = self.__calculate_horizontal_offset(self.__collected_blocks)
+        has_target = len(self.__collected_blocks) != 0
 
-        if avg_width >= self.__max_width_of_resolution_modifier * self.__resolution_x:
-            self.__steering_angle_publisher.publish(self.__zero)
-            return
-
-        if abs(hoffset) <= self.__large_adjust_threshold:
-            max_value = int(self.__resolution_x / self.__fine_adjust_divider)
-        else:
-            max_value = int(self.__resolution_x / self.__large_adjust_divider)
-
-        if hoffset < 0:
-            # Turn left
+        # No blocks detected during the period, reset
+        if has_target:
+            avg_width, center_offset = self.__calculate_center_offset(
+                self.__collected_blocks)
+            error = self.__pid(center_offset)
             new_angle = int(np.interp(
-                (self.__resolution_x / 2) - abs(hoffset),
-                [0, max_value],
-                [self.__zero, self.__max_left]))
-        elif hoffset > 0:
-            # Turn right
-            new_angle = int(np.interp(
-                abs(hoffset),
-                [0, max_value],
-                [self.__zero, self.__max_right]))
+                error,
+                [self.__pid_min, self.__pid_max],
+                [self.__max_right, self.__max_left]))
 
-        self.__has_target_publisher.publish(True)
+        self.__has_target_publisher.publish(has_target)
         self.__steering_angle_publisher.publish(new_angle)
         self.__collected_blocks = []
         self.__collected_blocks_count = 0
