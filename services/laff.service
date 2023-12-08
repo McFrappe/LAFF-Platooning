@@ -1,6 +1,6 @@
 [Unit]
 Description=LAFF Orchestrator Client
-After=multi-user.target
+After=network-online.target
 
 [Service]
 Type=simple
