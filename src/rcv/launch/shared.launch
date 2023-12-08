@@ -30,10 +30,9 @@
     <param name="MAX_FORWARD_MOTOR" type="int" value="800000" />
     <param name="MIN_FORWARD_MOTOR" type="int" value="715000" />
     <param name="MAX_REVERSE_MOTOR" type="int" value="585000" />
-    <param name="IDLE_MOTOR" type="int" value="570000" />
+    <param name="IDLE_MOTOR" type="int" value="660000" />
     <param name="PWM_FREQUENCY_MOTOR" type="int" value="500" />
     <param name="MAX_RIGHT_ANGLE" type="int" value="870000" />
     <param name="MAX_LEFT_ANGLE" type="int" value="270000" />
     <param name="ZERO_ANGLE" type="int" value="560000" />
-
 </launch>
