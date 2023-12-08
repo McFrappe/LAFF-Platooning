@@ -165,12 +165,6 @@ class GUI:
         # Seperate the windows by a line
         sidebar_width = self.__get_sidebar_width()
         socket_win_height = self.__get_socket_win_height()
-        self.__std_scr.hline(
-            socket_win_height, curses.COLS - sidebar_width,
-            curses.ACS_HLINE, sidebar_width)
-        self.__std_scr.vline(
-            0, curses.COLS - sidebar_width - 1,
-            curses.ACS_VLINE, curses.LINES)
         self.__status_win.refresh()
         self.__socket_win.refresh()
         self.__cli_win.refresh()
