@@ -1,6 +1,4 @@
-class PID:
-    # TODO: pid_min and pid_max should be optional
-    def __init__(self, kp, ki, kd, dt: int, pid_min: float, pid_max: float):
+def __init__(self, kp, ki, kd, dt: int, pid_min: float = None, pid_max: float = None):
         self.error = 0
         self.error_integral = 0
         self.error_derivative = 0
@@ -8,8 +6,9 @@ class PID:
         self.Ki = ki
         self.Kd = kd
         self.dt = dt
-        self.pid_min = pid_min
-        self.pid_max = pid_max
+
+        self.pid_min = pid_min if pid_min is not None else -float('inf')
+        self.pid_max = pid_max if pid_max is not None else float('inf')
 
     def update(self, error: float):
         error_prev = self.error
