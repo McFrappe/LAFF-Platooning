@@ -20,6 +20,7 @@
     <!-- Velocity -->
     <param name="VELOCITY_WAIT_TIME_US" type="double" value="2000" />
     <param name="VELOCITY_REFLECTANCE_THRESHOLD_US" type="int" value="200" />
+    <param name="VELOCITY_TAPES_PER_ROTATION" type="int" value="1" />
 
     <!-- Publisher periods -->
     <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="0.2" />
