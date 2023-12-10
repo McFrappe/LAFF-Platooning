@@ -1,4 +1,5 @@
-def __init__(self, kp, ki, kd, dt: int, pid_min: float = None, pid_max: float = None):
+class PID:
+    def __init__(self, kp, ki, kd, dt: int, pid_min: float = None, pid_max: float = None):
         self.error = 0
         self.error_integral = 0
         self.error_derivative = 0
