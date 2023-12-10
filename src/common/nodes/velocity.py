@@ -62,8 +62,8 @@ class VelocityController:
             # If we have more than one piece of tape per rotation, the distance traveled
             # per reading (time between tape, no tape, and tape) only corresponds to
             # a n:th of the total circumference of the wheel.
-            distance_traveled = (self.wheel_radius_cm / 100) / self.tapes_per_rotation
-            velocity_ms = (distance_traveled * 2 * np.pi) / mean_diff
+            distance_traveled = ((self.wheel_radius_cm / 100) * 2 * np.pi) / self.tapes_per_rotation
+            velocity_ms = distance_traveled / mean_diff
 
         velocity_kmh = velocity_ms * 3.6
         self.publisher.publish(Float32(data=velocity_kmh))
