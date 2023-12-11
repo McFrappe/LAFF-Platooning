@@ -7,7 +7,7 @@ class VehicleLeaderBidirectionalStateSpaceS1(VehicleLeaderS1):
         self.mass = vehicle_specs.get_mass_in_kg()
 
     def update_speed(self, tick, leader_speed, relative_position_infront, momentum_infront, momentum_behind, delta_infront, delta_behind):
-        super().base_update_speed(tick)
+        return super().base_update_speed(tick)
 
     def get_momentum(self):
         return self.speed * self.mass
@@ -22,7 +22,7 @@ class VehicleLeaderBidirectionalStateSpaceS2(VehicleLeaderS2):
         self.mass = vehicle_specs.get_mass_in_kg()
 
     def update_speed(self, tick, leader_speed, relative_position_infront, momentum_infront, momentum_behind, delta_infront, delta_behind):
-        super().base_update_speed(tick)
+        return super().base_update_speed(tick)
 
     def get_momentum(self):
         return self.speed * self.mass
@@ -37,7 +37,7 @@ class VehicleLeaderBidirectionalStateSpaceS3(VehicleLeaderS3):
         self.mass = vehicle_specs.get_mass_in_kg()
 
     def update_speed(self, tick, leader_speed, relative_position_infront, momentum_infront, momentum_behind, delta_infront, delta_behind):
-        super().base_update_speed(tick)
+        return super().base_update_speed(tick)
 
     def get_momentum(self):
         return self.speed * self.mass
@@ -52,7 +52,7 @@ class VehicleLeaderBidirectionalStateSpaceS4(VehicleLeaderS4):
         self.mass = vehicle_specs.get_mass_in_kg()
 
     def update_speed(self, tick, leader_speed, relative_position_infront, momentum_infront, momentum_behind, delta_infront, delta_behind):
-        super().base_update_speed(tick)
+        return super().base_update_speed(tick)
 
     def get_momentum(self):
         return self.speed * self.mass

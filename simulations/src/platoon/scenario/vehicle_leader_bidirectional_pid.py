@@ -6,7 +6,7 @@ class VehicleLeaderBidirectionalPidS1(VehicleLeaderS1):
         VehicleLeaderS1.__init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs)
 
     def update_speed(self, tick, leader_speed, relative_position_infront):
-        super().base_update_speed(tick)
+        return super().base_update_speed(tick)
 
 
 class VehicleLeaderBidirectionalPidS2(VehicleLeaderS2):
@@ -14,7 +14,7 @@ class VehicleLeaderBidirectionalPidS2(VehicleLeaderS2):
         VehicleLeaderS1.__init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs)
 
     def update_speed(self, tick, leader_speed, relative_position_infront):
-        super().base_update_speed(tick)
+        return super().base_update_speed(tick)
 
 
 class VehicleLeaderBidirectionalPidS3(VehicleLeaderS3):
@@ -22,7 +22,7 @@ class VehicleLeaderBidirectionalPidS3(VehicleLeaderS3):
         VehicleLeaderS3.__init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs)
 
     def update_speed(self, tick, leader_speed, relative_position_infront):
-        super().base_update_speed(tick)
+        return super().base_update_speed(tick)
 
 
 class VehicleLeaderBidirectionalPidS4(VehicleLeaderS4):
@@ -30,4 +30,4 @@ class VehicleLeaderBidirectionalPidS4(VehicleLeaderS4):
         VehicleLeaderS1.__init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs)
 
     def update_speed(self, tick, leader_speed, relative_position_infront):
-        super().base_update_speed(tick)
+        return super().base_update_speed(tick)

@@ -3,9 +3,9 @@ from scipy import signal
 from src.vehicle.vehicle import Vehicle
 from src.common.constants import tick_in_s
 
-class VehicleBidirectionalStateSpace(Vehicle):
 
-    def __init__(self, order, num_followers, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
+class VehicleBidirectionalStateSpace(Vehicle):
+    def __init__(self, order, num_followers, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, state_space_vehicle_parameters):
         Vehicle.__init__(self, order, vehicle_specs)
         self.speed = init_speed
         self.position = init_position
@@ -14,25 +14,18 @@ class VehicleBidirectionalStateSpace(Vehicle):
         self.integral_sum = 0
         self.prev_velocity_error = 0
         self.delta = 0 
+        self.ss_par = state_space_vehicle_parameters#StateSpaceVehicleParameters
+        self.mass = self.ss_par.m[1]
 
-        # continues time
-        #r = np.array([10000,10000,5000]) # [r_{i-1}, r_{i}, r_{i+1}] 
-        #m = np.array([6000,6000,6000]) # [m_{i-1}, m_{i}, m_{i+1}] 
-        #a = np.array([0,50000,20000]) # [a_{i-1} (not used), a_{i}, a_{i+1}] 
-        h_p = 0.5
-
-        # discrete time
-        r = np.array([200000,200000,200000]) # [r_{i-1}, r_{i}, r_{i+1}] 
-        #r = np.array([100000,100000,100000]) # [r_{i-1}, r_{i}, r_{i+1}] 
-        m = np.array([6000,6000,6000]) # [m_{i-1}, m_{i}, m_{i+1}] 
-        #m = np.array([6000,6000,6000]) # [m_{i-1}, m_{i}, m_{i+1}] 
-        #a = np.array([0,300000,50000]) # [a_{i-1} (not used), a_{i}, a_{i+1}] 
-        a = np.array([0,300000,50000]) # [a_{i-1} (not used), a_{i}, a_{i+1}] 
-
-        self.mass = m[1]
-
-        self.A_continuous = np.array([[-((1+h_p)-(-1+h_p)*(self.order % num_followers)/(self.order))*(r[1]/m[1]), a[1]], [-1/m[1], 0]])
-        self.B_continuous = np.array([[-1, (1+h_p)*(r[0]/m[0]), -(-1+h_p)*(r[2]/m[2]), 0, a[2]], [0, 1/m[0], 0, 0, 0]])
+        #self.A_continuous = np.array([[-((1+h_p)-(-1+h_p)*(self.order % num_followers)/(self.order))*(r[1]/m[1]), a[1]], [-1/m[1], 0]])
+        a11 = -((1+self.ss_par.h_p)-(-1+self.ss_par.h_p)*(self.order % num_followers)/(self.order))*(self.ss_par.r[1]/self.ss_par.m[1])
+        a12 = self.ss_par.a[1]
+        a21 = -1/self.ss_par.m[1]
+        self.A_continuous = np.array([[a11, a12], [a21, 0]])
+        #self.B_continuous = np.array([[-1, (1+h_p)*(r[0]/m[0]), -(-1+h_p)*(r[2]/m[2]), 0, a[2]], [0, 1/m[0], 0, 0, 0]])
+        b12 = (1+self.ss_par.h_p)*(self.ss_par.r[0]/self.ss_par.m[0])
+        b13 = -(-1+self.ss_par.h_p)*(self.ss_par.r[2]/self.ss_par.m[2])
+        self.B_continuous = np.array([[-1, b12, b13, 0, self.ss_par.a[2]], [0, 1/self.ss_par.m[0], 0, 0, 0]])
         self.C_continuous = np.array([[1/self.mass, 0]])
         self.D_continuous = np.array([[0]])
 
@@ -44,7 +37,6 @@ class VehicleBidirectionalStateSpace(Vehicle):
         )
 
     def update_speed(self, tick, leader_speed, relative_position_infront, momentum_infront, momentum_behind, delta_infront, delta_behind):
-        
         self.delta = self.calculate_positioning_error(leader_speed, relative_position_infront)
         state_variables =  np.array([self.mass*self.speed, self.delta])
         input_variables =  np.array([leader_speed, momentum_infront, momentum_behind, delta_infront, delta_behind])

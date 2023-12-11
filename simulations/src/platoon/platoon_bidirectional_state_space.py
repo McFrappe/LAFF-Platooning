@@ -66,8 +66,9 @@ class PlatoonBidirectionalStateSpaceS1(PlatoonBidirectionalStateSpace):
     def init_vehicles(self, num_vehicles, vehicle_specs):
         self.vehicles.append(VehicleLeaderBidirectionalStateSpaceS1(order=0, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
 
+        ss_par = vehicle_specs.get_state_space_vehicle_parameters()
         for i in range(num_vehicles-1):
-            self.vehicles.append(VehicleBidirectionalStateSpace(order=i+1, num_followers=(num_vehicles-1), init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+            self.vehicles.append(VehicleBidirectionalStateSpace(order=i+1, num_followers=(num_vehicles-1), init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs, state_space_vehicle_parameters=ss_par))
 
 
 class PlatoonBidirectionalStateSpaceS2(PlatoonBidirectionalStateSpace):
@@ -77,8 +78,9 @@ class PlatoonBidirectionalStateSpaceS2(PlatoonBidirectionalStateSpace):
     def init_vehicles(self, num_vehicles, vehicle_specs):
         self.vehicles.append(VehicleLeaderBidirectionalStateSpaceS2(order=0, init_speed=60, init_travel_distance=2.17, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
 
+        ss_par = vehicle_specs.get_state_space_vehicle_parameters()
         for i in range(num_vehicles-1):
-            self.vehicles.append(VehicleBidirectionalStateSpace(order=i+1, num_followers=(num_vehicles-1), init_speed=60, init_travel_distance=2.17*(-i), init_position=2.17*(-i+1), init_distance=2.17, vehicle_specs=vehicle_specs))
+            self.vehicles.append(VehicleBidirectionalStateSpace(order=i+1, num_followers=(num_vehicles-1), init_speed=60, init_travel_distance=2.17*(-i), init_position=2.17*(-i+1), init_distance=2.17, vehicle_specs=vehicle_specs,state_space_vehicle_parameters=ss_par ))
 
 
 class PlatoonBidirectionalStateSpaceS3(PlatoonBidirectionalStateSpace):
@@ -88,5 +90,6 @@ class PlatoonBidirectionalStateSpaceS3(PlatoonBidirectionalStateSpace):
     def init_vehicles(self, num_vehicles, vehicle_specs):
         self.vehicles.append(VehicleLeaderBidirectionalStateSpaceS3(order=0, init_speed=0, init_travel_distance=20, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
 
+        ss_par = vehicle_specs.get_state_space_vehicle_parameters()
         for i in range(num_vehicles-1):
-            self.vehicles.append(VehicleBidirectionalStateSpace(i+1, num_followers=(num_vehicles-1), init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+            self.vehicles.append(VehicleBidirectionalStateSpace(i+1, num_followers=(num_vehicles-1), init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs, state_space_vehicle_parameters=ss_par))
