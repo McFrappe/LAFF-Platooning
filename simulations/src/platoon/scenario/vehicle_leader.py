@@ -2,8 +2,8 @@ from src.vehicle.vehicle import Vehicle
 
 
 class VehicleLeaderS1(Vehicle):
-    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
-        Vehicle.__init__(self, order, vehicle_specs)
+    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period):
+        Vehicle.__init__(self, order, vehicle_specs, period)
         self.speed = init_speed
         self.position = init_position
         self.distance = init_distance
@@ -30,8 +30,8 @@ class VehicleLeaderS1(Vehicle):
 
 
 class VehicleLeaderS2(Vehicle):
-    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
-        Vehicle.__init__(self, order, vehicle_specs)
+    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period):
+        Vehicle.__init__(self, order, vehicle_specs, period)
         self.speed = init_speed
         self.position = init_position
         self.distance = init_distance
@@ -50,8 +50,8 @@ class VehicleLeaderS2(Vehicle):
 
 
 class VehicleLeaderS3(Vehicle):
-    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
-        Vehicle.__init__(self, order, vehicle_specs)
+    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period):
+        Vehicle.__init__(self, order, vehicle_specs, period)
         self.speed = init_speed
         self.position = init_position
         self.distance = init_distance
@@ -80,8 +80,8 @@ class VehicleLeaderS3(Vehicle):
 
 
 class VehicleLeaderS4(Vehicle):
-    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
-        Vehicle.__init__(self, order, vehicle_specs)
+    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period):
+        Vehicle.__init__(self, order, vehicle_specs, period)
         self.speed = init_speed
         self.position = init_position
         self.distance = init_distance
@@ -90,7 +90,7 @@ class VehicleLeaderS4(Vehicle):
         self.leader_initial_accelerating = True
 
 
-    def update_speed(self, tick):
+    def base_update_speed(self, tick):
         max_speed = self.vehicle_specs.get_max_speed_in_km_per_h()
         if int(self.speed) == int(max_speed/1.25):
             self.leader_accelerating = False

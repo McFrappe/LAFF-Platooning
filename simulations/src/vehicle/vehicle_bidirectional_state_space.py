@@ -5,8 +5,8 @@ from src.common.constants import tick_in_s
 
 
 class VehicleBidirectionalStateSpace(Vehicle):
-    def __init__(self, order, num_followers, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, state_space_vehicle_parameters):
-        Vehicle.__init__(self, order, vehicle_specs)
+    def __init__(self, order, num_followers, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, state_space_vehicle_parameters, period):
+        Vehicle.__init__(self, order, vehicle_specs, period)
         self.speed = init_speed
         self.position = init_position
         self.distance = init_distance
@@ -16,6 +16,7 @@ class VehicleBidirectionalStateSpace(Vehicle):
         self.delta = 0 
         self.ss_par = state_space_vehicle_parameters#StateSpaceVehicleParameters
         self.mass = self.ss_par.m[1]
+        self.speed_increase_per_tick = 0
 
         #self.A_continuous = np.array([[-((1+h_p)-(-1+h_p)*(self.order % num_followers)/(self.order))*(r[1]/m[1]), a[1]], [-1/m[1], 0]])
         a11 = -((1+self.ss_par.h_p)-(-1+self.ss_par.h_p)*(self.order % num_followers)/(self.order))*(self.ss_par.r[1]/self.ss_par.m[1])
@@ -32,18 +33,29 @@ class VehicleBidirectionalStateSpace(Vehicle):
         # Convert to discrete-time system
         self.A_discrete, self.B_discrete, self.C_discrete, self.D_discrete, _ = signal.cont2discrete(
             (self.A_continuous, self.B_continuous, self.C_continuous, self.D_continuous),
-            dt=tick_in_s,
+            dt=self.period,
             method='zoh'  # You can choose other discretization methods
         )
 
     def update_speed(self, tick, leader_speed, relative_position_infront, momentum_infront, momentum_behind, delta_infront, delta_behind):
+        if int(tick) % int(self.period/tick_in_s) != 0:
+            desired_speed = self.speed + self.speed_increase_per_tick
+            self.speed = self.calculate_valid_speed(desired_speed)
+            return self.speed
+
         self.delta = self.calculate_positioning_error(leader_speed, relative_position_infront)
         state_variables =  np.array([self.mass*self.speed, self.delta])
         input_variables =  np.array([leader_speed, momentum_infront, momentum_behind, delta_infront, delta_behind])
 
         next_step = self.A_discrete @ state_variables + self.B_discrete @ input_variables
         desired_speed = self.C_discrete @ next_step
-        self.speed = self.calculate_valid_speed(desired_speed[0]) # we want a scaler not a np array with single value
+
+        prev_speed = self.speed
+        speed_increase = desired_speed[0]-prev_speed
+        ticks_per_period = self.period/tick_in_s
+        desired_speed_increase_per_tick = speed_increase/ticks_per_period
+        self.speed = self.calculate_valid_speed(self.speed+desired_speed_increase_per_tick)
+        self.speed_increase_per_tick = self.speed-prev_speed
 
         return self.speed
 
@@ -63,7 +75,7 @@ class VehicleBidirectionalStateSpace(Vehicle):
     def calculate_valid_reference(self, leader_speed, order):
         speed_in_m_per_s = leader_speed/3.6
         margin_in_m = 0.5
-        minimal_distance = speed_in_m_per_s * tick_in_s + margin_in_m
+        minimal_distance = speed_in_m_per_s * self.period + margin_in_m
 
         return minimal_distance * order
 

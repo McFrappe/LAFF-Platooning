@@ -4,52 +4,59 @@ from src.platoon.platoon_bidirectional_state_space import PlatoonBidirectionalSt
 from src.platoon.platoon_pid_distance import PlatoonPidDistanceS1, PlatoonPidDistanceS2, PlatoonPidDistanceS3, PlatoonPidDistanceS4
 from src.common.plot import plot_speed, plot_travel_distance, plot_distances, plot_position
 from src.vehicle.vehicle_specs import truck, kit_car, rc_car
+from src.common.constants import tick_in_s
 
 
-def simulate(num_tick, num_vehicles, scenario, type, model):
+def simulate(num_tick, num_vehicles, scenario, type, model, period):
     match (scenario, type, model):
         case (1,1,1):
-            p = PlatoonPidDistanceS1(num_vehicles, truck)
+            p = PlatoonPidDistanceS1(num_vehicles, truck, period)
             suffix = "pid-distance-model-s1-truck"
         case (2,1,1):
-            p = PlatoonPidDistanceS2(num_vehicles, truck)
+            p = PlatoonPidDistanceS2(num_vehicles, truck, period)
             suffix = "pid-distance-model-s2-truck"
         case (3,1,1):
-            p = PlatoonPidDistanceS3(num_vehicles, truck)
+            p = PlatoonPidDistanceS3(num_vehicles, truck, period)
             suffix = "pid-distance-model-s3-truck"
         case (4,1,1):
-            p = PlatoonPidDistanceS4(num_vehicles, truck)
+            p = PlatoonPidDistanceS4(num_vehicles, truck, period)
             suffix = "pid-distance-model-s4-truck"
         case (1,3,1):
-            p = PlatoonPidDistanceS1(num_vehicles, rc_car)
+            p = PlatoonPidDistanceS1(num_vehicles, rc_car, period)
             suffix = "pid-distance-model-s1-rc-vehicle"
         case (2,3,1):
-            p = PlatoonPidDistanceS2(num_vehicles, rc_car)
+            p = PlatoonPidDistanceS2(num_vehicles, rc_car, period)
             suffix = "pid-distance-model-s2-rc-vehicle"
         case (3,3,1):
-            p = PlatoonPidDistanceS3(num_vehicles, rc_car)
+            p = PlatoonPidDistanceS3(num_vehicles, rc_car, period)
             suffix = "pid-distance-model-s3-rc-vehicle"
         case (1,1,2):
-            p = PlatoonBidirectionalPidS1(num_vehicles, truck)
+            p = PlatoonBidirectionalPidS1(num_vehicles, truck, period)
             suffix = "bidirectional-pid-model-s1-truck"
         case (2,1,2):
-            p = PlatoonBidirectionalPidS2(num_vehicles, truck)
+            p = PlatoonBidirectionalPidS2(num_vehicles, truck, period)
             suffix = "bidirectional-pid-model-s2-truck"
         case (3,1,2):
-            p = PlatoonBidirectionalPidS3(num_vehicles, truck)
+            p = PlatoonBidirectionalPidS3(num_vehicles, truck, period)
             suffix = "bidirectional-pid-model-s3-truck"
         case (1,1,3):
-            p = PlatoonBidirectionalStateSpaceS1(num_vehicles, truck)
+            p = PlatoonBidirectionalStateSpaceS1(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-model-s1-truck"
         case (2,1,3):
-            p = PlatoonBidirectionalStateSpaceS2(num_vehicles, truck)
+            p = PlatoonBidirectionalStateSpaceS2(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-model-s2-truck"
         case (3,1,3):
-            p = PlatoonBidirectionalStateSpaceS3(num_vehicles, truck)
+            p = PlatoonBidirectionalStateSpaceS3(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-model-s3-truck"
         case (1,3,3):
-            p = PlatoonBidirectionalStateSpaceS1(num_vehicles, rc_car)
+            p = PlatoonBidirectionalStateSpaceS1(num_vehicles, rc_car, period)
             suffix = "bidirectional-state-space-model-s1-rc-vehicle"
+        case (2,3,3):
+            p = PlatoonBidirectionalStateSpaceS2(num_vehicles, rc_car, period)
+            suffix = "bidirectional-state-space-model-s2-rc-vehicle"
+        case (3,3,3):
+            p = PlatoonBidirectionalStateSpaceS3(num_vehicles, rc_car, period)
+            suffix = "bidirectional-state-space-model-s3-rc-vehicle"
         case (_,_,_):
             print("Unknown option")
             exit(1)
@@ -76,7 +83,8 @@ def main(argv):
     scenario = 1
     type = 1
     model = 1
-    opts, args = getopt.getopt(argv,"ht:s:v:y:m:",["ticks=","scenario=","vehicles=","type=","model="])
+    period = tick_in_s
+    opts, args = getopt.getopt(argv,"ht:s:v:y:m:p:",["ticks=","scenario=","vehicles=","type=","model=","period="])
     for opt, arg in opts:
         if opt == '-h':
             print ('simulation-pid-distance-model.py -t <number of ticks> -s <scenario> -v <number of vehicles> -y <vehicle type>')
@@ -98,8 +106,15 @@ def main(argv):
             type = int(arg)
         elif opt in ("-m", "--model"):
             model = int(arg)
+        elif opt in ("-p", "--period"):
+            period = float(arg)
+            if tick_in_s > period:
+                print(f'period must be greater than {tick_in_s}')
+                exit(1)
+        else:
+            print(f"unknown option: {opt}")
 
-    simulate(num_ticks, num_vehicles, scenario, type, model)
+    simulate(num_ticks, num_vehicles, scenario, type, model, period)
 
 
 

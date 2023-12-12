@@ -7,8 +7,8 @@ import numpy as np
 
 
 class PlatoonBidirectional(Platoon):
-    def __init__(self, num_vehicles, vehicle_specs):
-        Platoon.__init__(self, num_vehicles, vehicle_specs)
+    def __init__(self, num_vehicles, vehicle_specs, period):
+        Platoon.__init__(self, num_vehicles, vehicle_specs, period)
 
     def run(self, tick):
         speeds_each_run = np.array([])
@@ -17,7 +17,7 @@ class PlatoonBidirectional(Platoon):
         travel_distance_each_run = np.array([])
 
         # v_in_front (order -1 if no vehicle is in front)
-        v_in_front = Vehicle(-1, dummy_vehicle) # dummy vehicle
+        v_in_front = Vehicle(-1, dummy_vehicle, 1) # dummy vehicle
 
         for v in self.vehicles:
             speeds_each_run = np.append(speeds_each_run, v.update_speed(tick, self.vehicles[0].get_current_speed(), v_in_front.get_position()))
@@ -36,33 +36,33 @@ class PlatoonBidirectional(Platoon):
 
 
 class PlatoonBidirectionalPidS1(PlatoonBidirectional):
-    def __init__(self, num_vehicles, vehicle_specs):
-        PlatoonBidirectional.__init__(self, num_vehicles, vehicle_specs)
+    def __init__(self, num_vehicles, vehicle_specs, period):
+        PlatoonBidirectional.__init__(self, num_vehicles, vehicle_specs, period)
 
     def init_vehicles(self, num_vehicles, vehicle_specs):
         self.vehicles.append(VehicleLeaderBidirectionalPidS1(order=0, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
 
         for i in range(num_vehicles-1):
-            self.vehicles.append(VehicleBidirectional(i+1, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+            self.vehicles.append(VehicleBidirectional(i+1, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs, period=self.period))
 
 
 class PlatoonBidirectionalPidS2(PlatoonBidirectional):
-    def __init__(self, num_vehicles, vehicle_specs):
-        PlatoonBidirectional.__init__(self, num_vehicles, vehicle_specs)
+    def __init__(self, num_vehicles, vehicle_specs, period):
+        PlatoonBidirectional.__init__(self, num_vehicles, vehicle_specs, period)
 
     def init_vehicles(self, num_vehicles, vehicle_specs):
         self.vehicles.append(VehicleLeaderBidirectionalPidS2(order=0, init_speed=60, init_travel_distance=2.17, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
 
         for i in range(num_vehicles-1):
-            self.vehicles.append(VehicleBidirectional(order=i+1, init_speed=60, init_travel_distance=2.17*(-i), init_position=2.17*(-i+1), init_distance=2.17, vehicle_specs=vehicle_specs))
+            self.vehicles.append(VehicleBidirectional(order=i+1, init_speed=60, init_travel_distance=2.17*(-i), init_position=2.17*(-i+1), init_distance=2.17, vehicle_specs=vehicle_specs, period=self.period))
 
 
 class PlatoonBidirectionalPidS3(PlatoonBidirectional):
-    def __init__(self, num_vehicles, vehicle_specs):
-        PlatoonBidirectional.__init__(self, num_vehicles, vehicle_specs)
+    def __init__(self, num_vehicles, vehicle_specs, period):
+        PlatoonBidirectional.__init__(self, num_vehicles, vehicle_specs, period)
 
     def init_vehicles(self, num_vehicles, vehicle_specs):
         self.vehicles.append(VehicleLeaderBidirectionalPidS3(order=0, init_speed=0, init_travel_distance=20, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
 
         for i in range(num_vehicles-1):
-            self.vehicles.append(VehicleBidirectional(i+1, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+            self.vehicles.append(VehicleBidirectional(i+1, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs, period=self.period))
