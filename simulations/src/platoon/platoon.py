@@ -4,13 +4,13 @@ import numpy as np
 
 
 class Platoon:
-
-    def __init__(self, num_vehicles, vehicle_specs) -> None:
+    def __init__(self, num_vehicles, vehicle_specs, period) -> None:
         self.vehicles = []
         self.speeds = []
         self.travel_distance = []
         self.distances = []
         self.positions = []
+        self.period = period
 
         self.init_vehicles(num_vehicles, vehicle_specs)
 
@@ -26,7 +26,7 @@ class Platoon:
         travel_distance_each_run = np.array([])
 
         # v_in_front (order -1 if no vehicle is in front)
-        v_in_front = Vehicle(-1, dummy_vehicle) # dummy vehicle
+        v_in_front = Vehicle(-1, dummy_vehicle, 1) # dummy vehicle
 
         for v in self.vehicles:
             speeds_each_run = np.append(speeds_each_run, v.update_speed(tick))

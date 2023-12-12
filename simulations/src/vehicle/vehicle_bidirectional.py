@@ -3,9 +3,8 @@ from src.vehicle.vehicle import Vehicle
 from src.common.constants import tick_in_s
 
 class VehicleBidirectional(Vehicle):
-
-    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs):
-        Vehicle.__init__(self, order, vehicle_specs)
+    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period):
+        Vehicle.__init__(self, order, vehicle_specs, period)
         self.speed = init_speed
         self.position = init_position
         self.distance = init_distance

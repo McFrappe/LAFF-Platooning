@@ -5,7 +5,7 @@ class Vehicle:
     t_c = 10  # number of ticks for period of communication (10ms*t_c = 100ms)
     array_distance_errors_len = 100
 
-    def __init__(self, order, vehicle_specs) -> None:
+    def __init__(self, order, vehicle_specs, period) -> None:
         self.vehicle_specs = vehicle_specs
         self.speed = 0  # initially it the vehicle stands still
         self.speed_old = 0  # updates each period t_c
@@ -19,6 +19,7 @@ class Vehicle:
         self.error_integral = 0
         self.prev_distance_error = 0
         self.min_distance = 9  # how close the vehicles should be to each other, depends on speed. (m)
+        self.period = period
 
     # This should be called each tick
     def update_travel_distance(self):
@@ -56,7 +57,7 @@ class Vehicle:
 
     def update_min_distance(self):
         speed_in_m_per_s = self.speed/3.6
-        margin_in_m = 0.2 # TODO: should depend on speed and vehicle
+        margin_in_m = 0.2 # TODO: should depend on speed and vehicle?
         self.min_distance = speed_in_m_per_s * tick_in_s *2 + margin_in_m 
         return self.min_distance
 
