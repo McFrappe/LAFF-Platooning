@@ -23,7 +23,7 @@
     <param name="VELOCITY_TAPES_PER_ROTATION" type="int" value="1" />
 
     <!-- Publisher periods -->
-    <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="0.2" />
+    <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="0.05" />
     <param name="DEBUG_PUBLISH_PERIOD" type="double" value="0.3" />
     <param name="MESSAGE_QUEUE_SIZE" type="int" value="10" />
 
