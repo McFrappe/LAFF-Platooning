@@ -89,7 +89,7 @@ class PIDController:
 
         rospy.Timer(rospy.Duration(self.__period), self.__perform_step)
 
-    def __create_velocity_pwm_mapper(self, map_file, polyfiy_deg):
+    def __create_velocity_pwm_mapper(self, map_file, polyfit_deg):
         data = np.genfromtxt(
             map_file,
             delimiter=",",
