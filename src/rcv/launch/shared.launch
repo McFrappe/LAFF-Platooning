@@ -1,5 +1,6 @@
 <launch>
-    <arg name="vehicle_id" default="vehicle"/>
+    <arg name="vehicle_id" default="vehicle" />
+    <arg name="velocity_pwm_map_path" default="" />
 
     <!-- Common nodes -->
     <node name="$(eval vehicle_id + '_esc_node')" pkg="rcv" type="esc.py" respawn="true" />
@@ -21,6 +22,8 @@
     <param name="VELOCITY_WAIT_TIME_US" type="double" value="2000" />
     <param name="VELOCITY_REFLECTANCE_THRESHOLD_US" type="int" value="200" />
     <param name="VELOCITY_TAPES_PER_ROTATION" type="int" value="6" />
+    <param name="VELOCITY_PWM_MAP_PATH" type="string" value="$(arg velocity_pwm_map_path)" />
+    <param name="VELOCITY_PWM_MAP_POLYFIT_DEGREE" type="int" value="3" />
 
     <!-- Publisher periods -->
     <param name="VELOCITY_PUBLISH_PERIOD" type="double" value="0.07" />

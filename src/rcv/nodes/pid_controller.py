@@ -51,6 +51,10 @@ class PIDController:
         self.__current_leader_velocity = 0
         self.__is_leader = self.__id == "vehicle_0"
 
+        self.__pwm_mapper = self.__create_velocity_pwm_mapper(
+            rospy.get_param("VELOCITY_PWM_MAP_FILE_PATH"),
+            rospy.get_param("VELOCITY_PWM_MAP_POLYFIT_DEGREE"))
+
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
 
         self.pwm_publisher = rospy.Publisher(
@@ -100,6 +104,15 @@ class PIDController:
             queue_size=self.__message_queue_size)
 
         rospy.Timer(rospy.Duration(self.__period), self.__perform_step)
+
+    def __create_velocity_pwm_mapper(self, map_file, polyfiy_deg):
+        data = np.genfromtxt(
+            map_file,
+            delimiter=",",
+            skip_header=1,
+            names=["pwm", "velocity"])
+        z = np.polyfit(data["pwm"], data["velocity"], polyfit_deg)
+        return np.poly1d(z)
 
     def __callback_esc_calibrated(self, msg: Bool):
         """
