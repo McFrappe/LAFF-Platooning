@@ -44,6 +44,7 @@ class Vehicle:
         else:
             self.distance = travel_distance_of_vehicle_in_front - self.travel_distance
 
+        # TODO: remove only calculate the distance.
         error = self.distance - self.min_distance
         self.error_derivative = (error - self.prev_distance_error)/tick_in_s
         self.error_integral += error*tick_in_s
