@@ -1,10 +1,30 @@
 <launch>
     <include file="$(find rcv)/launch/shared.launch" pass_all_args="true" />
 
-    <node name="$(eval vehicle_id + '_pid_controller')" pkg="rcv" type="pid_controller.py" respawn="true" />
-    <node name="$(eval vehicle_id + '_distance_node')" pkg="common" type="distance.py" respawn="true" />
-    <node name="$(eval vehicle_id + '_object_follower_node')" pkg="common" type="object_follower.py" respawn="true" />
-    <node name="$(eval vehicle_id + '_pixy2_node')" pkg="pixy2_node" type="pixy2_node" respawn="true">
+    <node
+        name="$(eval vehicle_id + '_bidirectional_controller')"
+        pkg="rcv"
+        type="bidirectional_controller.py"
+        respawn="true"
+    />
+    <node
+        name="$(eval vehicle_id + '_distance_node')"
+        pkg="common"
+        type="distance.py"
+        respawn="true"
+    />
+    <node
+        name="$(eval vehicle_id + '_object_follower_node')"
+        pkg="common"
+        type="object_follower.py"
+        respawn="true"
+    />
+    <node
+        name="$(eval vehicle_id + '_pixy2_node')"
+        pkg="pixy2_node"
+        type="pixy2_node"
+        respawn="true"
+    >
         <param name="rate" value="60.0" />
         <param name="use_servos" value="false" />
         <param name="enable_lamp" value="true" />

@@ -5,27 +5,12 @@ import numpy as np
 from sensor_msgs.msg import Range
 from std_msgs.msg import Int32, Float32, Bool
 
-from controller.pid import PID
+from controller.state_space import BidirectionalStateSpace
 
-class PIDController:
+class BidirectionalController:
     def __init__(self):
         self.__id = rospy.get_param("VEHICLE_ID")
-        self.__period = rospy.get_param("PID_CONTROL_PERIOD")
-        self.__pid_platooning = PID(
-            rospy.get_param("K_PP"),
-            rospy.get_param("K_PI"),
-            rospy.get_param("K_PD"),
-            self.__period, # FIXME: should this be DISTANCE_PUBLISH_PERIOD?
-            rospy.get_param("PID_PMIN"),
-            rospy.get_param("PID_PMAX"))
-
-        self.__pid_pwm = PID(
-            rospy.get_param("K_SP"),
-            rospy.get_param("K_SI"),
-            rospy.get_param("K_SD"),
-            self.__period, # FIXME: should this be VELOCITY_PUBLISH_PERIOD?
-            rospy.get_param("PID_SMIN"),
-            rospy.get_param("PID_SMAX"))
+        self.__period = rospy.get_param("BIDIRECTIONAL_CONTROL_PERIOD")
 
         self.__margin_in_m = rospy.get_param("PID_PLATOONING_MARGIN_M")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
@@ -39,49 +24,51 @@ class PIDController:
 
         self.__has_target = False
         self.__esc_calibrated = False
-        self.__desired_pwm = self.__idle
-        self.__current_pwm = self.__idle
         self.__current_distance = 0
         self.__current_velocity = 0
         self.__current_leader_velocity = 0
         self.__is_leader = self.__id == "vehicle_0"
+        self.__state_space = BidirectionalStateSpace()
+        self.__pwm_mapper = self.__create_velocity_pwm_mapper(
+            rospy.get_param("VELOCITY_PWM_MAP_FILE_PATH"),
+            rospy.get_param("VELOCITY_PWM_MAP_POLYFIT_DEGREE"))
 
-        self.pwm_publisher = rospy.Publisher(
+        self.__pwm_publisher = rospy.Publisher(
             f"{self.__id}/pwm",
             Int32,
             queue_size=self.__message_queue_size)
 
-        self.control_publisher = rospy.Publisher(
+        self.__control_publisher = rospy.Publisher(
             f"{self.__id}/control",
             Float32,
             queue_size=self.__message_queue_size)
 
-        self.distance_subscriber = rospy.Subscriber(
+        self.__distance_subscriber = rospy.Subscriber(
             f"{self.__id}/distance",
             Range,
             self.__callback_distance,
             queue_size=self.__message_queue_size)
 
         if not self.__is_leader:
-            self.leader_velocity_subscriber = rospy.Subscriber(
+            self.__leader_velocity_subscriber = rospy.Subscriber(
                 "/vehicle_0/velocity",
                 Float32,
                 self.__callback_leader_velocity,
                 queue_size=self.__message_queue_size)
 
-        self.velocity_subscriber = rospy.Subscriber(
+        self.__velocity_subscriber = rospy.Subscriber(
             f"{self.__id}/velocity",
             Float32,
             self.__callback_velocity,
             queue_size=self.__message_queue_size)
 
-        self.esc_calibrated_subscriber = rospy.Subscriber(
+        self.__esc_calibrated_subscriber = rospy.Subscriber(
             f"{self.__id}/esc_calibrated",
             Bool,
             self.__callback_esc_calibrated,
             queue_size=self.__message_queue_size)
 
-        self.has_target_subscriber = rospy.Subscriber(
+        self.__has_target_subscriber = rospy.Subscriber(
             f"{self.__id}/has_target",
             Bool,
             self.__callback_has_target,
@@ -134,29 +121,21 @@ class PIDController:
         if not self.__esc_calibrated:
             return
 
-        # Only apply PID controller if we have an object to follow,
+        # Only apply controller if we have an object to follow,
         # and we have enabled the flag in the launch file.
-        if not self.__has_target and self.__stop_vehicle_if_no_target:
-            self.__current_pwm = self.__idle
-        else:
-            distance_error = self.__current_distance - self.__min_distance()
-            platoon_control_output = self.__pid_platooning.update(distance_error)
+        new_pwm = self.__idle
+        if self.__has_target or not self.__stop_vehicle_if_no_target:
+            desired_velocity = self.__state_space.update()
+            # TODO: Is this the desired velocity, or the change?
+            new_pwm = int(min(
+                max(self.__pwm_mapper(desired_velocity), self.__idle),
+                self.__max_forward))
 
-            if platoon_control_output <= 0:
-                self.__desired_pwm = self.__max_reverse
-            else:
-                self.__desired_pwm = max(
-                    self.__desired_pwm + platoon_control_output,
-                    self.__min_forward)
-
-            self.__current_pwm = int(min(
-                max(self.__desired_pwm, self.__max_reverse), self.__max_forward))
-
-        self.pwm_publisher.publish(self.__current_pwm)
-        self.control_publisher.publish(self.__desired_pwm)
+        self.__pwm_publisher.publish(new_pwm)
+        self.__control_publisher.publish(desired_velocity)
 
     def stop(self):
-        self.pwm_publisher.publish(self.__idle)
+        self.__pwm_publisher.publish(self.__idle)
 
 if __name__ == "__main__":
     rospy.init_node("pid_controller_node", anonymous=True)
