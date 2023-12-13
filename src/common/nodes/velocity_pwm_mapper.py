@@ -48,12 +48,14 @@ class VelocityPWMMapper:
 
     def __write_header(self):
         with open(self.__out_path, "w") as f:
-            f.write("velocity,pwm")
+            f.write("pwm,velocity")
 
     def __flush_samples(self):
+        """
+        Calculates the mean velocity of the samples and saves it to file.
+        """
         with open(self.__out_path, "a") as f:
-            for sample in self.__samples:
-                f.write(f"{sample}\n")
+            f.write(f"{self.__current_pwm},{np.mean(self.__samples)}\n")
 
     def __increase_pwm(self):
         if self.__current_pwm >= self.__max_forward:
@@ -79,7 +81,7 @@ class VelocityPWMMapper:
             if self.__current_sample == 0:
                 self.__increase_pwm()
             else:
-                self.__samples.append(f"{msg.data},{self.__current_pwm}")
+                self.__samples.append(msg.data)
 
             self.__current_sample += 1
         else:

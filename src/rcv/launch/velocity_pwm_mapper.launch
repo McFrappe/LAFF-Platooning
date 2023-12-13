@@ -9,6 +9,6 @@
     />
 
     <param name="MAPPER_OUT_PATH" type="string" value="/tmp/velocity_pwm_mapper.csv" />
-    <param name="MAPPER_PWM_STEP_SIZE" type="int" value="20000" />
-    <param name="MAPPER_SAMPLES_PER_PWM_STEP" type="int" value="1000" />
+    <param name="MAPPER_PWM_STEP_SIZE" type="int" value="5000" />
+    <param name="MAPPER_SAMPLES_PER_PWM_STEP" type="int" value="20" />
 </launch>
