@@ -72,22 +72,13 @@ publish:
 	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash || source /opt/ros/noetic/setup.bash; rostopic pub -1 $(PUBLISH_CMD_ARGS)"
 
 run_joyit:
-	source devel/setup.bash
-	ROS_IP=$(IP) roslaunch joyit vehicle.launch
-
-run_joyit_pi:
 	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"
 
 run_rcv:
-	source devel/setup.bash
-	ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle.launch
-
-run_rcv_pi:
 	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"
 
 run_rcv_joystick:
-	source devel/setup.bash
-	ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle_joystick.launch
-
-run_rcv_joystick_pi:
 	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle_joystick.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"
+
+run_rcv_velocity_pwm_mapper:
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv velocity_pwm_mapper.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"
