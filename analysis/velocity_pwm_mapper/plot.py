@@ -32,10 +32,11 @@ if __name__ == "__main__":
         axs[idx].set_xlim([MIN_FORWARD, MAX_FORWARD])
         axs[idx].set_title(fname)
         axs[idx].scatter(data["pwm"], data["velocity"], c="black")
-        z = np.polyfit(data["pwm"], data["velocity"], POLYFIT_ORDER)
+        z = np.polyfit(data["velocity"], data["pwm"], POLYFIT_ORDER)
         p = np.poly1d(z)
-        xp = np.linspace(MIN_FORWARD, MAX_FORWARD, (MAX_FORWARD-MIN_FORWARD)//STEP_SIZE)
-        axs[idx].plot(xp, p(xp), "r--")
+        steps = (MAX_FORWARD-MIN_FORWARD)//STEP_SIZE
+        xp = np.linspace(MIN_VELOCITY, MAX_VELOCITY, steps)
+        axs[idx].plot(p(xp), xp, "r--")
 
     plt.xlabel("Velocity")
     plt.ylabel("PWM")

@@ -111,7 +111,7 @@ class PIDController:
             delimiter=",",
             skip_header=1,
             names=["pwm", "velocity"])
-        z = np.polyfit(data["pwm"], data["velocity"], polyfit_deg)
+        z = np.polyfit(data["velocity"], data["pwm"], polyfit_deg)
         return np.poly1d(z)
 
     def __callback_esc_calibrated(self, msg: Bool):
