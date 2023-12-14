@@ -16,9 +16,9 @@ class VehiclePidDistance(Vehicle):
         max_deceleration = vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
         max_acceleration = vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
 
-        kp = 10
+        kp = 8
         ki = 6
-        kd = 2
+        kd = 8
 
         self.pid = PID(kp, ki, kd, tick_in_s, min_speed, max_speed, -max_deceleration, max_acceleration)
 

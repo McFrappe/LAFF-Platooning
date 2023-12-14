@@ -1,7 +1,8 @@
 import sys, getopt
-from src.platoon.platoon_bidirectional_pid import PlatoonBidirectionalPidS3, PlatoonBidirectionalPidS1, PlatoonBidirectionalPidS2
-from src.platoon.platoon_bidirectional_state_space import PlatoonBidirectionalStateSpaceS1, PlatoonBidirectionalStateSpaceS2, PlatoonBidirectionalStateSpaceS3
 from src.platoon.platoon_pid_distance import PlatoonPidDistanceS1, PlatoonPidDistanceS2, PlatoonPidDistanceS3, PlatoonPidDistanceS4
+from src.platoon.platoon_bidirectional_pid import PlatoonBidirectionalPidS3, PlatoonBidirectionalPidS1, PlatoonBidirectionalPidS2
+from src.platoon.platoon_bidirectional_state_space import PlatoonBidirectionalStateSpaceS1, PlatoonBidirectionalStateSpaceS2, PlatoonBidirectionalStateSpaceS3, PlatoonBidirectionalStateSpaceS4
+from src.platoon.platoon_bidirectional_state_space_with_pid import PlatoonBidirectionalStateSpaceWithPidS1, PlatoonBidirectionalStateSpaceWithPidS2, PlatoonBidirectionalStateSpaceWithPidS3, PlatoonBidirectionalStateSpaceWithPidS4
 from src.common.plot import plot_speed, plot_travel_distance, plot_distances, plot_position
 from src.vehicle.vehicle_specs import truck, kit_car, rc_car
 from src.common.constants import tick_in_s
@@ -57,6 +58,21 @@ def simulate(num_tick, num_vehicles, scenario, type, model, period):
         case (3,3,3):
             p = PlatoonBidirectionalStateSpaceS3(num_vehicles, rc_car, period)
             suffix = "bidirectional-state-space-model-s3-rc-vehicle"
+        case (4,1,3):
+            p = PlatoonBidirectionalStateSpaceS4(num_vehicles, truck, period)
+            suffix = "bidirectional-state-space-model-s4-truck"
+        case (1,1,4):
+            p = PlatoonBidirectionalStateSpaceWithPidS1(num_vehicles, truck, period)
+            suffix = "bidirectional-state-space-with-pid-model-s1-truck"
+        case (2,1,4):
+            p = PlatoonBidirectionalStateSpaceWithPidS2(num_vehicles, truck, period)
+            suffix = "bidirectional-state-space-with-pid-model-s2-truck"
+        case (3,1,4):
+            p = PlatoonBidirectionalStateSpaceWithPidS3(num_vehicles, truck, period)
+            suffix = "bidirectional-state-space-with-pid-model-s3-truck"
+        case (4,1,4):
+            p = PlatoonBidirectionalStateSpaceWithPidS4(num_vehicles, truck, period)
+            suffix = "bidirectional-state-space-with-pid-model-s4-truck"
         case (_,_,_):
             print("Unknown option")
             exit(1)

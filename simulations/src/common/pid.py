@@ -28,6 +28,5 @@ class PID:
 
         increase = min(max(desire_increase, self.pid_increase_min), self.pid_increase_max)
         self.u = min(max(self.u + increase, self.pid_min), self.pid_max)
-        print(f'{error}, {desire_increase}, {desired_u}, {self.u}')
 
         return self.u
