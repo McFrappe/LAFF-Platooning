@@ -1,14 +1,17 @@
 SHELL := /bin/bash
 BRANCH ?= main
+ID ?= default
 PUBLISH_CMD_ARGS :=
 
 PASSWORD ?= laff
 IP := $(shell ip addr show wlan0 | grep -Po4 'inet \K[\d.]+')
 VEHICLE_ID := $(shell cat /tmp/VEHICLE_ID || echo 'vehicle_0')
 ROS_MASTER_URI := $(shell cat /tmp/ROS_MASTER_URI || echo 'http://localhost:11311')
+HARDWARE_ID := $(shell cat /home/laff/HARDWARE_ID || echo 'default')
 
 
 install:
+	echo $(ID) > /home/laff/HARDWARE_ID
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
 	sudo apt install -y curl
 	curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add
@@ -72,13 +75,13 @@ publish:
 	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash || source /opt/ros/noetic/setup.bash; rostopic pub -1 $(PUBLISH_CMD_ARGS)"
 
 run_joyit:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch joyit vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID) hardware_id:=$(HARDWARE_ID)"
 
 run_rcv:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID) hardware_id:=$(HARDWARE_ID)"
 
 run_rcv_joystick:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle_joystick.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv vehicle_joystick.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID) hardware_id:=$(HARDWARE_ID)"
 
 run_rcv_velocity_pwm_mapper:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv velocity_pwm_mapper.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID)"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv velocity_pwm_mapper.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID) hardware_id:=$(HARDWARE_ID)"

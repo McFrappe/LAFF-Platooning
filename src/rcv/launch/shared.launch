@@ -1,6 +1,7 @@
 <launch>
-    <arg name="vehicle_id" default="vehicle" />
-    <arg name="velocity_pwm_map_path" default="" />
+    <arg name="vehicle_id" default="vehicle_0" />
+    <arg name="hardware_id" default="default" />
+    <arg name="velocity_pwm_map_path" default="$(find rcv)/assets/$(arg hardware_id)" />
 
     <!-- Common nodes -->
     <node name="$(eval vehicle_id + '_esc_node')" pkg="rcv" type="esc.py" respawn="true" />
