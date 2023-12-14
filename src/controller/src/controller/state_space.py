@@ -72,15 +72,15 @@ class BidirectionalStateSpace:
         self,
         order,
         position,
-        distance,
+        position_in_front,
         velocity_leader
     ):
         if order == 0 or order >= self.__total_vehicles:
             return 0
 
         ref_self = self.__get_valid_reference(velocity_leader, order)
-        ref_infront = self.__get_valid_reference(velocity_leader, order - 1)
-        return -((ref_self - position) - (ref_infront - distance))
+        ref_in_front = self.__get_valid_reference(velocity_leader, order - 1)
+        return -((ref_self - position) - (ref_in_front - position_in_front))
 
     def __get_valid_reference(self, velocity_leader, order):
         speed_in_m_per_s = velocity_leader / 3.6
@@ -128,13 +128,13 @@ class BidirectionalStateSpace:
             self.__get_positioning_error(
                 self.__order - 1,
                 position_in_front,
-                distance_in_front,
+                0, # For 3 vehicles, this will always be 0
                 velocity_leader
             ),
             self.__get_positioning_error(
                 self.__order + 1,
                 position_behind,
-                distance_behind,
+                position_self,
                 velocity_leader
             )
         ])
