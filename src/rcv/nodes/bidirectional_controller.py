@@ -6,6 +6,7 @@ import numpy as np
 from sensor_msgs.msg import Range
 from std_msgs.msg import Int32, Float32, Bool
 
+from rcv.velocity_mapper import VelocityMapper
 from controller.state_space import BidirectionalStateSpace
 
 VEHICLE_ID_LEADER = "vehicle_0"
@@ -100,9 +101,12 @@ class BidirectionalController:
         self.__vehicle_in_front = vehicle_in_front
 
         self.__state_space = BidirectionalStateSpace()
-        self.__pwm_mapper = self.__create_velocity_pwm_mapper(
+        self.__velocity_mapper = VelocityMapper(
             rospy.get_param("VELOCITY_PWM_MAP_FILE_PATH"),
-            rospy.get_param("VELOCITY_PWM_MAP_POLYFIT_DEGREE"))
+            rospy.get_param("VELOCITY_PWM_MAP_POLYFIT_DEGREE"),
+            self.__idle,
+            self.__min_forward,
+            self.__max_forward)
 
         self.__pwm_publisher = rospy.Publisher(
             f"{self.__id}/pwm",
@@ -170,15 +174,6 @@ class BidirectionalController:
 
         return (vehicle_leader, vehicle_in_front, vehicle_behind)
 
-    def __create_velocity_pwm_mapper(self, map_file, polyfit_deg):
-        data = np.genfromtxt(
-            map_file,
-            delimiter=",",
-            skip_header=1,
-            names=["pwm", "velocity"])
-        z = np.polyfit(data["velocity"], data["pwm"], polyfit_deg)
-        return np.poly1d(z)
-
     def __callback_esc_calibrated(self, msg: Bool):
         """
         Callback for when the ESC has been calibrated.
@@ -220,10 +215,7 @@ class BidirectionalController:
         new_pwm = self.__idle
         if self.__has_target or not self.__stop_vehicle_if_no_target:
             desired_velocity = self.__state_space.update()
-            # TODO: Is this the desired velocity, or the change?
-            new_pwm = int(min(
-                max(self.__pwm_mapper(desired_velocity), self.__idle),
-                self.__max_forward))
+            new_pwm = self.__velocity_mapper.to_pwm(desired_velocity)
 
         self.__pwm_publisher.publish(new_pwm)
         self.__control_publisher.publish(desired_velocity)
