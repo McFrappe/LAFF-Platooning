@@ -71,7 +71,7 @@ class BidirectionalStateSpace:
     def __get_positioning_error(
         self,
         order,
-        position,
+        position_self,
         position_in_front,
         velocity_leader
     ):
@@ -80,7 +80,7 @@ class BidirectionalStateSpace:
 
         ref_self = self.__get_valid_reference(velocity_leader, order)
         ref_in_front = self.__get_valid_reference(velocity_leader, order - 1)
-        return -((ref_self - position) - (ref_in_front - position_in_front))
+        return -((ref_self - position_self) - (ref_in_front - position_in_front))
 
     def __get_valid_reference(self, velocity_leader, order):
         speed_in_m_per_s = velocity_leader / 3.6
