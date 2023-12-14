@@ -274,9 +274,9 @@ class BidirectionalController:
         self.__pwm_publisher.publish(self.__idle)
 
 if __name__ == "__main__":
-    rospy.init_node("pid_controller_node", anonymous=True)
-    controller = PIDController()
+    rospy.init_node("bidirectional_controller_node", anonymous=True)
+    controller = BidirectionalController()
     rospy.on_shutdown(controller.stop)
 
-    rospy.loginfo("PID controller node started.")
+    rospy.loginfo("Bidirectional controller node started.")
     rospy.spin()
