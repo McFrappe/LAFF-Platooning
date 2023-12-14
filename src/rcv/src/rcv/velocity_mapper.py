@@ -2,12 +2,12 @@ import numpy as np
 
 class VelocityMapper:
     def __init__(
-            self,
-            map_file: str,
-            polyfit_deg: int,
-            idle: int,
-            min_forward: int
-            max_forward: int,
+        self,
+        map_file: str,
+        polyfit_deg: int,
+        idle: int,
+        min_forward: int
+        max_forward: int,
     ):
         self.__data = np.genfromtxt(
             map_file,

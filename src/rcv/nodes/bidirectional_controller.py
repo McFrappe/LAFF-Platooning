@@ -7,13 +7,13 @@ from sensor_msgs.msg import Range
 from std_msgs.msg import Int32, Float32, Bool
 
 from rcv.velocity_mapper import VelocityMapper
-from controller.state_space import BidirectionalStateSpace
+from controller.state_space import BidirectionalStateSpace, VehicleDynamics
 
-VEHICLE_ID_LEADER = "vehicle_0"
 
 class AdjacentVehicle:
     def __init__(self, vehicle_id):
         self.__id = vehicle_id
+        self.__id_leader = rospy.get_param("VEHICLE_ID_LEADER")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
         self.__current_velocity = 0
         self.__current_distance = 0
@@ -67,14 +67,16 @@ class AdjacentVehicle:
         return distance_updated and velocity_updated
 
     def is_leader(self):
-        return self.__id == VEHICLE_ID_LEADER
+        return self.__id == self.__id_leader
 
 class BidirectionalController:
     def __init__(self):
         self.__id = rospy.get_param("VEHICLE_ID")
-        self.__period = rospy.get_param("BIDIRECTIONAL_CONTROL_PERIOD")
+        self.__id_leader = rospy.get_param("VEHICLE_ID_LEADER")
+        self.__order = self.__id[self.__id.index("_")+1:]
+        self.__period = rospy.get_param("BISS_CONTROL_PERIOD")
 
-        self.__margin_in_m = rospy.get_param("PID_PLATOONING_MARGIN_M")
+        self.__margin_in_m = rospy.get_param("BISS_MARGIN_M")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
         self.__stop_vehicle_if_no_target = rospy.get_param(
             "VEHICLE_STOP_IF_NO_OBJECT_VISIBLE")
@@ -90,17 +92,38 @@ class BidirectionalController:
         self.__current_velocity = 0
         self.__current_leader_velocity = 0
 
+        # TODO: Wait for some time before attempting this.
+        # Need to ensure that all vehicles are up and running first.
         (
-            vehicle_leader,
-            vehicle_in_front,
-            vehicle_behind
-        ) = self.__get_adjacent_vehicles()
+            self.__total_vehicles,
+            self.__vehicle_leader,
+            self.__vehicle_in_front,
+            self.__vehicle_behind
+        ) = self.__get_vehicles_in_platoon()
 
-        self.__vehicle_leader = vehicle_leader
-        self.__vehicle_behind = vehicle_behind
-        self.__vehicle_in_front = vehicle_in_front
-
-        self.__state_space = BidirectionalStateSpace()
+        self.__state_space = BidirectionalStateSpace(
+            self.__order,
+            self.__total_vehicles,
+            self.__margin_in_m,
+            self.__period,
+            VehicleDynamics(
+                rospy.get_param("MAX_VELOCITY"),
+                rospy.get_param("BISS_MAX_ACCELERATION"),
+                rospy.get_param("BISS_MAX_DECELERATION"),
+                rospy.get_param("BISS_MASS"),
+                rospy.get_param("BISS_SS_HP"),
+                np.array([
+                    rospy.get_param("BISS_SS_R_0"),
+                    rospy.get_param("BISS_SS_R_1"),
+                    rospy.get_param("BISS_SS_R_2")
+                ]),
+                np.array([
+                    rospy.get_param("BISS_SS_A_0"),
+                    rospy.get_param("BISS_SS_A_1"),
+                    rospy.get_param("BISS_SS_A_2")
+                ])
+            )
+        )
         self.__velocity_mapper = VelocityMapper(
             rospy.get_param("VELOCITY_PWM_MAP_FILE_PATH"),
             rospy.get_param("VELOCITY_PWM_MAP_POLYFIT_DEGREE"),
@@ -144,13 +167,12 @@ class BidirectionalController:
 
         rospy.Timer(rospy.Duration(self.__period), self.__perform_step)
 
-    def __get_adjacent_vehicles(self):
+    def __get_vehicles_in_platoon(self):
         """
-        Gets the vehicle id of the vehicle in front and behind.
+        Gets the vehicle  of the vehicle in front and behind.
         """
-        self_num = self.__id[self.__id.index("_")+1:]
-        vehicle_id_in_front = f"vehicle_{self_num-1}"
-        vehicle_id_behind = f"vehicle_{self_num-1}"
+        vehicle_id_in_front = f"vehicle_{self.__order-1}"
+        vehicle_id_behind = f"vehicle_{self.__order+1}"
 
         vehicle_leader = None
         vehicle_behind = None
@@ -166,13 +188,26 @@ class BidirectionalController:
 
         if vehicle_in_front.is_leader():
             vehicle_leader = vehicle_in_front
-        elif self.__id != VEHICLE_ID_LEADER:
-            vehicle_leader = AdjacentVehicle(VEHICLE_ID_LEADER)
+        elif self.__id != self.__id_leader:
+            vehicle_leader = AdjacentVehicle(self.__id_leader)
         else:
             rospy.signal_shutdown(
                 "The leader vehicle can not run bidirectional controller")
 
-        return (vehicle_leader, vehicle_in_front, vehicle_behind)
+        # Myself and a leader vehicle
+        total_vehicles = self.__order + 1
+        for i in range(total_vehicles, 25):
+            if f"/vehicle_{i}/velocity" in topics:
+                total_vehicles += 1
+            else:
+                break
+
+        return (
+            total_vehicles,
+            vehicle_leader,
+            vehicle_in_front,
+            vehicle_behind
+        )
 
     def __callback_esc_calibrated(self, msg: Bool):
         """

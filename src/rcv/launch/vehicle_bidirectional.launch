@@ -1,0 +1,29 @@
+<launch>
+    <include file="$(find rcv)/launch/vehicle.launch" pass_all_args="true" />
+
+    <node
+        name="$(eval vehicle_id + '_bidirectional_controller')"
+        pkg="rcv"
+        type="bidirectional_controller.py"
+        respawn="true"
+    />
+
+    <param name="BISS_MARGIN_M" type="double" value="0.5" />
+
+    <!-- Vehicle dynamics -->
+    <param name="BISS_MASS" type="double" value="1.8" />
+    <param name="BISS_MAX_ACCELERATION" type="double" value="0.08" />
+    <param name="BISS_MAX_DECELERATION" type="double" value="0.3" />
+
+    <!-- State space dynamics -->
+    <param name="BISS_SS_HP" type="double" value="0.5" />
+    <param name="BISS_SS_R_0" type="double" value="200" />
+    <param name="BISS_SS_R_1" type="double" value="200" />
+    <param name="BISS_SS_R_2" type="double" value="200" />
+    <param name="BISS_SS_A_0" type="double" value="0" />
+    <param name="BISS_SS_A_1" type="double" value="300" />
+    <param name="BISS_SS_A_2" type="double" value="50" />
+
+    <!-- Periods -->
+    <param name="BISS_CONTROL_PERIOD" type="double" value="0.1" />
+</launch>
