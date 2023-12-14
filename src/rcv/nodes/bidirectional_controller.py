@@ -90,7 +90,6 @@ class BidirectionalController:
 
         self.__min_forward = rospy.get_param("MIN_FORWARD_MOTOR")
         self.__max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
-        self.__max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
         self.__idle = rospy.get_param("IDLE_MOTOR")
 
         self.__has_target = False
