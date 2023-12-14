@@ -11,7 +11,7 @@ from controller.state_space import BidirectionalStateSpace, VehicleDynamics
 
 
 class AdjacentVehicle:
-    def __init__(self, vehicle_id):
+    def __init__(self, vehicle_id, should_subscribe=True):
         self.__id = vehicle_id
         self.__id_leader = rospy.get_param("VEHICLE_ID_LEADER")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
@@ -21,18 +21,19 @@ class AdjacentVehicle:
         self.__distance_last_update = -1
         self.__velocity_last_update = -1
 
-        self.__velocity_subscriber = rospy.Subscriber(
-            f"/{self.__id}/velocity",
-            Float32,
-            self.__callback_velocity,
-            queue_size=self.__message_queue_size)
-
-        if not self.is_leader():
-            self.__distance_subscriber = rospy.Subscriber(
-                f"/{self.__id}/distance",
-                Range,
-                self.__callback_distance,
+        if should_subscribe:
+            self.__velocity_subscriber = rospy.Subscriber(
+                f"/{self.__id}/velocity",
+                Float32,
+                self.__callback_velocity,
                 queue_size=self.__message_queue_size)
+
+            if not self.is_leader():
+                self.__distance_subscriber = rospy.Subscriber(
+                    f"/{self.__id}/distance",
+                    Range,
+                    self.__callback_distance,
+                    queue_size=self.__message_queue_size)
 
     def __callback_velocity(self, msg: Float32):
         self.__current_velocity = msg.data
@@ -56,6 +57,12 @@ class AdjacentVehicle:
         'period'. E.g. if period is 0.1, this will return True if both
         velocity and distance has received new values in the past 0.1s.
         """
+        if (
+            self.__distance_last_updated == -1 or
+            self.__velocity_last_updated == -1
+        ):
+            return False
+
         now = time.time_ns()
         distance_updated = ((now-self.__distance_last_update) / 10**9) <= period
         velocity_updated = ((now-self.__velocity_last_update) / 10**9) <= period
@@ -110,7 +117,8 @@ class BidirectionalController:
                 rospy.get_param("MAX_VELOCITY"),
                 rospy.get_param("BISS_MAX_ACCELERATION"),
                 rospy.get_param("BISS_MAX_DECELERATION"),
-                rospy.get_param("BISS_MASS"),
+                rospy.get_param("BISS_VEHICLE_MASS"),
+                rospy.get_param("BISS_VEHICLE_LENGTH"),
                 rospy.get_param("BISS_SS_HP"),
                 np.array([
                     rospy.get_param("BISS_SS_R_0"),
@@ -171,28 +179,27 @@ class BidirectionalController:
         """
         Gets the vehicle  of the vehicle in front and behind.
         """
-        vehicle_id_in_front = f"vehicle_{self.__order-1}"
-        vehicle_id_behind = f"vehicle_{self.__order+1}"
-
-        vehicle_leader = None
-        vehicle_behind = None
-        vehicle_in_front = None
+        if self.__order == 0:
+            rospy.signal_shutdown(
+                "The leader vehicle can not run bidirectional controller")
+            return
 
         topics = rospy.get_published_topics()
-
-        if f"/{vehicle_id_in_front}/velocity" in topics:
-            vehicle_in_front = AdjacentVehicle(vehicle_id_in_front)
-
-        if f"/{vehicle_id_behind}/velocity" in topics:
-            vehicle_behind = AdjacentVehicle(vehicle_id_behind)
+        vehicle_id_in_front = f"vehicle_{self.__order-1}"
+        vehicle_id_behind = f"vehicle_{self.__order+1}"
+        vehicle_in_front = AdjacentVehicle(
+            vehicle_id_in_front,
+            should_subscribe=f"/{vehicle_id_in_front}/velocity" in topics
+        )
+        vehicle_behind = AdjacentVehicle(
+            vehicle_id_behind,
+            should_subscribe=f"/{vehicle_id_behind}/velocity" in topics
+        )
 
         if vehicle_in_front.is_leader():
             vehicle_leader = vehicle_in_front
-        elif self.__id != self.__id_leader:
-            vehicle_leader = AdjacentVehicle(self.__id_leader)
         else:
-            rospy.signal_shutdown(
-                "The leader vehicle can not run bidirectional controller")
+            vehicle_leader = AdjacentVehicle(self.__id_leader)
 
         # Myself and a leader vehicle
         total_vehicles = self.__order + 1
@@ -249,7 +256,15 @@ class BidirectionalController:
         # and we have enabled the flag in the launch file.
         new_pwm = self.__idle
         if self.__has_target or not self.__stop_vehicle_if_no_target:
-            desired_velocity = self.__state_space.update()
+            desired_velocity = self.__state_space.update(
+                self.__current_distance,
+                self.__vehicle_in_front.distance,
+                self.__vehicle_behind.distance,
+                self.__current_velocity,
+                self.__vehicle_leader.velocity,
+                self.__vehicle_in_front.velocity,
+                self.__vehicle_behind.velocity,
+            )
             new_pwm = self.__velocity_mapper.to_pwm(desired_velocity)
 
         self.__pwm_publisher.publish(new_pwm)

@@ -8,11 +8,13 @@ class VehicleDynamics:
         max_acceleration,
         max_deceleration,
         mass,
+        length,
         ss_hp,
         ss_r,
         ss_a
     ):
         self.mass = mass
+        self.length = length
         self.max_speed = max_speed
         self.max_acceleration = max_acceleration
         self.max_deceleration = max_deceleration
@@ -66,14 +68,19 @@ class BidirectionalStateSpace:
             method="zoh"
         )
 
-    def __get_positioning_error(self, distance, leader_velocity):
-        ref_self = self.__get_min_distance(
-            leader_velocity, self.__order)
-        ref_infront = self.__get_min_distance(
-            leader_velocity, self.__order - 1)
+    def __get_positioning_error(
+        self,
+        order,
+        position,
+        distance,
+        leader_velocity
+    ):
+        if order == 0 or order >= self.__total_vehicles:
+            return 0
 
-        # TODO: Set self.position
-        return -((ref_self - self.position) - (ref_infront - distance))
+        ref_self = self.__get_min_distance(leader_velocity, order)
+        ref_infront = self.__get_min_distance(leader_velocity, order - 1)
+        return -((ref_self - position) - (ref_infront - distance))
 
     def __get_min_distance(self, leader_velocity, order):
         speed_in_m_per_s = leader_velocity / 3.6
@@ -86,7 +93,9 @@ class BidirectionalStateSpace:
 
     def update(
         self,
-        distance,
+        distance_self,
+        distance_in_front,
+        distance_behind,
         velocity_self,
         velocity_leader,
         velocity_in_front,
@@ -95,14 +104,39 @@ class BidirectionalStateSpace:
         """
         Calculates a new desired velocity based on adjacent vehicles.
         """
-        delta = self.__get_positioning_error(distance, velocity_leader)
-        state = np.array([self.__get_momentum(velocity_self), delta])
+        # HACK: Based on the assumption that we only have 3 vehicles,
+        # 2 followers and 1 leader.
+        if self.__order == 1:
+            position_in_front = 0
+            position_self = distance_self
+            position_behind = distance_self + distance_behind + \
+                self.__dynamcis.length
+        else:
+            position_in_front = distance_in_front
+            position_self = distance_self + distance_in_front + \
+                self.__dynamics.length
+            position_behind = 0
+
+        delta_self = self.__get_positioning_error(
+            self.__order, position_self, distance_self, velocity_leader)
+        state = np.array([self.__get_momentum(velocity_self), delta_self])
+
         inputs = np.array([
             velocity_leader,
             self.__get_momentum(velocity_in_front),
             self.__get_momentum(velocity_behind),
-            self.__get_positioning_error(??, velocity_in_front),
-            self.__get_positioning_error(??, velocity_behind)
+            self.__get_positioning_error(
+                self.__order - 1,
+                position_in_front,
+                distance_in_front,
+                velocity_leader
+            ),
+            self.__get_positioning_error(
+                self.__order + 1,
+                position_behind,
+                distance_behind,
+                velocity_leader
+            )
         ])
 
         return self.__C_dt @ (self.__A_dt @ state + self.__B_dt @ inputs)

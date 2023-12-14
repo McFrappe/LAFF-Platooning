@@ -11,7 +11,8 @@
     <param name="BISS_MARGIN_M" type="double" value="0.5" />
 
     <!-- Vehicle dynamics -->
-    <param name="BISS_MASS" type="double" value="1.8" />
+    <param name="BISS_VEHICLE_MASS" type="double" value="1.8" />
+    <param name="BISS_VEHICLE_LENGTH" type="double" value="0.4" />
     <param name="BISS_MAX_ACCELERATION" type="double" value="0.08" />
     <param name="BISS_MAX_DECELERATION" type="double" value="0.3" />
 
