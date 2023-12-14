@@ -89,15 +89,6 @@ class PIDController:
 
         rospy.Timer(rospy.Duration(self.__period), self.__perform_step)
 
-    def __create_velocity_pwm_mapper(self, map_file, polyfit_deg):
-        data = np.genfromtxt(
-            map_file,
-            delimiter=",",
-            skip_header=1,
-            names=["pwm", "velocity"])
-        z = np.polyfit(data["velocity"], data["pwm"], polyfit_deg)
-        return np.poly1d(z)
-
     def __callback_esc_calibrated(self, msg: Bool):
         """
         Callback for when the ESC has been calibrated.
