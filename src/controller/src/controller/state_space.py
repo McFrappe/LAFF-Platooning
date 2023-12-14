@@ -73,17 +73,17 @@ class BidirectionalStateSpace:
         order,
         position,
         distance,
-        leader_velocity
+        velocity_leader
     ):
         if order == 0 or order >= self.__total_vehicles:
             return 0
 
-        ref_self = self.__get_min_distance(leader_velocity, order)
-        ref_infront = self.__get_min_distance(leader_velocity, order - 1)
+        ref_self = self.__get_min_distance(velocity_leader, order)
+        ref_infront = self.__get_min_distance(velocity_leader, order - 1)
         return -((ref_self - position) - (ref_infront - distance))
 
-    def __get_min_distance(self, leader_velocity, order):
-        speed_in_m_per_s = leader_velocity / 3.6
+    def __get_min_distance(self, velocity_leader, order):
+        speed_in_m_per_s = velocity_leader / 3.6
         margin_in_m = self.__min_distance
         minimal_distance = speed_in_m_per_s * self.period + margin_in_m
         return minimal_distance * order
