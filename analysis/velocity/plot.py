@@ -1,11 +1,13 @@
+import os
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 plots = []
 
 def add_plot_from_file(fname):
     data = np.genfromtxt(
-        fname,
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), fname),
         delimiter=",",
         skip_header=1,
         names=["t", "v"])
@@ -19,6 +21,7 @@ if __name__ == "__main__":
     add_plot_from_file("data/6tape.csv")
     add_plot_from_file("data/1tape.csv")
 
+    mpl.rcParams["backend"] = "TkAgg"
     plt.rcParams['figure.figsize'] = [12, 8]
     fig, axs = plt.subplots(len(plots))
     fig.tight_layout()
@@ -40,5 +43,4 @@ if __name__ == "__main__":
 
     plt.xlabel('Time (s)')
     plt.ylabel('Velocity (km/h)')
-    plt.savefig("velocity.png")
     plt.show()

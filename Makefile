@@ -88,3 +88,9 @@ run_rcv_joystick:
 
 run_rcv_velocity_pwm_mapper:
 	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash; ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) roslaunch rcv velocity_pwm_mapper.launch --screen --pid /tmp/laff.pid vehicle_id:=$(VEHICLE_ID) hardware_id:=$(HARDWARE_ID)"
+
+analyse_velocity_sensor:
+	python3 analysis/velocity/plot.py
+
+analyse_velocity_pwm_map:
+	python3 analysis/velocity_pwm_mapper/plot.py src/rcv/assets/$(HARDWARE_ID).csv
