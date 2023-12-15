@@ -3,7 +3,7 @@
 
     <node
         name="$(eval vehicle_id + '_velocity_pwm_mapper)"
-        pkg="common"
+        pkg="rcv"
         type="velocity_pwm_mapper.py"
         required="true"
     />
