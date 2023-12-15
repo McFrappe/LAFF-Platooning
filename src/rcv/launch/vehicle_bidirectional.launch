@@ -27,4 +27,5 @@
 
     <!-- Periods -->
     <param name="BISS_CONTROL_PERIOD" type="double" value="0.1" />
+    <param name="BISS_INITIALIZE_WAIT_TIME_S" type="double" value="10" />
 </launch>

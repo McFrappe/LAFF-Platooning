@@ -82,6 +82,8 @@ class BidirectionalController:
         self.__id_leader = rospy.get_param("VEHICLE_ID_LEADER")
         self.__order = self.__id[self.__id.index("_")+1:]
         self.__period = rospy.get_param("BISS_CONTROL_PERIOD")
+        self.__initialize_wait_time_s = rospy.get_param(
+            "BISS_INITIALIZE_WAIT_TIME_S")
 
         self.__margin_in_m = rospy.get_param("BISS_MARGIN_M")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
@@ -92,45 +94,19 @@ class BidirectionalController:
         self.__max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
         self.__idle = rospy.get_param("IDLE_MOTOR")
 
+        self.__initialized = False
         self.__has_target = False
         self.__esc_calibrated = False
         self.__current_distance = 0
         self.__current_velocity = 0
-        self.__current_leader_velocity = 0
 
-        # TODO: Wait for some time before attempting this.
-        # Need to ensure that all vehicles are up and running first.
-        (
-            self.__total_vehicles,
-            self.__vehicle_leader,
-            self.__vehicle_in_front,
-            self.__vehicle_behind
-        ) = self.__get_vehicles_in_platoon()
+        # Set on initialize
+        self.__total_vehicles = 0
+        self.__state_space = None
+        self.__vehicle_leader = None
+        self.__vehicle_in_front = None
+        self.__vehicle_behind = None
 
-        self.__state_space = BidirectionalStateSpace(
-            self.__order,
-            self.__total_vehicles,
-            self.__margin_in_m,
-            self.__period,
-            VehicleDynamics(
-                rospy.get_param("MAX_VELOCITY"),
-                rospy.get_param("BISS_MAX_ACCELERATION"),
-                rospy.get_param("BISS_MAX_DECELERATION"),
-                rospy.get_param("BISS_VEHICLE_MASS"),
-                rospy.get_param("BISS_VEHICLE_LENGTH"),
-                rospy.get_param("BISS_SS_HP"),
-                np.array([
-                    rospy.get_param("BISS_SS_R_0"),
-                    rospy.get_param("BISS_SS_R_1"),
-                    rospy.get_param("BISS_SS_R_2")
-                ]),
-                np.array([
-                    rospy.get_param("BISS_SS_A_0"),
-                    rospy.get_param("BISS_SS_A_1"),
-                    rospy.get_param("BISS_SS_A_2")
-                ])
-            )
-        )
         self.__velocity_mapper = VelocityMapper(
             rospy.get_param("VELOCITY_PWM_MAP_FILE_PATH"),
             rospy.get_param("VELOCITY_PWM_MAP_POLYFIT_DEGREE"),
@@ -172,6 +148,11 @@ class BidirectionalController:
             self.__callback_has_target,
             queue_size=self.__message_queue_size)
 
+        rospy.Timer(
+            rospy.Duration(self.__initialize_wait_time_s),
+            self.__initialize,
+            oneshot=True
+        )
         rospy.Timer(rospy.Duration(self.__period), self.__perform_step)
 
     def __get_vehicles_in_platoon(self):
@@ -215,6 +196,49 @@ class BidirectionalController:
             vehicle_behind
         )
 
+    def __initialize(self, event):
+        """
+        Wait for some time before attempting to find other vehicles
+        in the platoon. This is because we need to ensure that all
+        vehicles are up and running before checking which topics
+        (vehicles) are available.
+
+        A better solution might be to do this manually via the
+        orchestrator utility once we see that everything has started.
+        """
+        (
+            self.__total_vehicles,
+            self.__vehicle_leader,
+            self.__vehicle_in_front,
+            self.__vehicle_behind
+        ) = self.__get_vehicles_in_platoon()
+
+        self.__state_space = BidirectionalStateSpace(
+            self.__order,
+            self.__total_vehicles,
+            self.__margin_in_m,
+            self.__period,
+            VehicleDynamics(
+                rospy.get_param("MAX_VELOCITY"),
+                rospy.get_param("BISS_MAX_ACCELERATION"),
+                rospy.get_param("BISS_MAX_DECELERATION"),
+                rospy.get_param("BISS_VEHICLE_MASS"),
+                rospy.get_param("BISS_VEHICLE_LENGTH"),
+                rospy.get_param("BISS_SS_HP"),
+                np.array([
+                    rospy.get_param("BISS_SS_R_0"),
+                    rospy.get_param("BISS_SS_R_1"),
+                    rospy.get_param("BISS_SS_R_2")
+                ]),
+                np.array([
+                    rospy.get_param("BISS_SS_A_0"),
+                    rospy.get_param("BISS_SS_A_1"),
+                    rospy.get_param("BISS_SS_A_2")
+                ])
+            )
+        )
+        self.__initialized = True
+
     def __callback_esc_calibrated(self, msg: Bool):
         """
         Callback for when the ESC has been calibrated.
@@ -233,13 +257,6 @@ class BidirectionalController:
         """
         self.__current_velocity = msg.data
 
-    def __callback_leader_velocity(self, msg: Float32):
-        """
-        Callback for the leader velocity subscriber.
-        """
-        rospy.loginfo(f"Leader velocity: {msg.data}")
-        self.__current_leader_velocity = msg.data
-
     def __callback_has_target(self, msg: Bool):
         self.__has_target = msg.data
 
@@ -248,12 +265,14 @@ class BidirectionalController:
         return speed_in_m_per_s * self.__period * 2 + self.__margin_in_m
 
     def __perform_step(self, event):
-        if not self.__esc_calibrated:
+        if not self.__esc_calibrated or not self.__initialized:
             return
 
         # Only apply controller if we have an object to follow,
         # and we have enabled the flag in the launch file.
         new_pwm = self.__idle
+        desired_velocity = 0
+
         if self.__has_target or not self.__stop_vehicle_if_no_target:
             desired_velocity = self.__state_space.update(
                 self.__current_distance,
