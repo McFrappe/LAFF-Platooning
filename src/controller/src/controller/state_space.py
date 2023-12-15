@@ -30,13 +30,13 @@ class BidirectionalStateSpace:
         self,
         order: int,
         total_vehicles: int,
-        min_distance: float,
+        min_margin_in_m: float,
         period: float,
         dynamics: VehicleDynamics
     ):
         self.__order = order
         self.__total_vehicles = total_vehicles
-        self.__min_distance = min_distance
+        self.__min_margin_in_m = min_margin_in_m
         self.__period = period
         self.__dynamics = dynamics
 
@@ -78,15 +78,14 @@ class BidirectionalStateSpace:
         if order == 0 or order >= self.__total_vehicles:
             return 0
 
-        ref_self = self.__get_valid_reference(velocity_leader, order)
-        ref_in_front = self.__get_valid_reference(velocity_leader, order - 1)
+        ref_self = self.__get_reference(velocity_leader, order)
+        ref_in_front = self.__get_reference(velocity_leader, order - 1)
         return -((ref_self - position_self) - (ref_in_front - position_in_front))
 
-    def __get_valid_reference(self, velocity_leader, order):
+    def __get_reference(self, velocity_leader, order):
         speed_in_m_per_s = velocity_leader / 3.6
-        margin_in_m = self.__min_distance
-        minimal_distance = speed_in_m_per_s * self.period + margin_in_m
-        return minimal_distance * order
+        min_distance = speed_in_m_per_s * self.__period + self.__min_margin_in_m
+        return min_distance * order
 
     def __get_momentum(self, velocity):
         return self.__dynamics.mass * velocity
