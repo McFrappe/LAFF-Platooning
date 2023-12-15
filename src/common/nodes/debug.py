@@ -14,7 +14,7 @@ class DebugController:
         self.__distance = 0
         self.__pwm = 0
         self.__velocity = 0
-        self.__pid = 0
+        self.__control = 0
 
         self.__debug_publisher = rospy.Publisher(
             f"{self.__id}/debug",
@@ -39,10 +39,10 @@ class DebugController:
             self.__callback_pwm,
             queue_size=self.__message_queue_size)
 
-        self.__pid_subscriber = rospy.Subscriber(
-            f"{self.__id}/pid",
+        self.__control_subscriber = rospy.Subscriber(
+            f"{self.__id}/control",
             Float32,
-            self.__callback_pid,
+            self.__callback_control,
             queue_size=self.__message_queue_size)
 
         self.__velocity_subscriber = rospy.Subscriber(
@@ -62,19 +62,19 @@ class DebugController:
     def __callback_pwm(self, msg: Int32):
         self.__pwm = msg.data
 
-    def __callback_pid(self, msg: Float32):
-        self.__pid = msg.data
+    def __callback_control(self, msg: Float32):
+        self.__control = msg.data
 
     def __callback_velocity(self, msg: Float32):
         self.__velocity = msg.data
 
     def __publish_debug(self, event):
         msg = f"[{self.__id}]"
-        msg += f" steering angle: {self.__steering_angle},"
-        msg += f" distance: {self.__distance},"
+        msg += f" angle: {self.__steering_angle},"
+        msg += f" dist: {self.__distance},"
         msg += f" pwm: {self.__pwm},"
-        msg += f" PID: {self.__pid},"
-        msg += f" velocity: {self.__velocity}"
+        msg += f" ctrl: {self.__control},"
+        msg += f" vel: {self.__velocity}"
         self.__debug_publisher.publish(msg)
         rospy.loginfo(msg)
 
@@ -82,7 +82,7 @@ class DebugController:
         self.__steering_angle_subscriber.unregister()
         self.__distance_subscriber.unregister()
         self.__pwm_subscriber.unregister()
-        self.__pid_subscriber.unregister()
+        self.__control_subscriber.unregister()
         self.__velocity_subscriber.unregister()
 
 

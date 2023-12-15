@@ -1,0 +1,29 @@
+<launch>
+    <include file="$(find rcv)/launch/vehicle.launch" pass_all_args="true" />
+
+    <node
+        name="$(eval vehicle_id + '_pid_controller')"
+        pkg="rcv"
+        type="pid_controller.py"
+        respawn="true"
+    />
+
+    <!-- PID platooning controller -->
+    <param name="K_PP" type="double" value="500" />
+    <param name="K_PI" type="double" value="0" />
+    <param name="K_PD" type="double" value="2000" />
+    <param name="PID_PMIN" type="double" value="-9000" />
+    <param name="PID_PMAX" type="double" value="5000" />
+    <param name="PID_PLATOONING_MARGIN_M" type="double" value="0.2" />
+
+    <!-- PID speed controller -->
+    <param name="K_SP" type="double" value="1" />
+    <param name="K_SI" type="double" value="20" />
+    <param name="K_SD" type="double" value="0.002" />
+    <param name="PID_SMIN" type="double" value="-20000" />
+    <param name="PID_SMAX" type="double" value="20000" />
+    <param name="PID_SPEED_REFERENCE" type="double" value="10" />
+
+    <!-- Periods -->
+    <param name="PID_CONTROL_PERIOD" type="double" value="0.01" />
+</launch>

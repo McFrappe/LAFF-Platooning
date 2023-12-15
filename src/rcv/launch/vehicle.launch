@@ -1,10 +1,24 @@
 <launch>
     <include file="$(find rcv)/launch/shared.launch" pass_all_args="true" />
 
-    <node name="$(eval vehicle_id + '_pid_controller')" pkg="rcv" type="pid_controller.py" respawn="true" />
-    <node name="$(eval vehicle_id + '_distance_node')" pkg="common" type="distance.py" respawn="true" />
-    <node name="$(eval vehicle_id + '_object_follower_node')" pkg="common" type="object_follower.py" respawn="true" />
-    <node name="$(eval vehicle_id + '_pixy2_node')" pkg="pixy2_node" type="pixy2_node" respawn="true">
+    <node
+        name="$(eval vehicle_id + '_distance_node')"
+        pkg="common"
+        type="distance.py"
+        respawn="true"
+    />
+    <node
+        name="$(eval vehicle_id + '_object_follower_node')"
+        pkg="common"
+        type="object_follower.py"
+        respawn="true"
+    />
+    <node
+        name="$(eval vehicle_id + '_pixy2_node')"
+        pkg="pixy2_node"
+        type="pixy2_node"
+        respawn="true"
+    >
         <param name="rate" value="60.0" />
         <param name="use_servos" value="false" />
         <param name="enable_lamp" value="true" />
@@ -20,22 +34,6 @@
     <param name="OBJECT_FOLLOWER_PID_MIN" type="double" value="-200" />
     <param name="OBJECT_FOLLOWER_PID_MAX" type="double" value="200" />
 
-    <!-- PID platooning controller -->
-    <param name="K_PP" type="double" value="500" />
-    <param name="K_PI" type="double" value="0" />
-    <param name="K_PD" type="double" value="2000" />
-    <param name="PID_PMIN" type="double" value="-9000" />
-    <param name="PID_PMAX" type="double" value="5000" />
-    <param name="PID_PLATOONING_MARGIN_M" type="double" value="0.2" />
-
-    <!-- PID speed controller -->
-    <param name="K_SP" type="double" value="1" />
-    <param name="K_SI" type="double" value="20" />
-    <param name="K_SD" type="double" value="0.002" />
-    <param name="PID_SMIN" type="double" value="-20000" />
-    <param name="PID_SMAX" type="double" value="20000" />
-    <param name="PID_SPEED_REFERENCE" type="double" value="10" />
-
     <!-- Minimum and maximum velocity allowed. -->
     <param name="VELOCITY_MIN" type="int" value="0" />
     <param name="VELOCITY_MAX" type="int" value="8" />
@@ -47,7 +45,6 @@
     <!-- Publisher periods -->
     <param name="DISTANCE_PUBLISH_PERIOD" type="double" value="0.01" />
     <param name="OBJECT_FOLLOWER_PERIOD" type="double" value="0.0167" />
-    <param name="PID_CONTROL_PERIOD" type="double" value="0.01" />
 
     <!-- Ultrasonic node -->
     <param name="MINIMUM_DISTANCE_THRESHOLD" type="int" value="10" />
@@ -57,8 +54,4 @@
     <param name="ULTRASONIC_MIN_RANGE" type="int" value="3" />
     <param name="ULTRASONIC_MAX_RANGE" type="int" value="400" />
     <param name="ULTRASONIC_FOV" type="double" value="0.26179938779915" />
-
-    <!-- Motor node. -->
-    <!-- For some reason, this value is different for follower vehicles -->
-    <param name="IDLE_MOTOR" type="int" value="660000" />
 </launch>

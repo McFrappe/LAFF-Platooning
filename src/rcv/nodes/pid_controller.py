@@ -9,8 +9,8 @@ from controller.pid import PID
 
 class PIDController:
     def __init__(self):
-        self.__period = rospy.get_param("PID_CONTROL_PERIOD")
         self.__id = rospy.get_param("VEHICLE_ID")
+        self.__period = rospy.get_param("PID_CONTROL_PERIOD")
         self.__pid_platooning = PID(
             rospy.get_param("K_PP"),
             rospy.get_param("K_PI"),
@@ -27,9 +27,8 @@ class PIDController:
             rospy.get_param("PID_SMIN"),
             rospy.get_param("PID_SMAX"))
 
-        self.__velocity_min = rospy.get_param("VELOCITY_MIN")
-        self.__velocity_max = rospy.get_param("VELOCITY_MAX")
         self.__margin_in_m = rospy.get_param("PID_PLATOONING_MARGIN_M")
+        self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
         self.__stop_vehicle_if_no_target = rospy.get_param(
             "VEHICLE_STOP_IF_NO_OBJECT_VISIBLE")
 
@@ -37,13 +36,9 @@ class PIDController:
         self.__max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
         self.__max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
         self.__idle = rospy.get_param("IDLE_MOTOR")
-        self.__max_right = rospy.get_param("MAX_RIGHT_ANGLE")
-        self.__max_left = rospy.get_param("MAX_LEFT_ANGLE")
-        self.__zero = rospy.get_param("ZERO_ANGLE")
 
         self.__has_target = False
         self.__esc_calibrated = False
-        self.__steering_angle = self.__zero
         self.__desired_pwm = self.__idle
         self.__current_pwm = self.__idle
         self.__current_distance = 0
@@ -51,21 +46,14 @@ class PIDController:
         self.__current_leader_velocity = 0
         self.__is_leader = self.__id == "vehicle_0"
 
-        self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
-
         self.pwm_publisher = rospy.Publisher(
             f"{self.__id}/pwm",
             Int32,
             queue_size=self.__message_queue_size)
 
-        self.pid_publisher = rospy.Publisher(
-            f"{self.__id}/pid",
+        self.control_publisher = rospy.Publisher(
+            f"{self.__id}/control",
             Float32,
-            queue_size=self.__message_queue_size)
-
-        self.steering_angle_publisher = rospy.Publisher(
-            f"{self.__id}/steering_angle",
-            Int32,
             queue_size=self.__message_queue_size)
 
         self.distance_subscriber = rospy.Subscriber(
@@ -130,7 +118,7 @@ class PIDController:
         self.__has_target = msg.data
 
     def __min_distance(self):
-        speed_in_m_per_s = self.__current_velocity/3.6
+        speed_in_m_per_s = self.__current_velocity / 3.6
         return speed_in_m_per_s * self.__period * 2 + self.__margin_in_m
 
     def __perform_step(self, event):
@@ -156,7 +144,7 @@ class PIDController:
                 max(self.__desired_pwm, self.__max_reverse), self.__max_forward))
 
         self.pwm_publisher.publish(self.__current_pwm)
-        self.pid_publisher.publish(self.__desired_pwm)
+        self.control_publisher.publish(self.__desired_pwm)
 
     def stop(self):
         self.pwm_publisher.publish(self.__idle)

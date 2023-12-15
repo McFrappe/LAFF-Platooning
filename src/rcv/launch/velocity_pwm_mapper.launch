@@ -1,0 +1,14 @@
+<launch>
+    <include file="$(find rcv)/launch/shared.launch" pass_all_args="true" />
+
+    <node
+        name="$(eval vehicle_id + '_velocity_pwm_mapper)"
+        pkg="common"
+        type="velocity_pwm_mapper.py"
+        required="true"
+    />
+
+    <param name="MAPPER_OUT_PATH" type="string" value="$(arg velocity_pwm_map_path)" />
+    <param name="MAPPER_PWM_STEP_SIZE" type="int" value="20000" />
+    <param name="MAPPER_SAMPLES_PER_PWM_STEP" type="int" value="20" />
+</launch>
