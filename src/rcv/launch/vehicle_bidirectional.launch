@@ -8,6 +8,7 @@
         respawn="true"
     />
 
+    <param name="BISS_DEBUG_MODE" type="bool" value="true" />
     <param name="BISS_MARGIN_M" type="double" value="0.5" />
 
     <!-- Vehicle dynamics -->
@@ -27,5 +28,6 @@
 
     <!-- Periods -->
     <param name="BISS_CONTROL_PERIOD" type="double" value="0.1" />
+    <param name="BISS_DEBUG_PRINT_PERIOD" type="double" value="0.1" />
     <param name="BISS_INITIALIZE_WAIT_TIME_S" type="double" value="10" />
 </launch>

@@ -20,6 +20,7 @@ class AdjacentVehicle:
 
         self.__distance_last_update = -1
         self.__velocity_last_update = -1
+        self.__should_subscribe = should_subscribe
 
         if should_subscribe:
             self.__velocity_subscriber = rospy.Subscriber(
@@ -50,6 +51,10 @@ class AdjacentVehicle:
     @property
     def distance(self):
         return self.__current_distance
+
+    @property
+    def subscribed(self):
+        return self.__should_subscribe
 
     def has_updates_since(self, period):
         """
@@ -85,6 +90,9 @@ class BidirectionalController:
         self.__initialize_wait_time_s = rospy.get_param(
             "BISS_INITIALIZE_WAIT_TIME_S")
 
+        self.__debug_mode = rospy.get_param("BISS_DEBUG_MODE")
+        self.__debug_print_period = rospy.get_param("BISS_DEBUG_PRINT_PERIOD")
+
         self.__margin_in_m = rospy.get_param("BISS_MARGIN_M")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
         self.__stop_vehicle_if_no_target = rospy.get_param(
@@ -99,6 +107,7 @@ class BidirectionalController:
         self.__esc_calibrated = False
         self.__current_distance = 0
         self.__current_velocity = 0
+        self.__missed_updates = 0
 
         # Set on initialize
         self.__total_vehicles = 0
@@ -154,6 +163,10 @@ class BidirectionalController:
             oneshot=True
         )
         rospy.Timer(rospy.Duration(self.__period), self.__perform_step)
+
+        if self.__debug_mode:
+            rospy.Timer(
+                rospy.Duration(self.__debug_print_period), self.__debug_print)
 
     def __get_vehicles_in_platoon(self):
         """
@@ -260,6 +273,13 @@ class BidirectionalController:
     def __callback_has_target(self, msg: Bool):
         self.__has_target = msg.data
 
+    def __get_missed_update(self, vehicle):
+        # Dummy vehicle, no data being transmitted from it.
+        if not vehicle.subscribed:
+            return 0
+
+        return 0 if vehicle.has_updates_since(self.__period) else 1
+
     def __min_distance(self):
         speed_in_m_per_s = self.__current_velocity / 3.6
         return speed_in_m_per_s * self.__period * 2 + self.__margin_in_m
@@ -272,6 +292,15 @@ class BidirectionalController:
         # and we have enabled the flag in the launch file.
         new_pwm = self.__idle
         desired_velocity = 0
+
+        if self.__debug_mode:
+            self.__missed_updates += self.__get_missed_update(
+                self.__vehicle_in_front)
+            self.__missed_updates += self.__get_missed_update(
+                self.__vehicle_behind)
+            if self.__vehicle_in_front != self.__vehicle_leader:
+                self.__missed_updates += self.__get_missed_update(
+                    self.__vehicle_leader)
 
         if self.__has_target or not self.__stop_vehicle_if_no_target:
             desired_velocity = self.__state_space.update(
@@ -287,6 +316,18 @@ class BidirectionalController:
 
         self.__pwm_publisher.publish(new_pwm)
         self.__control_publisher.publish(desired_velocity)
+
+    def __debug_print(self, event):
+        msg = "Bidirectional controller\n"
+        msg += f"Velocity self: {self.__current_velocity}\n"
+        msg += f"Velocity leader: {self.__vehicle_leader.velocity}\n"
+        msg += f"Velocity in front: {self.__vehicle_in_front.velocity}\n"
+        msg += f"Velocity behind: {self.__vehicle_behind.velocity}\n"
+        msg += f"Distance self: {self.__current_distance}\n"
+        msg += f"Distance in front: {self.__vehicle_in_front.distance}\n"
+        msg += f"Distance behind: {self.__vehicle_behind.distance}\n"
+        msg += f"Missed updates: {self.__missed_updates}\n"
+        rospy.loginfo(msg)
 
     def stop(self):
         self.__pwm_publisher.publish(self.__idle)
