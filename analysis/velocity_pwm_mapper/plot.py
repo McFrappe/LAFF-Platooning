@@ -1,4 +1,6 @@
+import sys
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 MIN_FORWARD = 715000
@@ -8,37 +10,32 @@ MAX_VELOCITY = 10
 MIN_VELOCITY = 0
 POLYFIT_ORDER = 4
 
-plots = []
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Please input file name.")
+        sys.exit(1)
 
-def add_plot_from_file(fname):
     data = np.genfromtxt(
-        fname,
+        sys.argv[1],
         delimiter=",",
         skip_header=1,
         names=["pwm", "velocity"])
 
-    plots.append((fname, data))
-
-if __name__ == "__main__":
-    add_plot_from_file("data/vehicle1.csv")
-    add_plot_from_file("data/vehicle1.csv")
-
+    mpl.rcParams["backend"] = "TkAgg"
     plt.rcParams["figure.figsize"] = [12, 8]
-    fig, axs = plt.subplots(min(len(plots), 2))
-    fig.tight_layout()
+    plt.tight_layout()
 
-    for idx, (fname, data) in enumerate(plots):
-        axs[idx].set_ylim([MIN_VELOCITY, MAX_VELOCITY])
-        axs[idx].set_xlim([MIN_FORWARD, MAX_FORWARD])
-        axs[idx].set_title(fname)
-        axs[idx].scatter(data["pwm"], data["velocity"], c="black")
-        z = np.polyfit(data["velocity"], data["pwm"], POLYFIT_ORDER)
-        p = np.poly1d(z)
-        steps = (MAX_FORWARD-MIN_FORWARD)//STEP_SIZE
-        xp = np.linspace(MIN_VELOCITY, MAX_VELOCITY, steps)
-        axs[idx].plot(p(xp), xp, "r--")
+    plt.ylim([MIN_VELOCITY, MAX_VELOCITY])
+    plt.xlim([MIN_FORWARD, MAX_FORWARD])
+    plt.scatter(data["pwm"], data["velocity"], c="black")
+    z = np.polyfit(data["velocity"], data["pwm"], POLYFIT_ORDER)
+    p = np.poly1d(z)
+    steps = (MAX_FORWARD-MIN_FORWARD)//STEP_SIZE
+    xp = np.linspace(MIN_VELOCITY, MAX_VELOCITY, steps)
+    plt.plot(p(xp), xp, "r--")
 
-    plt.xlabel("Velocity")
-    plt.ylabel("PWM")
-    plt.savefig("velocity_pwm_mapper.png")
-    # plt.show()
+    plt.ylabel("Velocity (km/h)")
+    plt.xlabel("PWM")
+    plt.grid()
+    plt.title("Velocity PWM map")
+    plt.show()
