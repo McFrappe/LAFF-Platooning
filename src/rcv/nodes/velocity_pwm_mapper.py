@@ -11,7 +11,7 @@ class VelocityPWMMapper:
         self.__id = rospy.get_param("VEHICLE_ID")
         self.__out_path = rospy.get_param("MAPPER_OUT_PATH")
         self.__step_size = rospy.get_param("MAPPER_PWM_STEP_SIZE")
-        self.__samples = rospy.get_param("MAPPER_SAMPLES_PER_PWM_STEP")
+        self.__nr_samples = rospy.get_param("MAPPER_SAMPLES_PER_PWM_STEP")
 
         self.__idle = rospy.get_param("IDLE_MOTOR")
         self.__min_forward = rospy.get_param("MIN_FORWARD_MOTOR")
@@ -77,7 +77,7 @@ class VelocityPWMMapper:
         if not self.__started_mapping:
             return
 
-        if self.__current_sample < self.__samples:
+        if self.__current_sample < self.__nr_samples:
             if self.__current_sample == 0:
                 self.__increase_pwm()
             else:
