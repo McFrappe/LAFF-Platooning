@@ -67,8 +67,8 @@ class AdjacentVehicle:
         velocity and distance has received new values in the past 0.1s.
         """
         if (
-            self.__distance_last_updated == -1 or
-            self.__velocity_last_updated == -1
+            self.__distance_last_update == -1 or
+            self.__velocity_last_update == -1
         ):
             return False
 
