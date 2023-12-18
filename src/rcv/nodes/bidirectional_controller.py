@@ -22,7 +22,7 @@ class AdjacentVehicle:
         self.__velocity_last_update = -1
         self.__subscribe = self.__should_subscribe()
 
-        if subscribe:
+        if self.__subscribe:
             self.__velocity_subscriber = rospy.Subscriber(
                 f"/{self.__id}/velocity",
                 Float32,
