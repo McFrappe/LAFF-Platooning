@@ -318,6 +318,9 @@ class BidirectionalController:
         self.__control_publisher.publish(desired_velocity)
 
     def __debug_print(self, event):
+        if not self.__initialized:
+            return
+
         msg = "Bidirectional controller\n"
         msg += f"Velocity self: {self.__current_velocity}\n"
         msg += f"Velocity leader: {self.__vehicle_leader.velocity}\n"
