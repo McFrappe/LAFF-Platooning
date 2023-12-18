@@ -41,7 +41,7 @@ class BidirectionalStateSpace:
         self.__dynamics = dynamics
 
         a11 = -((1 + dynamics.ss_hp) - (-1 + dynamics.ss_hp) * \
-                (order % total_vehicles) / (order) * \
+                (order % total_vehicles) / (order)) * \
                 (dynamics.ss_r[1] / dynamics.ss_m[1])
         a12 = dynamics.ss_a[1]
         a21 = -1 / dynamics.ss_m[1]
