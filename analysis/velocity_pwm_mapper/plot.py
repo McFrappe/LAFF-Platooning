@@ -4,9 +4,9 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 MIN_FORWARD = 715000
-MAX_FORWARD = 800000
-STEP_SIZE = 1000
-MAX_VELOCITY = 10
+MAX_FORWARD = 775000
+STEP_SIZE = 5000
+MAX_VELOCITY = 30
 MIN_VELOCITY = 0
 POLYFIT_ORDER = 4
 
