@@ -117,7 +117,7 @@ class BidirectionalController:
         self.__vehicle_behind = None
 
         self.__velocity_mapper = VelocityMapper(
-            rospy.get_param("VELOCITY_PWM_MAP_FILE_PATH"),
+            rospy.get_param("VELOCITY_PWM_MAP_PATH"),
             rospy.get_param("VELOCITY_PWM_MAP_POLYFIT_DEGREE"),
             self.__idle,
             self.__min_forward,
