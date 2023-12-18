@@ -232,7 +232,7 @@ class BidirectionalController:
             self.__margin_in_m,
             self.__period,
             VehicleDynamics(
-                rospy.get_param("MAX_VELOCITY"),
+                rospy.get_param("VELOCITY_MAX"),
                 rospy.get_param("BISS_MAX_ACCELERATION"),
                 rospy.get_param("BISS_MAX_DECELERATION"),
                 rospy.get_param("BISS_VEHICLE_MASS"),
