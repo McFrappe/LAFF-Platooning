@@ -85,7 +85,7 @@ class BidirectionalController:
     def __init__(self):
         self.__id = rospy.get_param("VEHICLE_ID")
         self.__id_leader = rospy.get_param("VEHICLE_ID_LEADER")
-        self.__order = self.__id[self.__id.index("_")+1:]
+        self.__order = int(self.__id[self.__id.index("_")+1:])
         self.__period = rospy.get_param("BISS_CONTROL_PERIOD")
         self.__initialize_wait_time_s = rospy.get_param(
             "BISS_INITIALIZE_WAIT_TIME_S")
