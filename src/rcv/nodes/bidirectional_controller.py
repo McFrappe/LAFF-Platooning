@@ -11,7 +11,7 @@ from controller.state_space import BidirectionalStateSpace, VehicleDynamics
 
 
 class AdjacentVehicle:
-    def __init__(self, vehicle_id, should_subscribe=True):
+    def __init__(self, vehicle_id):
         self.__id = vehicle_id
         self.__id_leader = rospy.get_param("VEHICLE_ID_LEADER")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
@@ -20,9 +20,9 @@ class AdjacentVehicle:
 
         self.__distance_last_update = -1
         self.__velocity_last_update = -1
-        self.__should_subscribe = should_subscribe
+        self.__subscribe = self.__should_subscribe()
 
-        if should_subscribe:
+        if subscribe:
             self.__velocity_subscriber = rospy.Subscriber(
                 f"/{self.__id}/velocity",
                 Float32,
@@ -35,6 +35,10 @@ class AdjacentVehicle:
                     Range,
                     self.__callback_distance,
                     queue_size=self.__message_queue_size)
+
+    def __should_subscribe(self):
+        topics = [x[0] for x in rospy.get_published_topics()]
+        return f"/{self.__id}/velocity" in topics
 
     def __callback_velocity(self, msg: Float32):
         self.__current_velocity = msg.data
@@ -54,7 +58,7 @@ class AdjacentVehicle:
 
     @property
     def subscribed(self):
-        return self.__should_subscribe
+        return self.__subscribe
 
     def has_updates_since(self, period):
         """
@@ -180,14 +184,8 @@ class BidirectionalController:
         topics = rospy.get_published_topics()
         vehicle_id_in_front = f"vehicle_{self.__order-1}"
         vehicle_id_behind = f"vehicle_{self.__order+1}"
-        vehicle_in_front = AdjacentVehicle(
-            vehicle_id_in_front,
-            should_subscribe=f"/{vehicle_id_in_front}/velocity" in topics
-        )
-        vehicle_behind = AdjacentVehicle(
-            vehicle_id_behind,
-            should_subscribe=f"/{vehicle_id_behind}/velocity" in topics
-        )
+        vehicle_in_front = AdjacentVehicle(vehicle_id_in_front)
+        vehicle_behind = AdjacentVehicle(vehicle_id_behind)
 
         if vehicle_in_front.is_leader():
             vehicle_leader = vehicle_in_front
