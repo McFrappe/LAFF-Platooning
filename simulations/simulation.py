@@ -1,5 +1,6 @@
 import sys, getopt
-from src.platoon.platoon_pid_distance import PlatoonPidDistanceS1, PlatoonPidDistanceS2, PlatoonPidDistanceS3, PlatoonPidDistanceS4
+from src.platoon.platoon_distance_pid import PlatoonPidDistanceS1, PlatoonPidDistanceS2, PlatoonPidDistanceS3, PlatoonPidDistanceS4
+from src.platoon.platoon_distance_pid_increase import PlatoonPidIncreaseDistanceS1, PlatoonPidIncreaseDistanceS2, PlatoonPidIncreaseDistanceS3, PlatoonPidIncreaseDistanceS4
 from src.platoon.platoon_bidirectional_pid import PlatoonBidirectionalPidS3, PlatoonBidirectionalPidS1, PlatoonBidirectionalPidS2
 from src.platoon.platoon_bidirectional_state_space import PlatoonBidirectionalStateSpaceS1, PlatoonBidirectionalStateSpaceS2, PlatoonBidirectionalStateSpaceS3, PlatoonBidirectionalStateSpaceS4
 from src.platoon.platoon_bidirectional_state_space_with_pid import PlatoonBidirectionalStateSpaceWithPidS1, PlatoonBidirectionalStateSpaceWithPidS2, PlatoonBidirectionalStateSpaceWithPidS3, PlatoonBidirectionalStateSpaceWithPidS4
@@ -73,6 +74,18 @@ def simulate(num_tick, num_vehicles, scenario, type, model, period):
         case (4,1,4):
             p = PlatoonBidirectionalStateSpaceWithPidS4(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-with-pid-model-s4-truck"
+        case (1,1,5):
+            p = PlatoonPidIncreaseDistanceS1(num_vehicles, truck, period)
+            suffix = "distance-pid-increase-model-s1-truck"
+        case (2,1,5):
+            p = PlatoonPidIncreaseDistanceS2(num_vehicles, truck, period)
+            suffix = "distance-pid-increase-model-s2-truck"
+        case (3,1,5):
+            p = PlatoonPidIncreaseDistanceS3(num_vehicles, truck, period)
+            suffix = "distance-pid-increase-model-s3-truck"
+        case (4,1,5):
+            p = PlatoonPidIncreaseDistanceS4(num_vehicles, truck, period)
+            suffix = "distance-pid-increase-model-s4-truck"
         case (_,_,_):
             print("Unknown option")
             exit(1)
