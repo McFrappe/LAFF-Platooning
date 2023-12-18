@@ -6,8 +6,8 @@ class VelocityMapper:
         map_file: str,
         polyfit_deg: int,
         idle: int,
-        min_forward: int
-        max_forward: int,
+        min_forward: int,
+        max_forward: int
     ):
         self.__data = np.genfromtxt(
             map_file,
