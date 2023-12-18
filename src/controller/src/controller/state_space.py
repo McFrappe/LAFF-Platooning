@@ -109,7 +109,7 @@ class BidirectionalStateSpace:
             position_in_front = 0
             position_self = distance_self
             position_behind = distance_self + distance_behind + \
-                self.__dynamcis.length
+                self.__dynamics.length
         else:
             position_in_front = distance_in_front
             position_self = distance_self + distance_in_front + \
