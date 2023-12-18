@@ -48,7 +48,7 @@ class VelocityPWMMapper:
 
     def __write_header(self):
         with open(self.__out_path, "w") as f:
-            f.write("pwm,velocity")
+            f.write("pwm,velocity\n")
 
     def __flush_samples(self):
         """
