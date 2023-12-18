@@ -2,7 +2,7 @@
 import rospy
 
 from sensor_msgs.msg import Range
-from std_msgs.msg import String, Int32, Float32
+from std_msgs.msg import String, Int32, Float32, Bool
 
 class DebugController:
     def __init__(self):
@@ -15,6 +15,7 @@ class DebugController:
         self.__pwm = 0
         self.__velocity = 0
         self.__control = 0
+        self.__has_target = False
 
         self.__debug_publisher = rospy.Publisher(
             f"{self.__id}/debug",
@@ -51,6 +52,12 @@ class DebugController:
             self.__callback_velocity,
             queue_size=self.__message_queue_size)
 
+        self.__velocity_subscriber = rospy.Subscriber(
+            f"{self.__id}/has_target",
+            Bool,
+            self.__callback_has_target,
+            queue_size=self.__message_queue_size)
+
         rospy.Timer(rospy.Duration(self.__publish_period), self.__publish_debug)
 
     def __callback_steering_angle(self, msg: Int32):
@@ -68,6 +75,9 @@ class DebugController:
     def __callback_velocity(self, msg: Float32):
         self.__velocity = msg.data
 
+    def __callback_has_target(self, msg: Bool):
+        self.__has_target = msg.data
+
     def __publish_debug(self, event):
         msg = f"[{self.__id}]"
         msg += f" angle: {self.__steering_angle},"
@@ -75,6 +85,7 @@ class DebugController:
         msg += f" pwm: {self.__pwm},"
         msg += f" ctrl: {self.__control},"
         msg += f" vel: {self.__velocity}"
+        msg += f" has_target: {self.__has_target}"
         self.__debug_publisher.publish(msg)
         rospy.loginfo(msg)
 
