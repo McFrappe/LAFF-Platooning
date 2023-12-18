@@ -288,11 +288,6 @@ class BidirectionalController:
         if not self.__esc_calibrated or not self.__initialized:
             return
 
-        # Only apply controller if we have an object to follow,
-        # and we have enabled the flag in the launch file.
-        new_pwm = self.__idle
-        desired_velocity = 0
-
         if self.__debug_mode:
             self.__missed_updates += self.__get_missed_update(
                 self.__vehicle_in_front)
@@ -302,7 +297,12 @@ class BidirectionalController:
                 self.__missed_updates += self.__get_missed_update(
                     self.__vehicle_leader)
 
-        if self.__has_target or not self.__stop_vehicle_if_no_target:
+        if not self.__has_target and self.__stop_vehicle_if_no_target:
+            # Only apply controller if we have an object to follow,
+            # and we have enabled the flag in the launch file.
+            new_pwm = self.__idle
+            desired_velocity = 0
+        else:
             desired_velocity = self.__state_space.update(
                 self.__current_distance,
                 self.__vehicle_in_front.distance,
