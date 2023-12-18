@@ -4,7 +4,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 MIN_FORWARD = 715000
-MAX_FORWARD = 775000
+MAX_FORWARD = 770000
 STEP_SIZE = 5000
 MAX_VELOCITY = 30
 MIN_VELOCITY = 0
@@ -31,11 +31,13 @@ if __name__ == "__main__":
     z = np.polyfit(data["velocity"], data["pwm"], POLYFIT_ORDER)
     p = np.poly1d(z)
     steps = (MAX_FORWARD-MIN_FORWARD)//STEP_SIZE
-    xp = np.linspace(MIN_VELOCITY, MAX_VELOCITY, steps)
+    min_map_velocity = np.min(data["velocity"])
+    max_map_velocity = np.max(data["velocity"])
+    xp = np.linspace(min_map_velocity, max_map_velocity, steps)
     plt.plot(p(xp), xp, "r--")
 
     plt.ylabel("Velocity (km/h)")
     plt.xlabel("PWM")
     plt.grid()
-    plt.title("Velocity PWM map")
+    plt.title(f"Velocity PWM map ({sys.argv[1]})")
     plt.show()

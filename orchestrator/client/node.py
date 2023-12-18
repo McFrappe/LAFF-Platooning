@@ -57,9 +57,9 @@ class Node:
             return ERROR
 
         if self.__is_master:
-            make_cmd = "run_rcv_joystick_pi"
+            make_cmd = "run_rcv_joystick"
         else:
-            make_cmd = "run_rcv_pi"
+            make_cmd = "run_rcv_pid"
 
         try:
             subprocess.Popen(
