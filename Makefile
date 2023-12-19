@@ -53,16 +53,7 @@ local-update:
 	git submodule update --recursive --remote
 
 update:
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "date -s \"$(shell wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\""
-	git config --global --add safe.directory /home/laff/laff-platooning
-	cd /home/laff/laff-platooning
-	git reset --hard
-	git pull
-	git checkout $(BRANCH)
-	git pull
-	git submodule update --recursive --remote
-	rm -rf build
-	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "cd /home/laff/laff-platooning; source devel/setup.bash || source /opt/ros/noetic/setup.bash; catkin_make"
+	echo $(PASSWORD) | sudo -S sleep 1 && sudo su - root -c "date -s \"$(shell wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z\"; git config --global --add safe.directory /home/laff/laff-platooning; cd /home/laff/laff-platooning; git reset --hard; git pull; git checkout $(BRANCH); git pull; git submodule update --recursive --remote; cd /home/laff/laff-platooning; source devel/setup.bash || source /opt/ros/noetic/setup.bash; catkin_make"
 
 cat:
 	sudo rm -rf build
