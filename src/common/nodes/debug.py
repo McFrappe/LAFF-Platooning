@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import time
 import rospy
 
 from sensor_msgs.msg import Range
@@ -69,13 +70,14 @@ class DebugController:
     def __write_header(self):
         # Write CSV header and clear any previous data in the file.
         with open(self.__out_path, "w") as f:
-            f.write("pwm,distance,steering_angle,control,velocity,has_target\n")
+            f.write("time,pwm,distance,angle,control,velocity,target\n")
 
     def __flush_data(self):
         """
         Saves debug data to file.
         """
         values_str = ",".join([
+            time.time_ns(),
             self.__pwm,
             self.__distance,
             self.__steering_angle,
