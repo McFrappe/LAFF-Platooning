@@ -54,20 +54,20 @@ A_discrete, B_discrete, C_discrete, D_discrete, _ = signal.cont2discrete(
 
 # -------------- My system --------------
 
-ss = signal.StateSpace(A_discrete, B_discrete, C_discrete, D_discrete)
-x0 = np.zeros(ss.A.shape[0])
-u = np.ones((M, 5))
-print(x0)
-print("START My system")
-print("u array Test system")
-print([u])
-print("array My system")
-print([u, np.repeat(u[:, -1:], P - M, axis=1)])
-print("concat My system")
-print(np.concatenate([u, np.repeat(u[:, -1:], P - M, axis=1)], axis=1))
-print("hack My system")
-print(np.concatenate([u, np.tile(u[-1, :], (P-M, 1))]))
-print("END My system")
+#ss = signal.StateSpace(A_discrete, B_discrete, C_discrete, D_discrete)
+#x0 = np.zeros(ss.A.shape[0])
+#u = np.ones((M, 5))
+#print(x0)
+#print("START My system")
+#print("u array Test system")
+#print([u])
+#print("array My system")
+#print([u, np.repeat(u[:, -1:], P - M, axis=1)])
+#print("concat My system")
+#print(np.concatenate([u, np.repeat(u[:, -1:], P - M, axis=1)], axis=1))
+#print("hack My system")
+#print(np.concatenate([u, np.tile(u[-1, :], (P-M, 1))]))
+#print("END My system")
 
 
 # -------------- MPC Implementation --------------

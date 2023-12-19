@@ -95,7 +95,7 @@ class VehicleLeaderS4(Vehicle):
         if int(self.speed) == int(max_speed/1.25):
             self.leader_accelerating = False
             self.leader_initial_accelerating = False
-        elif int(self.speed) == int(max_speed/2) and not self.leader_initial_accelerating: # may fail?
+        elif int(self.speed) == int(max_speed/2.5) and not self.leader_initial_accelerating: # may fail?
             self.leader_accelerating = True
         
         max_acceleration = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
@@ -104,7 +104,7 @@ class VehicleLeaderS4(Vehicle):
         if self.leader_accelerating:
             desired_speed = self.speed + max_acceleration/2
         else: 
-            desired_speed = self.speed - max_deceleration/5
+            desired_speed = self.speed - max_deceleration/2
         self.speed = self.calculate_valid_speed(desired_speed)
 
         return self.speed

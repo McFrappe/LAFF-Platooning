@@ -2,6 +2,7 @@ import numpy as np
 from scipy import signal
 from src.vehicle.vehicle import Vehicle
 from src.common.constants import tick_in_s
+from src.common.state_space import StateSpaceDiscrete
 
 
 class VehicleBidirectionalStateSpace(Vehicle):
@@ -9,54 +10,42 @@ class VehicleBidirectionalStateSpace(Vehicle):
         Vehicle.__init__(self, order, vehicle_specs, period)
         self.speed = init_speed
         self.position = init_position
-        self.distance = init_distance
-        self.travel_distance = init_travel_distance
-        self.integral_sum = 0
-        self.prev_velocity_error = 0
         self.delta = 0 
         self.ss_par = state_space_vehicle_parameters#StateSpaceVehicleParameters
         self.mass = self.ss_par.m[1]
         self.speed_increase_per_tick = 0
 
-        #self.A_continuous = np.array([[-((1+h_p)-(-1+h_p)*(self.order % num_followers)/(self.order))*(r[1]/m[1]), a[1]], [-1/m[1], 0]])
+        max_deceleration = vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
+        max_acceleration = vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
+        min_speed = 0
+        max_speed = vehicle_specs.get_max_speed_in_km_per_h()
+
+        self.max_deceleration = max_deceleration
+        self.max_acceleration = max_acceleration
+        self.min_speed = min_speed
+        self.max_speed = max_speed
+
         a11 = -((1+self.ss_par.h_p)-(-1+self.ss_par.h_p)*(self.order % num_followers)/(self.order))*(self.ss_par.r[1]/self.ss_par.m[1])
         a12 = self.ss_par.a[1]
         a21 = -1/self.ss_par.m[1]
-        self.A_continuous = np.array([[a11, a12], [a21, 0]])
-        #self.B_continuous = np.array([[-1, (1+h_p)*(r[0]/m[0]), -(-1+h_p)*(r[2]/m[2]), 0, a[2]], [0, 1/m[0], 0, 0, 0]])
         b12 = (1+self.ss_par.h_p)*(self.ss_par.r[0]/self.ss_par.m[0])
         b13 = -(-1+self.ss_par.h_p)*(self.ss_par.r[2]/self.ss_par.m[2])
-        self.B_continuous = np.array([[-1, b12, b13, 0, self.ss_par.a[2]], [0, 1/self.ss_par.m[0], 0, 0, 0]])
-        self.C_continuous = np.array([[1/self.mass, 0]])
-        self.D_continuous = np.array([[0]])
 
-        # Convert to discrete-time system
-        self.A_discrete, self.B_discrete, self.C_discrete, self.D_discrete, _ = signal.cont2discrete(
-            (self.A_continuous, self.B_continuous, self.C_continuous, self.D_continuous),
-            dt=self.period,
-            method='zoh'  # You can choose other discretization methods
-        )
+        A_continuous = np.array([[a11, a12], [a21, 0]])
+        B_continuous = np.array([[-1, b12, b13, 0, self.ss_par.a[2]], [0, 1/self.ss_par.m[0], 0, 0, 0]])
+        C_continuous = np.array([[1/self.mass, 0]])
+        D_continuous = np.array([[0]])
+
+        self.ss = StateSpaceDiscrete(A_continuous, B_continuous, C_continuous, D_continuous, 
+                                    tick_in_s, period, 
+                                    -max_deceleration, max_acceleration, min_speed, max_speed)
 
     def update_speed(self, tick, leader_speed, relative_position_infront, momentum_infront, momentum_behind, delta_infront, delta_behind):
-        if int(tick) % int(self.period/tick_in_s) != 0:
-            desired_speed = self.speed + self.speed_increase_per_tick
-            self.speed = self.calculate_valid_speed(desired_speed)
-            return self.speed
-
         self.delta = self.calculate_positioning_error(leader_speed, relative_position_infront)
         state_variables =  np.array([self.mass*self.speed, self.delta])
         input_variables =  np.array([leader_speed, momentum_infront, momentum_behind, delta_infront, delta_behind])
 
-        next_step = self.A_discrete @ state_variables + self.B_discrete @ input_variables
-        desired_speed = self.C_discrete @ next_step
-
-        prev_speed = self.speed
-        speed_increase = desired_speed[0]-prev_speed
-        ticks_per_period = self.period/tick_in_s
-        desired_speed_increase_per_tick = speed_increase/ticks_per_period
-        self.speed = self.calculate_valid_speed(self.speed+desired_speed_increase_per_tick)
-        self.speed_increase_per_tick = self.speed-prev_speed
-
+        self.speed = self.ss.update(tick, state_variables, input_variables)
         return self.speed
 
     def update_all_speeds(self, speeds_vector):
@@ -74,7 +63,7 @@ class VehicleBidirectionalStateSpace(Vehicle):
 
     def calculate_valid_reference(self, leader_speed, order):
         speed_in_m_per_s = leader_speed/3.6
-        margin_in_m = 0.5
+        margin_in_m = 1
         minimal_distance = speed_in_m_per_s * self.period + margin_in_m
 
         return minimal_distance * order
