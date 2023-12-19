@@ -107,12 +107,12 @@ class GUI:
             return
 
         self.output("Connected nodes", win=self.__client_win, bold=True)
-        for idx, node in enumerate(nodes):
-            if node == master_node:
-                self.output(f"{idx}) {node} (master)", win=self.__client_win)
+        for idx, (ip, hostname) in enumerate(nodes):
+            if ip == master_node:
+                self.output(f"{idx}) {ip} {hostname} (master)", win=self.__client_win)
                 continue
 
-            self.output(f"{idx}) {node}", win=self.__client_win)
+            self.output(f"{idx}) {ip} {hostname}", win=self.__client_win)
 
         self.__client_win.refresh()
 

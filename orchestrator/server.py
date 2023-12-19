@@ -36,7 +36,15 @@ class Server:
         """
         Updates the list of connected nodes
         """
-        self.__gui.update_nodes(self.__hostnames.keys(), self.__master_node)
+        hosts = dict()
+
+        for ip in self.__nodes.keys():
+            if ip in self.__hostnames.keys():
+                hosts[ip] = self.__hostnames[ip]
+            else:
+                hosts[ip] = "Unknown"
+
+        self.__gui.update_nodes(hosts, self.__master_node)
 
     def update_status(self):
         """
