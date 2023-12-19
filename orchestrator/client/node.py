@@ -151,6 +151,9 @@ class Node:
         Sets the master node. If the node is already the master node, this method does nothing.
         """
         self.__is_master = new_master == self.__ip
+        if self.__is_master:
+            self.set_id(0)
+
         print(f"Set master: {self.__is_master}")
 
         try:
