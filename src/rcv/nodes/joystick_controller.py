@@ -58,9 +58,9 @@ class JoystickController:
 
         # Change zero angle after trim input deom dpad
         if button_dpad_left == 1:
-            self.zero = max(self.zero - 1*10**5, self.max_left)
+            self.zero = max(self.zero - 1*10**3, self.max_left)
         elif button_dpad_right == 1:
-            self.zero = min(self.zero + 1*10**5, self.max_right)
+            self.zero = min(self.zero + 1*10**3, self.max_right)
 
         if forward_pwm > 0:
             self.current_pwm = int(
