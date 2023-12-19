@@ -233,6 +233,22 @@ class Node:
         )
         return OK
 
+    def send_hostname(self):
+        """
+        Sends the hostname of the node to the server.
+        """
+        try:
+            proc = subprocess.run(["hostname"], capture_output=True, text=True)
+            self.__socket.sendto(
+                str.encode(f"{MSG_CMD_LIGHTS_CONFIRM}|{proc.stdout[:-1]}"),
+                (self.__broadcast_ip, SOCKET_PORT)
+            )
+            return OK
+        except Exception as e:
+            self.__broadcast_error(e)
+            return ERROR
+
+
     def handle_message(self, msg):
         """
         Handles incoming messages from the master node. The messages 'msg' are

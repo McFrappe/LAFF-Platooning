@@ -25,9 +25,11 @@ def run():
     timer_fd = timer.fileno()
     timer.settime(STARTUP_HEARTBEAT_TIMER_EXPIRATION)
 
+    node.send_hostname()
+
     while True:
         fds = [timer_fd, s]
-        rs, ws, _ = select.select(fds, [], [])
+        rs, _, _ = select.select(fds, [], [])
 
         for sock in rs:
             if sock == s:

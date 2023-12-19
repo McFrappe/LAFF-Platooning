@@ -16,10 +16,14 @@ class Server:
         self.__is_running = False
         self.__is_debug = False
         self.__nodes = dict()
+        self.__hostnames = dict()
         self.__socket = socket
         self.__ordered_nodes = set()
 
     def __remove_node(self, ip):
+        """
+        remove a node from the list of connected nodes
+        """
         if ip not in self.__nodes.keys():
             return
 
@@ -35,6 +39,9 @@ class Server:
         self.__gui.update_nodes(self.__nodes.keys(), self.__master_node)
 
     def update_status(self):
+        """
+        Updates the status of the server, i.e., if any data has been updated
+        """
         self.__gui.update_status(self.__is_running, self.__is_debug)
 
     def stop_node_timers(self):
@@ -48,6 +55,10 @@ class Server:
             self.__nodes[ip] = None
 
     def start_node_timer(self, ip):
+        """
+        Starts a timer for a registered node.
+        If the timer expires, the node is removed from the list of connected nodes.
+        """
         if ip in self.__nodes:
             if self.__nodes[ip] is not None:
                 self.__nodes[ip].cancel()
@@ -70,6 +81,11 @@ class Server:
 
             self.start_node_timer(ip)
             self.update_nodes()
+        elif cmd == MSG_CMD_HOSTNAME:
+            if ip in self.__hostnames.keys():
+                return
+
+            self.__hostnames[ip] = data
         elif cmd == MSG_CMD_START_CONFIRM:
             if self.__master_node == ip:
                 self.__gui.socket_output(f"{ip} started, starting slaves")
