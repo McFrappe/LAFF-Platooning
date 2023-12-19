@@ -36,7 +36,7 @@ class Server:
         """
         Updates the list of connected nodes
         """
-        self.__gui.update_nodes(self.__nodes.keys(), self.__master_node)
+        self.__gui.update_nodes(self.__hostnames.keys(), self.__master_node)
 
     def update_status(self):
         """
@@ -86,6 +86,7 @@ class Server:
                 return
 
             self.__hostnames[ip] = data
+            self.update_nodes()
         elif cmd == MSG_CMD_START_CONFIRM:
             if self.__master_node == ip:
                 self.__gui.socket_output(f"{ip} started, starting slaves")
