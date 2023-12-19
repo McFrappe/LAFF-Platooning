@@ -20,6 +20,27 @@ class Server:
         self.__socket = socket
         self.__ordered_nodes = set()
 
+    def __validate_node_input(self, node):
+        if len(node) == 0 or len(self.__nodes) == 0:
+            self.__gui.output("Invalid address")
+            return None
+
+        ips = list(self.__nodes.keys())
+        node = ips[0]
+        if "." in node:
+            return node
+        else:
+            try:
+                val = int(node)
+                if val >= len(self.__nodes):
+                    self.__gui.output(
+                        "Node index out of range")
+                    return None
+                return ips[val]
+            except:
+                self.__gui.output("Invalid node index")
+                return None
+
     def __remove_node(self, ip):
         """
         remove a node from the list of connected nodes
@@ -115,20 +136,6 @@ class Server:
             self.__gui.socket_output(f"{ip} set to master")
             self.__master_node = ip
             self.update_nodes()
-
-            # Assign order to vehicles
-            current_id = 1
-            for node in self.__nodes.keys():
-                if node == self.__master_node:
-                    vehicle_id = 0
-                else:
-                    vehicle_id = current_id
-                    current_id += 1
-
-                self.__socket.sendto(
-                    str.encode(f"{MSG_CMD_ORDER}|{vehicle_id}"),
-                    (node, SOCKET_PORT)
-                )
         elif cmd == MSG_CMD_NOT_MASTER_CONFIRM:
             self.__gui.socket_output(f"{ip} set to slave")
         elif cmd == MSG_CMD_ORDER_CONFIRM:
@@ -161,26 +168,9 @@ class Server:
             return
 
         if cmd == MSG_CMD_SET_MASTER:
-            if len(data) == 0 or len(self.__nodes) == 0:
-                self.__gui.output("Invalid address")
-                return
-
-            ips = list(self.__nodes.keys())
-            node = ips[0]
-            if "." in data:
-                node = data
-            else:
-                try:
-                    val = int(data)
-                    if val >= len(self.__nodes):
-                        self.__gui.output(
-                            "Node index out of range")
-                        return
-                    node = ips[val]
-                except:
-                    self.__gui.output("Invalid node index")
-                    return
-
+            node = self.__validate_node_input(data)
+            if node is None:
+                return ERROR
             self.__socket.sendto(
                 str.encode(f"{cmd}|{node}"),
                 (self.__broadcast_ip, SOCKET_PORT)
@@ -195,6 +185,16 @@ class Server:
                 str.encode(f"{cmd}|{data}"),
                 (self.__broadcast_ip, SOCKET_PORT)
             )
+        elif cmd == MSG_CMD_ORDER:
+            ips = [self.__validate_node_input(x.strip()) for x in data.split(",")]
+            if None in ips:
+                return ERROR
+
+            for idx, ip in enumerate(ips):
+                self.__socket.sendto(
+                    str.encode(f"{MSG_CMD_ORDER}|{idx+1}"),
+                    (ip, SOCKET_PORT)
+                )
         elif cmd == MSG_CMD_START:
             # Start master first, slaves started on confirm
             self.__socket.sendto(

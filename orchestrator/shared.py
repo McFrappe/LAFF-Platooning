@@ -46,6 +46,7 @@ AVAILABLE_COMMANDS = [
     MSG_CMD_START,
     MSG_CMD_STOP,
     MSG_CMD_UPDATE,
+    MSG_CMD_ORDER,
     MSG_CMD_SET_MASTER,
     MSG_CMD_DEBUG,
     MSG_CMD_LIGHTS,
@@ -59,6 +60,7 @@ AVAILABLE_COMMANDS_STR = f"""Available commands:
 - {MSG_CMD_UPDATE} [branch]: Update all nodes to latest code on <branch>
 - {MSG_CMD_SET_MASTER} [ip]: Set master node to be controlled with DS4 controller
 - {MSG_CMD_DEBUG} [on/off]: Get debug information from all connected vehicles
+- {MSG_CMD_ORDER} [ip/index, ...]: Set the order of vehicles, separated by comma
 - {MSG_CMD_LIGHTS} [on/off]: Toggle the LED lights on the Pixy2 camera on and off
 - {MSG_CMD_CLEAR_SCREEN}: Clear the screen
 """
