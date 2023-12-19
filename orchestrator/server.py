@@ -26,7 +26,6 @@ class Server:
             return None
 
         ips = list(self.__nodes.keys())
-        node = ips[0]
         if "." in node:
             return node
         else:
