@@ -14,6 +14,10 @@
     <param name="VEHICLE_ID_LEADER" type="string" value="$(arg vehicle_id_leader)" />
     <param name="VEHICLE_WHEEL_RADIUS_CM" type="double" value="3.25" />
 
+    <!-- Debug -->
+    <param name="DEBUG_OUT_PATH" type="string" value="/tmp/debug.csv" />
+    <param name="DEBUG_WRITE_TO_FILE" type="bool" value="true" />
+
     <!-- GPIOs BOARD -->
     <param name="REFLECTIVE_SENSOR_PIN" type="int" value="37" />
 

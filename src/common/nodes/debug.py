@@ -10,6 +10,9 @@ class DebugController:
         self.__publish_period = rospy.get_param("DEBUG_PUBLISH_PERIOD")
         self.__message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
 
+        self.__out_path = rospy.get_param("DEBUG_OUT_PATH")
+        self.__write_to_file = rospy.get_param("DEBUG_WRITE_TO_FILE")
+
         self.__steering_angle = 0
         self.__distance = 0
         self.__pwm = 0
@@ -60,6 +63,29 @@ class DebugController:
 
         rospy.Timer(rospy.Duration(self.__publish_period), self.__publish_debug)
 
+        if self.__write_to_file:
+            self.__write_header()
+
+    def __write_header(self):
+        # Write CSV header and clear any previous data in the file.
+        with open(self.__out_path, "w") as f:
+            f.write("pwm,distance,steering_angle,control,velocity,has_target\n")
+
+    def __flush_data(self):
+        """
+        Saves debug data to file.
+        """
+        values_str = ",".join([
+            self.__pwm,
+            self.__distance,
+            self.__steering_angle,
+            self.__control,
+            self.__velocity,
+            self.__has_target
+        ])
+        with open(self.__out_path, "a") as f:
+            f.write(f"{values_str}\n")
+
     def __callback_steering_angle(self, msg: Int32):
         self.__steering_angle = msg.data
 
@@ -88,6 +114,9 @@ class DebugController:
         msg += f" has_target: {self.__has_target}"
         self.__debug_publisher.publish(msg)
         rospy.loginfo(msg)
+
+        if self.__write_to_file:
+            self.__flush_data()
 
     def cleanup(self):
         self.__steering_angle_subscriber.unregister()
