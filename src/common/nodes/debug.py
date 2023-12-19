@@ -77,13 +77,13 @@ class DebugController:
         Saves debug data to file.
         """
         values_str = ",".join([
-            time.time_ns(),
-            self.__pwm,
-            self.__distance,
-            self.__steering_angle,
-            self.__control,
-            self.__velocity,
-            self.__has_target
+            str(time.time_ns()),
+            str(self.__pwm),
+            str(self.__distance),
+            str(self.__steering_angle),
+            str(self.__control),
+            str(self.__velocity),
+            str(self.__has_target)
         ])
         with open(self.__out_path, "a") as f:
             f.write(f"{values_str}\n")
