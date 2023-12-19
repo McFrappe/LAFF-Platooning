@@ -240,7 +240,7 @@ class Node:
         try:
             proc = subprocess.run(["hostname"], capture_output=True, text=True)
             self.__socket.sendto(
-                str.encode(f"{MSG_CMD_LIGHTS_CONFIRM}|{proc.stdout[:-1]}"),
+                str.encode(f"{MSG_CMD_HOSTNAME}|{proc.stdout[:-1]}"),
                 (self.__broadcast_ip, SOCKET_PORT)
             )
             return OK
