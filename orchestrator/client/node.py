@@ -24,6 +24,14 @@ class Node:
         self.__start_confirm_timer = Timer(
             MASTER_STARTUP_WAIT_TIME, self.__confirm_start)
         self.__debug_thread = None
+        self.__hostname = self.__get_hostname()
+
+    def __get_hostname(self):
+        try:
+            proc = subprocess.run(["hostname"], capture_output=True, text=True)
+            return proc.stdout[:-1]
+        except Exception:
+            return None
 
     def __confirm_start(self):
         self.__socket.sendto(
@@ -228,26 +236,10 @@ class Node:
         Sends a heartbeat message to the master node.
         """
         self.__socket.sendto(
-            str.encode(MSG_CMD_HEARTBEAT),
+            str.encode(f"{MSG_CMD_HEARTBEAT}|{self.__hostname}"),
             (self.__broadcast_ip, SOCKET_PORT)
         )
         return OK
-
-    def send_hostname(self):
-        """
-        Sends the hostname of the node to the server.
-        """
-        try:
-            proc = subprocess.run(["hostname"], capture_output=True, text=True)
-            self.__socket.sendto(
-                str.encode(f"{MSG_CMD_HOSTNAME}|{proc.stdout[:-1]}"),
-                (self.__broadcast_ip, SOCKET_PORT)
-            )
-            return OK
-        except Exception as e:
-            self.__broadcast_error(e)
-            return ERROR
-
 
     def handle_message(self, msg):
         """

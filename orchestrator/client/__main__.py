@@ -25,8 +25,6 @@ def run():
     timer_fd = timer.fileno()
     timer.settime(STARTUP_HEARTBEAT_TIMER_EXPIRATION)
 
-    node.send_hostname()
-
     while True:
         fds = [timer_fd, s]
         rs, _, _ = select.select(fds, [], [])

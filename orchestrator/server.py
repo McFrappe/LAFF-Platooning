@@ -103,17 +103,10 @@ class Server:
         data = "" if len(msg) == 1 else msg[1]
         ip = addr[0]
         if cmd == MSG_CMD_HEARTBEAT:
-            if ip in self.__nodes.keys():
-                self.start_node_timer(ip)
-                return
-
             self.start_node_timer(ip)
-            self.update_nodes()
-        elif cmd == MSG_CMD_HOSTNAME:
-            if ip in self.__hostnames.keys():
-                return
-
-            self.__hostnames[ip] = data
+            if ip not in self.__hostnames.keys():
+                if data != "None":
+                    self.__hostnames[ip] = data
             self.update_nodes()
         elif cmd == MSG_CMD_START_CONFIRM:
             if self.__master_node == ip:

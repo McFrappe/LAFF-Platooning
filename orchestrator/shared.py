@@ -29,7 +29,6 @@ MSG_CMD_ORDER_CONFIRM = "order_confirm"
 MSG_CMD_DEBUG_CONFIRM = "debug_confirm"
 MSG_CMD_DEBUG_MSG = "debug_msg"
 MSG_CMD_LIGHTS_CONFIRM = "lights_confirm"
-MSG_CMD_HOSTNAME = "hostname"
 
 # Server messages
 MSG_CMD_SET_MASTER = "master"
