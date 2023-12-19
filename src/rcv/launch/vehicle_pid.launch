@@ -9,12 +9,12 @@
     />
 
     <!-- PID platooning controller -->
-    <param name="K_PP" type="double" value="500" />
+    <param name="K_PP" type="double" value="6000" />
     <param name="K_PI" type="double" value="0" />
-    <param name="K_PD" type="double" value="2000" />
-    <param name="PID_PMIN" type="double" value="-9000" />
-    <param name="PID_PMAX" type="double" value="5000" />
-    <param name="PID_PLATOONING_MARGIN_M" type="double" value="0.2" />
+    <param name="K_PD" type="double" value="12000" />
+    <param name="PID_PMIN" type="double" value="-50000" />
+    <param name="PID_PMAX" type="double" value="30000" />
+    <param name="PID_PLATOONING_MARGIN_M" type="double" value="0.3" />
 
     <!-- PID speed controller -->
     <param name="K_SP" type="double" value="1" />

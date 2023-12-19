@@ -58,9 +58,9 @@ class JoystickController:
 
         # Change zero angle after trim input deom dpad
         if button_dpad_left == 1:
-            self.zero = max(self.zero - 1, self.max_left)
+            self.zero = max(self.zero - 1*10**6, self.max_left)
         elif button_dpad_right == 1:
-            self.zero = min(self.zero + 1, self.max_right)
+            self.zero = min(self.zero + 1*10**6, self.max_right)
 
         if forward_pwm > 0:
             self.current_pwm = int(
@@ -69,18 +69,15 @@ class JoystickController:
             self.current_pwm = int(
                 np.interp(reverse_pwm, [0, 1], [self.idle, self.max_reverse]))
 
-        self.steering_angle = int(
-            np.interp(steer_axis_x, [-1, 1], [self.max_right, self.max_left]))
+        if steer_axis_x == 0:
+            self.steering_angle = self.zero
+        else
+            self.steering_angle = int(
+                np.interp(steer_axis_x, [-1, 1], [self.max_right, self.max_left]))
 
     def perform_step(self, event):
         self.pwm_publisher.publish(self.current_pwm)
         self.steering_angle_publisher.publish(self.steering_angle)
-
-        if self.current_pwm != self.old_pwm:
-            self.old_pwm = self.current_pwm
-
-        if self.steering_angle != self.old_angle:
-            self.old_angle = self.steering_angle
 
     def stop(self):
         self.pwm_publisher.publish(self.idle)
