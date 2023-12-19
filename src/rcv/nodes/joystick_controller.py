@@ -71,7 +71,7 @@ class JoystickController:
 
         if steer_axis_x == 0:
             self.steering_angle = self.zero
-        else
+        else:
             self.steering_angle = int(
                 np.interp(steer_axis_x, [-1, 1], [self.max_right, self.max_left]))
 
