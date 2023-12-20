@@ -194,6 +194,9 @@ class Server:
             )
             self.__is_running = True
         elif cmd == MSG_CMD_STOP:
+            # Debug mode is automatically disabled on the nodes when stopping
+            self.__is_debug = False
+            self.update_status()
             self.__socket.sendto(
                 str.encode(cmd),
                 (self.__broadcast_ip, SOCKET_PORT)
