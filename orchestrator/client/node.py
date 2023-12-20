@@ -129,6 +129,7 @@ class Node:
         )
         self.__running = False
         self.__start_time = -1
+        self.set_debug("off")
         return OK
 
     def update(self, branch):
