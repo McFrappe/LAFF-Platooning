@@ -60,6 +60,10 @@ class Node:
         if self.__running or self.__start_confirm_timer.is_alive():
             return OK
 
+        # HACK: For some reason, this is being reset after stopping??
+        if self.__is_master:
+            self.set_id(0)
+
         if self.__id is None:
             self.__broadcast_error("Please assign vehicle id before starting")
             return ERROR
