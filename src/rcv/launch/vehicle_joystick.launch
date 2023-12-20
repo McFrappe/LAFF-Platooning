@@ -12,6 +12,7 @@
     <param name="JOYSTICK_CONTROL_PERIOD" type="double" value="0.1" />
 
     <!-- Motor node -->
+    <param name="AUTO_PILOT_PWM_MOTOR" type="int" value="750000" />
     <param name="MAX_FORWARD_MOTOR" type="int" value="780000" />
     <param name="MIN_FORWARD_MOTOR" type="int" value="715000" />
     <param name="MAX_RIGHT_ANGLE" type="int" value="780000" />

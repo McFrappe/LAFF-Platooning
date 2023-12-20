@@ -12,14 +12,15 @@ class JoystickController:
         self.max_forward = rospy.get_param("MAX_FORWARD_MOTOR")
         self.max_reverse = rospy.get_param("MAX_REVERSE_MOTOR")
         self.idle = rospy.get_param("IDLE_MOTOR")
-        self.current_pwm = self.idle
-        self.old_pwm = 0
-        self.max_right=rospy.get_param("MAX_RIGHT_ANGLE")
-        self.max_left=rospy.get_param("MAX_LEFT_ANGLE")
-        self.zero=rospy.get_param("ZERO_ANGLE")
-        self.steering_angle = self.zero
-        self.old_angle = 0
+        self.auto_pilot_pwm = rospy.get_param("AUTO_PILOT_PWM_MOTOR")
+        self.max_right = rospy.get_param("MAX_RIGHT_ANGLE")
+        self.max_left = rospy.get_param("MAX_LEFT_ANGLE")
+        self.zero = rospy.get_param("ZERO_ANGLE")
         self.message_queue_size = rospy.get_param("MESSAGE_QUEUE_SIZE")
+
+        self.auto_pilot = False
+        self.current_pwm = self.idle
+        self.steering_angle = self.zero
 
         self.pwm_publisher = rospy.Publisher(
             f"{self.id}/pwm",
@@ -45,7 +46,8 @@ class JoystickController:
         """
         Callback for the joy subscriber.
         """
-        # https://github.com/naoki-mizuno/ds4_driver/blob/humble-devel/ds4_driver_msgs/msg/Status.msg
+        # https://github.com/naoki-mizuno/ds4_driver/blob/noetic-devel/\
+        # src/ds4_driver/controller_ros.py
         # Left: 1.0, Right: -1.0, Up: 1.0, Down: -1.0
         steer_axis_x = data.axes[0]
         speed_axis_y = data.axes[3]
@@ -55,6 +57,10 @@ class JoystickController:
         # Buttons (0: Not pressed, 1: Pressed)
         button_dpad_left = data.buttons[-4]
         button_dpad_right = data.buttons[-2]
+        button_triangle = data.buttons[1]
+
+        if button_triangle == 1:
+            self.auto_pilot = True
 
         # Change zero angle after trim input deom dpad
         if button_dpad_left == 1:
@@ -63,11 +69,17 @@ class JoystickController:
             self.zero = min(self.zero + 1*10**3, self.max_right)
 
         if forward_pwm > 0:
+            self.auto_pilot = False
             self.current_pwm = int(
                 np.interp(forward_pwm, [0, 1], [self.idle, self.max_forward]))
-        else:
+        elif reverse_pwm > 0:
+            self.auto_pilot = False
             self.current_pwm = int(
                 np.interp(reverse_pwm, [0, 1], [self.idle, self.max_reverse]))
+        elif self.auto_pilot:
+            self.current_pwm = self.auto_pilot_pwm
+        else:
+            self.current_pwm = self.idle
 
         if steer_axis_x == 0:
             self.steering_angle = self.zero
