@@ -139,9 +139,9 @@ class PIDController:
                     self.__desired_pwm = self.__max_reverse
                 else:
                     self.__desired_pwm = self.__idle
-                self.__can_brake = False
             elif platoon_control_output == 0:
                 self.__desired_pwm = self.__idle
+                self.__can_brake = False
             else:
                 self.__can_brake = True
                 self.__desired_pwm = max(
