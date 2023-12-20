@@ -31,83 +31,107 @@ A_discrete, B_discrete, C_discrete, D_discrete, _ = signal.cont2discrete(
 # -------------- MPC --------------
 
 m = GEKKO()
-x,y,u = m.state_space(A_continuous,B_continuous,C_continuous,D=None)
+#x,y,u = m.state_space(A_continuous,B_continuous,C_continuous,D=None)
+x,y,u = m.state_space(A_discrete,B_discrete,C_discrete,D=None)
 
 # customize names
 # MVs
-v0 = u[0]
+v0 = u[0] # feedforward
 p_f = u[1]
 p_b = u[2]
 d_f = u[3]
 d_b = u[4]
+
 # CVs
-print(x)
 p_i = y[0]
 #d_i = y[1]
 
-m.time = [0, 0.1, 0.2, 0.4, 1, 1.5, 2, 3, 4]
-m.options.imode = 6
-m.options.nodes = 3
+# Parameters
+mass = 6000
+#b = m.Param(value=50)
+#K = m.Param(value=0.8)
 
-u[0].lower = 0 
-u[0].upper = 60
-u[0].dcost = 1
-u[0].status = 1 # will change
 
-u[1].lower = 0
-u[1].upper = 60*6000
-u[1].dcost = 1
-u[1].status = 1
+u[0].lower = 0 # the lower bound. will not be less then
+u[0].upper = 60 # the upper bound. will not be greater then
+#u[0].dcost = 1
+u[0].status = 1 # Feedback
 
-u[2].lower = 0
-u[2].upper = 60*6000
+u[1].lower = 0 # the lower bound. will not be less then
+u[1].upper = 60*mass # the upper bound. will not be greater then
+#u[1].dcost = 1
+u[1].status = 1 # Feedback
+
+u[2].lower = 0 # the lower bound. will not be less then
+u[2].upper = 60*mass # the upper bound. will not be greater then
 u[2].dcost = 1
-u[2].status = 1
+u[2].status = 1 # MV
 
-u[3].lower = -0.2
-u[3].upper = 3
-u[3].dcost = 1
-u[3].status = 1
+u[3].lower = -0.2 # the lower bound. will not be less then
+u[3].upper = 5 # the upper bound. will not be greater then
+#u[3].dcost = 0.5
+u[3].status = 1 # MV
 
-u[4].lower = -0.2
-u[4].upper = 3
-u[4].dcost = 1
-u[4].status = 1
+u[4].lower = -0.2 # the lower bound. will not be less then
+u[4].upper = 5 # the upper bound. will not be greater then
+#u[4].dcost = 0.005
+u[4].status = 1 # MV
+
 
 ## CV tuning
 # tau = first order time constant for trajectories
-#y[0].tau = 1
-#y[1].tau = 1
+y[0].tau = 0.3 # first order time constant for trajectories
+#y[1].tau = 60
 # tr_init = 0 (dead-band)
 #         = 1 (first order trajectory)
 #         = 2 (first order traj, re-center with each cycle)
-y[0].tr_init = 0
 #y[1].tr_init = 0
 # targets (dead-band needs upper and lower values)
-# SPHI = upper set point
-# SPLO = lower set point
-y[0].sphi= 0
-y[0].splo= 100
+y[0].upper = 100
+y[0].lower = 0
+y[0].sphi= 0.03*10 # SPHI = upper set point
+y[0].splo= 0.01*10 # SPLO = lower set point
+y[0].sp = 0.02*10 # SPLO = lower set point
 #y[1].sphi= 5.4
 #y[1].splo= 4.6
-
 y[0].status = 1
+y[0].tr_init = 0 # dead band = 0
+#y[0].value = 0 # dead band
 #y[1].status = 1
+
+m.options.imode = 6 # CTL
+m.options.nodes = 5 # Higher better accuracy but longer time
+m.time = np.linspace(0,10,10) #[0, 0.1, 0.2, 0.4, 1, 1.5, 2, 3, 4]
 
 # feedforward
 u[0].status = 0
+u[1].status = 0
 u[0].value = np.zeros(np.size(m.time))
-u[0].value[3:] = 2.5
+u[1].value = np.zeros(np.size(m.time))
+for i in range(np.size(m.time)):
+    u[0].value[i] = 0.02*i + 1
+    u[1].value[i] = 0.02*i*mass + 1*mass
 
 #m.solve(disp=False) # (GUI=True)
-m.solve() # (GUI=True)
+m.solve(disp=False) # (GUI=True)
+
+print(u[0].value)
+print(y[0].value)
+
+# get additional solution information
+import json
+with open(m.path+'//results.json') as f:
+    results = json.load(f)
+
+print(results)
 
 
 import matplotlib.pyplot as plt
 
+# should v0 be the trajectory?
 plt.subplot(2,1,1)
 plt.plot(m.time,v0.value,'r-',label=r'$u_0$ as feedforward')
-plt.plot(m.time,p_f.value,'b--',label=r'$u_1$ as MV')
+plt.plot(m.time,p_f.value,'b--',label=r'$u_1$ as feedforward')
 plt.plot(m.time,p_b.value,'b:',label=r'$u_2$ as MV')
 plt.plot(m.time,d_f.value,'g:',label=r'$u_3$ as MV')
 plt.plot(m.time,d_b.value,'g:',label=r'$u_4$ as MV')
