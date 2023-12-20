@@ -92,16 +92,14 @@ class Node:
         Stops the node process. If the node is not running, this method does
         nothing.
         """
-        if not self.__running:
-            return OK
-
-        # Killing roslaunch before nodes have been fully spawned results
-        # in nodes being kept alive. Ensure that all nodes have spawned
-        # before stopping.
-        time_since_start = time.time() - self.__start_time
-        if self.__start_time != -1 and time_since_start < MINIMUM_RUNNING_TIME:
-            self.__broadcast_error("Need to wait for ROS to fully start before stopping")
-            return ERROR
+        if self.__running:
+            # Killing roslaunch before nodes have been fully spawned results
+            # in nodes being kept alive. Ensure that all nodes have spawned
+            # before stopping.
+            time_since_start = time.time() - self.__start_time
+            if self.__start_time != -1 and time_since_start < MINIMUM_RUNNING_TIME:
+                self.__broadcast_error("Need to wait for ROS to fully start before stopping")
+                return ERROR
 
         failed = False
         try:
