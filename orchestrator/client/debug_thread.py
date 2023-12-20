@@ -24,7 +24,10 @@ class DebugThread(threading.Thread):
 
         count = 0
         while not self.__stop_event.is_set():
+            # Read all buffered messages
             msg = self.__proc.stdout.readline()
+            while msg:
+                msg = self.__proc.stdout.readline()
 
             if count < self.__skip_count:
                 count += 1
