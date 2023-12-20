@@ -103,19 +103,30 @@ class Node:
             self.__broadcast_error("Need to wait for ROS to fully start before stopping")
             return ERROR
 
+        failed = False
         try:
             proc = subprocess.Popen(
                 f"sudo kill -SIGINT $(cat {PID_PATH})", shell=True, executable="/bin/bash")
             proc.wait()
-            self.__socket.sendto(
-                str.encode(MSG_CMD_STOP_CONFIRM),
-                (self.__broadcast_ip, SOCKET_PORT)
-            )
         except Exception as e:
             print(f"Failed to stop process:\n{e}")
             self.__broadcast_error(f"Failed to stop ROS:\n{e}")
+            failed = True
+
+        if failed:
+            try:
+                proc = subprocess.Popen(
+                    f"sudo killall roslaunch", shell=True, executable="/bin/bash")
+                proc.wait()
+            except Exception as e:
+                print(f"Failed to stop process using killall:\n{e}")
+                self.__broadcast_error(f"Failed to stop ROS using killall:\n{e}")
 
         # Assume the process is already dead
+        self.__socket.sendto(
+            str.encode(MSG_CMD_STOP_CONFIRM),
+            (self.__broadcast_ip, SOCKET_PORT)
+        )
         self.__running = False
         self.__start_time = -1
         return OK
