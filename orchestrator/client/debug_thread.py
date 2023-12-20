@@ -1,5 +1,6 @@
 import os
-import time
+import select
+import linuxfd
 import threading
 import subprocess
 from orchestrator.shared import *
@@ -22,27 +23,35 @@ class DebugThread(threading.Thread):
             f"make debug_listener", shell=True, stdout=subprocess.PIPE,
             cwd=REPO_PATH, executable="/bin/bash")
 
+        msg = ""
         count = 0
+        timer = linuxfd.timerfd(rtc=True)
+        timer_fd = timer.fileno()
+        timer.settime(STARTUP_HEARTBEAT_TIMER_EXPIRATION)
+
+        stdout_fd = self.__proc.stdout.fileno()
+        flags_stdout = fcntl.fcntl(stdout_fd, fcntl.F_GETFL)
+        fcntl.fcntl(stdout_fd, fcntl.F_SETFL, flags_stdout | os.O_NONBLOCK)
+
         while not self.__stop_event.is_set():
-            # Read all buffered messages
-            msg = self.__proc.stdout.readline()
-            broadcast_msg = msg
-            while msg:
-                msg = self.__proc.stdout.readline()
-                if msg:
-                    broadcast_msg = msg
+            rs, _, _ = select.select([timer_fd, stdout_fd], [], [])
 
-            if count < self.__skip_count:
-                count += 1
-                continue
+            for fd in rs:
+                if fd == stdout_fd:
+                    count += 1
+                    msg = self.__proc.stdout.readline()
+                else:
+                    if count < self.__skip_count:
+                        continue
 
-            parsed_msg = broadcast_msg.decode("utf-8")
-            if "," not in parsed_msg:
-                continue
+                    parsed_msg = msg.decode("utf-8")
+                    if "," not in parsed_msg:
+                        continue
 
-            # Only broadcast the data, not the timestamp
-            self.__broadcast_cb(parsed_msg[parsed_msg.index(",")+1:].strip("\n"))
-            time.sleep(1)
+                    # Only broadcast the data, not the timestamp
+                    self.__broadcast_cb(
+                        parsed_msg[parsed_msg.index(",")+1:].strip("\n"))
+                    timer.settime(1)
 
     def stop(self):
         if self.__proc is not None:
