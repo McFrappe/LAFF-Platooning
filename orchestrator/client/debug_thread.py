@@ -26,14 +26,17 @@ class DebugThread(threading.Thread):
         while not self.__stop_event.is_set():
             # Read all buffered messages
             msg = self.__proc.stdout.readline()
+            broadcast_msg = msg
             while msg:
                 msg = self.__proc.stdout.readline()
+                if msg:
+                    broadcast_msg = msg
 
             if count < self.__skip_count:
                 count += 1
                 continue
 
-            parsed_msg = msg.decode("utf-8")
+            parsed_msg = broadcast_msg.decode("utf-8")
             if "," not in parsed_msg:
                 continue
 
