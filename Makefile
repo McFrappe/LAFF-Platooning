@@ -59,6 +59,9 @@ cat:
 	sudo rm -rf build
 	catkin_make
 
+pixymon:
+	QT_QPA_PLATFORM=vnc /home/laff/laff-platooning/src/pixy2_ros/pixy2_node/pixy2/build/pixymon/PixyMon
+
 debug_listener:
 	source devel/setup.bash && ROS_IP=$(IP) ROS_MASTER_URI=$(ROS_MASTER_URI) rostopic echo /$(VEHICLE_ID)/debug -p
 
