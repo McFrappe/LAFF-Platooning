@@ -133,7 +133,9 @@ class PIDController:
             distance_error = self.__current_distance - self.__min_distance()
             platoon_control_output = self.__pid_platooning.update(distance_error)
 
-            if platoon_control_output <= 0:
+            if platoon_control_output < 0:
+                self.__desired_pwm = self.__max_reverse
+            elif platoon_control_output == 0:
                 self.__desired_pwm = self.__idle
             else:
                 self.__desired_pwm = max(
@@ -141,7 +143,8 @@ class PIDController:
                     self.__min_forward)
 
             self.__current_pwm = int(min(
-                max(self.__desired_pwm, self.__idle), self.__max_forward))
+                max(self.__desired_pwm, self.__max_reverse),
+                self.__max_forward))
 
         self.pwm_publisher.publish(self.__current_pwm)
         self.control_publisher.publish(self.__desired_pwm)
