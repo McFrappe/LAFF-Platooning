@@ -109,10 +109,10 @@ class DebugController:
     def __publish_debug(self, event):
         msg = f"[{self.__id}]"
         msg += f" angle: {self.__steering_angle},"
-        msg += f" dist: {self.__distance},"
+        msg += f" dist: {self.__distance:.2f},"
         msg += f" pwm: {self.__pwm},"
-        msg += f" ctrl: {self.__control},"
-        msg += f" vel: {self.__velocity}"
+        msg += f" ctrl: {self.__control:.2f},"
+        msg += f" vel: {self.__velocity:.2f}"
         msg += f" has_target: {self.__has_target}"
         self.__debug_publisher.publish(msg)
         rospy.loginfo(msg)
