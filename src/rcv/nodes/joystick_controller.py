@@ -55,8 +55,10 @@ class JoystickController:
         forward_pwm = data.axes[5]
 
         # Buttons (0: Not pressed, 1: Pressed)
-        button_dpad_left = data.buttons[-4]
+        button_dpad_down = data.buttons[-1]
         button_dpad_right = data.buttons[-2]
+        button_dpad_up = data.buttons[-3]
+        button_dpad_left = data.buttons[-4]
         button_triangle = data.buttons[1]
 
         if button_triangle == 1:
@@ -67,6 +69,11 @@ class JoystickController:
             self.zero = max(self.zero - 1*10**3, self.max_left)
         elif button_dpad_right == 1:
             self.zero = min(self.zero + 1*10**3, self.max_right)
+
+        if button_dpad_up == 1:
+            self.auto_pilot_pwm = min(self.auto_pilot_pwm + 1*10**3, self.max_forward)
+        elif button_dpad_down == 1:
+            self.auto_pilot_pwm = max(self.auto_pilot_pwm - 1*10**3, self.idle)
 
         if forward_pwm > 0:
             self.auto_pilot = False
