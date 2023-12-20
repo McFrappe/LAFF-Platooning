@@ -17,7 +17,7 @@ install:
 	curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add
 	sudo apt update
 	sudo apt -y install ros-noetic-ros-base
-	sudo apt -y install python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential g++ libusb-1.0-0-dev libwiringpi-dev tightvncserver bluez pigpio-tools python3-setuptools unzip
+	sudo apt -y install python3-pip python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential g++ libusb-1.0-0-dev libwiringpi-dev tightvncserver bluez pigpio-tools python3-setuptools unzip qt5-default qt5-qmake qtbase5-dev-tools
 	echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 	source ~/.bashrc
 	sudo rosdep init || echo "Already initialized"
