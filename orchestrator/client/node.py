@@ -130,6 +130,7 @@ class Node:
         self.__running = False
         self.__start_time = -1
         self.set_debug("off")
+        os.remove(PID_PATH)
         return OK
 
     def update(self, branch):
