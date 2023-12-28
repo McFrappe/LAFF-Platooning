@@ -115,5 +115,5 @@ def plot_velocity():
     plt.legend()
     plt.show()
 
-#plot_distance()
-plot_velocity()
+plot_distance()
+#plot_velocity()
