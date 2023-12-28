@@ -8,7 +8,7 @@ import numpy as np
 
 class VehicleDummy(Vehicle):
     def __init__(self, order, vehicle_specs):
-        Vehicle.__init__(self, order, vehicle_specs, 1)
+        Vehicle.__init__(self, order, 0, 0, 0, 0, vehicle_specs, 1)
 
     def get_momentum(self):
         return 0  

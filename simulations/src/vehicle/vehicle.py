@@ -5,21 +5,24 @@ class Vehicle:
     t_c = 10  # number of ticks for period of communication (10ms*t_c = 100ms)
     array_distance_errors_len = 100
 
-    def __init__(self, order, vehicle_specs, period) -> None:
+    def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period) -> None:
+        self.order = order  # number of vehicles in front (first has order = 0)
+        self.period = period
         self.vehicle_specs = vehicle_specs
+
         self.speed = 0  # initially it the vehicle stands still
-        self.speed_old = 0  # updates each period t_c
         self.position = 0  # the distance to the leader
         self.travel_distance = 0 # current distance traveled of the vehicle in meters
         self.distance = 0  # distance to the vehicle in front (-1 if no one is in front)
-        self.order = order  # number of vehicles in front (first has order = 0)
-        self.array_distance_errors = [0]*self.array_distance_errors_len
-        self.array_distance_errors_pointer = 0
-        self.error_derivative = 0
-        self.error_integral = 0
-        self.prev_distance_error = 0
-        self.min_distance = 9  # how close the vehicles should be to each other, depends on speed. (m)
-        self.period = period
+
+        self.min_distance = 0  # how close the vehicles should be to each other, depends on speed. (m)
+        self.mass = vehicle_specs.get_mass_in_kg()
+        
+        self.speed = init_speed
+        self.position = init_position
+        self.distance = init_distance
+        self.travel_distance = init_travel_distance
+
 
     # This should be called each tick
     def update_travel_distance(self):
@@ -44,22 +47,13 @@ class Vehicle:
         else:
             self.distance = travel_distance_of_vehicle_in_front - self.travel_distance
 
-        # TODO: remove only calculate the distance.
-        error = self.distance - self.min_distance
-        self.error_derivative = (error - self.prev_distance_error)/tick_in_s
-        self.error_integral += error*tick_in_s
-        self.prev_distance_error = error
-
-        self.array_distance_errors[self.array_distance_errors_pointer] = error
-        if self.array_distance_errors_pointer == self.array_distance_errors_len-1:
-            self.array_distance_errors_pointer = 0
-
         return self.distance
 
     def update_min_distance(self):
         speed_in_m_per_s = self.speed/3.6
         margin_in_m = 0.2 # TODO: should depend on speed and vehicle?
         self.min_distance = speed_in_m_per_s * tick_in_s *2 + margin_in_m 
+
         return self.min_distance
 
     def calculate_valid_speed(self, desired_speed):
@@ -80,11 +74,11 @@ class Vehicle:
 
         return speed
 
+    def get_momentum(self):
+        return self.speed*self.mass 
+
     def get_current_speed(self):
         return self.speed
-
-    def get_old_speed(self):
-        return self.speed_old
 
     def get_order(self):
         return self.order
@@ -94,3 +88,6 @@ class Vehicle:
 
     def get_travel_distance(self):
         return self.travel_distance
+    
+    def get_min_distance(self):
+        return self.min_distance

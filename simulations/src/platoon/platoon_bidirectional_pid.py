@@ -17,7 +17,7 @@ class PlatoonBidirectional(Platoon):
         travel_distance_each_run = np.array([])
 
         # v_in_front (order -1 if no vehicle is in front)
-        v_in_front = Vehicle(-1, dummy_vehicle, 1) # dummy vehicle
+        v_in_front = Vehicle(-1, 0, 0, 0, 0, dummy_vehicle, 1) # dummy vehicle
 
         for v in self.vehicles:
             speeds_each_run = np.append(speeds_each_run, v.update_speed(tick, self.vehicles[0].get_current_speed(), v_in_front.get_position()))

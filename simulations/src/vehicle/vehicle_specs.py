@@ -33,19 +33,21 @@ class VehicleSpecs:
         return self.state_space_vehicle_parameters
 
 
+truck_mass = 6000
 truck_h_p = 0.5
 truck_r = np.array([200000,200000,200000]) # [r_{i-1}, r_{i}, r_{i+1}] 
-truck_m = np.array([6000,6000,6000]) # [m_{i-1}, m_{i}, m_{i+1}] 
+truck_m = np.array([truck_mass,truck_mass,truck_mass]) # [m_{i-1}, m_{i}, m_{i+1}] 
 truck_a = np.array([0,300000,50000]) # [a_{i-1} (not used), a_{i}, a_{i+1}] 
 truck_ss_par = StateSpaceVehicleParameters(truck_h_p, truck_r, truck_m, truck_a)
 
+rc_vehicle_mass = 1.8
 rc_vehicle_h_p = 0.5
 rc_vehicle_r = np.array([200,200,200]) # [r_{i-1}, r_{i}, r_{i+1}] 
-rc_vehicle_m = np.array([1.8,1.8,1.8]) # [m_{i-1}, m_{i}, m_{i+1}] 
+rc_vehicle_m = np.array([rc_vehicle_mass,rc_vehicle_mass,rc_vehicle_mass]) # [m_{i-1}, m_{i}, m_{i+1}] 
 rc_vehicle_a = np.array([0,300,50]) # [a_{i-1} (not used), a_{i}, a_{i+1}] 
 rc_vehicle_ss_par = StateSpaceVehicleParameters(rc_vehicle_h_p, rc_vehicle_r, rc_vehicle_m, rc_vehicle_a)
 
-truck = VehicleSpecs(100, 0.05, 0.2, 6000, truck_ss_par) # TODO: change to 30 000
+truck = VehicleSpecs(100, 0.05, 0.2, truck_mass, truck_ss_par) # TODO: change to 30 000
 kit_car = VehicleSpecs(4, 0.04, 0.15, 1, truck_ss_par)
-rc_car = VehicleSpecs(30, 0.08, 0.3, 1.8, rc_vehicle_ss_par)
+rc_car = VehicleSpecs(30, 0.08, 0.3, rc_vehicle_mass, rc_vehicle_ss_par)
 dummy_vehicle = VehicleSpecs(0, 0, 0, 0, truck_ss_par)

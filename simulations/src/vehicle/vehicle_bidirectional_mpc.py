@@ -7,9 +7,8 @@ from src.common.state_space import StateSpaceDiscrete
 
 class VehicleBidirectionalStateSpace(Vehicle):
     def __init__(self, order, num_followers, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, state_space_vehicle_parameters, period):
-        Vehicle.__init__(self, order, vehicle_specs, period)
-        self.speed = init_speed
-        self.position = init_position
+        Vehicle.__init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period)
+
         self.delta = 0 
         self.ss_par = state_space_vehicle_parameters#StateSpaceVehicleParameters
         self.mass = self.ss_par.m[1]

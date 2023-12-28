@@ -31,7 +31,7 @@ class PlatoonPidIncreaseDistanceS3(Platoon):
         Platoon.__init__(self, num_vehicles, vehicle_specs, period)
 
     def init_vehicles(self, num_vehicles, vehicle_specs):
-        self.vehicles.append(VehicleLeaderDistancePidS3(order=0, init_speed=0, init_travel_distance=20, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+        self.vehicles.append(VehicleLeaderDistancePidS3(order=0, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
 
         for i in range(num_vehicles-1):
             self.vehicles.append(VehiclePidIncreaseDistance(i+1, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs, period=self.period))
@@ -42,7 +42,7 @@ class PlatoonPidIncreaseDistanceS4(Platoon):
         Platoon.__init__(self, num_vehicles, vehicle_specs, period)
 
     def init_vehicles(self, num_vehicles, vehicle_specs):
-        self.vehicles.append(VehicleLeaderDistancePidS4(order=0, init_speed=0, init_travel_distance=20, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
+        self.vehicles.append(VehicleLeaderDistancePidS4(order=0, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs))
 
         for i in range(num_vehicles-1):
             self.vehicles.append(VehiclePidIncreaseDistance(i+1, init_speed=0, init_travel_distance=0, init_position=0, init_distance=0, vehicle_specs=vehicle_specs, period=self.period))

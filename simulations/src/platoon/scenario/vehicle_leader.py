@@ -3,11 +3,7 @@ from src.vehicle.vehicle import Vehicle
 
 class VehicleLeaderS1(Vehicle):
     def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period):
-        Vehicle.__init__(self, order, vehicle_specs, period)
-        self.speed = init_speed
-        self.position = init_position
-        self.distance = init_distance
-        self.travel_distance = init_travel_distance
+        Vehicle.__init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period)
 
         self.leader_accelerating = True
         self.leader_initial_accelerating = True
@@ -31,11 +27,7 @@ class VehicleLeaderS1(Vehicle):
 
 class VehicleLeaderS2(Vehicle):
     def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period):
-        Vehicle.__init__(self, order, vehicle_specs, period)
-        self.speed = init_speed
-        self.position = init_position
-        self.distance = init_distance
-        self.travel_distance = init_travel_distance
+        Vehicle.__init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period)
 
         self.leader_accelerating = True
         self.leader_initial_accelerating = True
@@ -51,10 +43,7 @@ class VehicleLeaderS2(Vehicle):
 
 class VehicleLeaderS3(Vehicle):
     def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period):
-        Vehicle.__init__(self, order, vehicle_specs, period)
-        self.speed = init_speed
-        self.position = init_position
-        self.distance = init_distance
+        Vehicle.__init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period)
 
         self.leader_accelerating = True
         self.leader_initial_accelerating = True
@@ -81,10 +70,7 @@ class VehicleLeaderS3(Vehicle):
 
 class VehicleLeaderS4(Vehicle):
     def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period):
-        Vehicle.__init__(self, order, vehicle_specs, period)
-        self.speed = init_speed
-        self.position = init_position
-        self.distance = init_distance
+        Vehicle.__init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period)
 
         self.leader_accelerating = True
         self.leader_initial_accelerating = True

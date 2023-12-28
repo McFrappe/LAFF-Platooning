@@ -1,3 +1,4 @@
+import numpy as np
 import sys, getopt
 from src.platoon.platoon_distance_pid import PlatoonPidDistanceS1, PlatoonPidDistanceS2, PlatoonPidDistanceS3, PlatoonPidDistanceS4
 from src.platoon.platoon_distance_pid_increase import PlatoonPidIncreaseDistanceS1, PlatoonPidIncreaseDistanceS2, PlatoonPidIncreaseDistanceS3, PlatoonPidIncreaseDistanceS4
@@ -99,10 +100,11 @@ def simulate(num_tick, num_vehicles, scenario, type, model, period):
     travel_distance = p.get_travel_distance()
     distances = p.get_distances()
     positions = p.get_positions()
+    references = p.get_references()
 
     plot_speed(speeds, num_vehicles, f'plots/speeds-with-{suffix}.png')
     plot_travel_distance(travel_distance, num_vehicles, f'plots/travel-distance-with-{suffix}.png')
-    plot_distances(distances, num_vehicles, f'plots/distances-with-{suffix}.png')
+    plot_distances((distances, references), num_vehicles, f'plots/distances-with-{suffix}.png')
     plot_position(positions, num_vehicles, f'plots/positions-with-{suffix}.png')
 
 

@@ -1,37 +1,29 @@
 import numpy as np
+from src.common.pid_increase import PidIncrease
 from src.vehicle.vehicle import Vehicle
 from src.common.constants import tick_in_s
 
 class VehicleBidirectional(Vehicle):
     def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period):
-        Vehicle.__init__(self, order, vehicle_specs, period)
-        self.speed = init_speed
-        self.position = init_position
-        self.distance = init_distance
-        self.travel_distance = init_travel_distance
+        Vehicle.__init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period)
         self.integral_sum = 0
         self.prev_velocity_error = 0
+
+        max_acceleration  = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
+        max_deceleration  = self.vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
+        kp = max_acceleration/0.4 #0.2
+        ki = 0.00005  # 0.001
+        kd = 1 # 0.1
+
+        self.pid = PidIncrease(kp, ki, kd, tick_in_s, -max_deceleration, max_acceleration)
 
     def update_speed(self, tick, leader_speed, relative_position_infront):
         delta_self = self.calculate_positioning_error(leader_speed, relative_position_infront)
         velocity_deviation = self.calculate_velocity_deviation(leader_speed, delta_self)
         velocity_deviation_fin = -velocity_deviation[0][0] * 0.85 + velocity_deviation[0][1] * 0.15 #0.8 and 0.2
 
-        max_acceleration  = self.vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
-        kp = max_acceleration/0.4 #0.2
-        ki = 0.00005  # 0.001
-        kd = 1 # 0.1
-        self.integral_sum += velocity_deviation_fin *kp
-        derivative = (velocity_deviation_fin *kp) - self.prev_velocity_error
-        self.prev_velocity_error = velocity_deviation_fin *kp
-
-        fs = kp * velocity_deviation_fin + ki * self.integral_sum + kd * derivative
-        desired_speed = self.speed + fs
-        self.speed = self.calculate_valid_speed(desired_speed)
-
-        desired_speed = self.speed
-        self.speed = self.calculate_valid_speed(desired_speed)
-
+        error = velocity_deviation_fin
+        self.speed = self.speed + self.pid.update(error)
         return self.speed
 
     def update_all_speeds(self, speeds_vector):
