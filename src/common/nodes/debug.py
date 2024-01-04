@@ -20,6 +20,7 @@ class DebugController:
         self.__velocity = 0
         self.__control = 0
         self.__has_target = False
+        self.__target_center_offset = 0
 
         self.__debug_publisher = rospy.Publisher(
             f"{self.__id}/debug",
@@ -56,10 +57,16 @@ class DebugController:
             self.__callback_velocity,
             queue_size=self.__message_queue_size)
 
-        self.__velocity_subscriber = rospy.Subscriber(
+        self.__has_target_subscriber = rospy.Subscriber(
             f"{self.__id}/has_target",
             Bool,
             self.__callback_has_target,
+            queue_size=self.__message_queue_size)
+
+        self.__target_center_offset_subscriber = rospy.Subscriber(
+            f"{self.__id}/target_center_offset",
+            Int32,
+            self.__callback_target_center_offset,
             queue_size=self.__message_queue_size)
 
         rospy.Timer(rospy.Duration(self.__publish_period), self.__publish_debug)
@@ -70,7 +77,7 @@ class DebugController:
     def __write_header(self):
         # Write CSV header and clear any previous data in the file.
         with open(self.__out_path, "w") as f:
-            f.write("time,pwm,distance,angle,control,velocity,target\n")
+            f.write("time,pwm,distance,angle,control,velocity,target,target_center_offset\n")
 
     def __flush_data(self):
         """
@@ -83,7 +90,8 @@ class DebugController:
             str(self.__steering_angle),
             str(self.__control),
             str(self.__velocity),
-            str(self.__has_target)
+            str(self.__has_target),
+            str(self.__target_center_offset),
         ])
         with open(self.__out_path, "a") as f:
             f.write(f"{values_str}\n")
@@ -106,14 +114,18 @@ class DebugController:
     def __callback_has_target(self, msg: Bool):
         self.__has_target = msg.data
 
+    def __callback_target_center_offset(self, msg: Int32):
+        self.__target_center_offset = msg.data
+
     def __publish_debug(self, event):
         msg = f"[{self.__id}]"
         msg += f" angle: {self.__steering_angle},"
         msg += f" dist: {self.__distance:.2f},"
         msg += f" pwm: {self.__pwm},"
         msg += f" ctrl: {self.__control:.2f},"
-        msg += f" vel: {self.__velocity:.2f}"
-        msg += f" has_target: {self.__has_target}"
+        msg += f" vel: {self.__velocity:.2f},"
+        msg += f" has_target: {self.__has_target},"
+        msg += f" center_offset: {self.__target_center_offset}"
         self.__debug_publisher.publish(msg)
         rospy.loginfo(msg)
 

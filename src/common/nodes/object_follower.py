@@ -44,6 +44,11 @@ class ObjectFollowerController:
             Bool,
             queue_size=self.__message_queue_size)
 
+        self.__target_center_offset_publisher = rospy.Publisher(
+            f"{self.__id}/target_center_offset",
+            Int32,
+            queue_size=self.__message_queue_size)
+
         self.__steering_angle_publisher = rospy.Publisher(
             f"{self.__id}/steering_angle",
             Int32,
@@ -107,6 +112,7 @@ class ObjectFollowerController:
                 error,
                 [self.__pid_min, self.__pid_max],
                 [self.__max_right, self.__max_left]))
+            self.__target_center_offset_publisher.publish(int(center_offset))
 
         self.__has_target_publisher.publish(has_target)
         self.__steering_angle_publisher.publish(new_angle)
