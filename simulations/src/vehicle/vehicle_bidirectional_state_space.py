@@ -36,7 +36,8 @@ class VehicleBidirectionalStateSpace(Vehicle):
 
         self.ss = StateSpaceDiscrete(A_continuous, B_continuous, C_continuous, D_continuous, 
                                     tick_in_s, period, 
-                                    -max_deceleration, max_acceleration, min_speed, max_speed)
+                                    -max_deceleration, max_acceleration, min_speed, max_speed,
+                                    init_speed)
 
     def update_speed(self, tick, leader_speed, relative_position_infront, momentum_infront, momentum_behind, delta_infront, delta_behind):
         self.delta = self.calculate_positioning_error(leader_speed, relative_position_infront)
@@ -62,9 +63,9 @@ class VehicleBidirectionalStateSpace(Vehicle):
     def calculate_valid_reference(self, leader_speed, order):
         speed_in_m_per_s = leader_speed/3.6
         margin_in_m = 1
-        minimal_distance = speed_in_m_per_s * self.period + margin_in_m
+        self.min_distance = speed_in_m_per_s * self.period + margin_in_m
 
-        return minimal_distance * order
+        return self.min_distance * order
 
     def get_delta(self):
         return self.delta 

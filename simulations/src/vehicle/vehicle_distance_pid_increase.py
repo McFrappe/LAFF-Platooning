@@ -8,24 +8,24 @@ class VehiclePidIncreaseDistance(Vehicle):
     def __init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period):
         Vehicle.__init__(self, order, init_speed, init_travel_distance, init_position, init_distance, vehicle_specs, period)
 
-        min_speed = 0
-        max_speed = vehicle_specs.get_max_speed_in_km_per_h()
+        self.min_speed = 0
+        self.max_speed = vehicle_specs.get_max_speed_in_km_per_h()
         max_deceleration = vehicle_specs.get_max_deceleration_in_km_per_h_per_tick()
         max_acceleration = vehicle_specs.get_max_acceleration_in_km_per_h_per_tick()
 
         kp = 1
-        ki = 0.02
-        kd = 8
+        ki = 0.08#1/(95/8) #0.02
+        kd = 1#1/(95/40) #8
 
         self.pid = PidIncrease(kp, ki, kd, tick_in_s, -max_deceleration, max_acceleration)
 
     # This should be called each tick
     def update_speed(self, tick):
         error = self.distance - self.min_distance
-        self.speed = self.speed + self.pid.update(error)
-        return self.speed
+        desired_speed = self.speed + self.pid.update(error)
+        self.speed = min(max(desired_speed, self.min_speed), self.max_speed)
 
-
+        return self.speed 
 
         distance_from_min = (self.distance - self.min_distance)
         integral = self.error_integral

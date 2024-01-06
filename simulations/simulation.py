@@ -1,5 +1,6 @@
 import numpy as np
 import sys, getopt
+from enum import Enum
 from src.platoon.platoon_distance_pid import PlatoonPidDistanceS1, PlatoonPidDistanceS2, PlatoonPidDistanceS3, PlatoonPidDistanceS4
 from src.platoon.platoon_distance_pid_increase import PlatoonPidIncreaseDistanceS1, PlatoonPidIncreaseDistanceS2, PlatoonPidIncreaseDistanceS3, PlatoonPidIncreaseDistanceS4
 from src.platoon.platoon_bidirectional_pid import PlatoonBidirectionalPidS3, PlatoonBidirectionalPidS1, PlatoonBidirectionalPidS2
@@ -9,82 +10,101 @@ from src.common.plot import plot_speed, plot_travel_distance, plot_distances, pl
 from src.vehicle.vehicle_specs import truck, kit_car, rc_car
 from src.common.constants import tick_in_s
 
+class VehicleType(Enum):
+    TRUCK: int = 1
+    RC_VEHICLE: int = 3
+
+class Model(Enum):
+    PID_VELOCITY_DIRECT: int = 1
+    PID_VELOCITY_INCREASE: int = 5
+    PID_BIDIRECTIONAL: int = 2
+    SS_BIDIRECTIONAL: int = 3
+    SS_BIDIRECTIONAL_PID_VELOCITY_INCREASE: int = 4
+
 
 def simulate(num_tick, num_vehicles, scenario, type, model, period):
+    print(VehicleType.TRUCK.value,
+          VehicleType.RC_VEHICLE.value,
+          Model.PID_VELOCITY_DIRECT.value,
+          Model.PID_VELOCITY_INCREASE.value,
+          Model.PID_BIDIRECTIONAL.value,
+          Model.SS_BIDIRECTIONAL.value,
+          Model.SS_BIDIRECTIONAL_PID_VELOCITY_INCREASE.value)
+
     match (scenario, type, model):
-        case (1,1,1):
+        case (1,VehicleType.TRUCK.value,Model.PID_VELOCITY_DIRECT.value):
             p = PlatoonPidDistanceS1(num_vehicles, truck, period)
             suffix = "pid-distance-model-s1-truck"
-        case (2,1,1):
+        case (2,VehicleType.TRUCK.value,Model.PID_VELOCITY_DIRECT.value):
             p = PlatoonPidDistanceS2(num_vehicles, truck, period)
             suffix = "pid-distance-model-s2-truck"
-        case (3,1,1):
+        case (3,VehicleType.TRUCK.value,Model.PID_VELOCITY_DIRECT.value):
             p = PlatoonPidDistanceS3(num_vehicles, truck, period)
             suffix = "pid-distance-model-s3-truck"
-        case (4,1,1):
+        case (4,VehicleType.TRUCK.value,Model.PID_VELOCITY_DIRECT.value):
             p = PlatoonPidDistanceS4(num_vehicles, truck, period)
             suffix = "pid-distance-model-s4-truck"
-        case (1,3,1):
+        case (1,VehicleType.RC_VEHICLE.value,Model.PID_VELOCITY_DIRECT.value):
             p = PlatoonPidDistanceS1(num_vehicles, rc_car, period)
             suffix = "pid-distance-model-s1-rc-vehicle"
-        case (2,3,1):
+        case (2,VehicleType.RC_VEHICLE.value,Model.PID_VELOCITY_DIRECT.value):
             p = PlatoonPidDistanceS2(num_vehicles, rc_car, period)
             suffix = "pid-distance-model-s2-rc-vehicle"
-        case (3,3,1):
+        case (3,VehicleType.RC_VEHICLE.value,Model.PID_VELOCITY_DIRECT.value):
             p = PlatoonPidDistanceS3(num_vehicles, rc_car, period)
             suffix = "pid-distance-model-s3-rc-vehicle"
-        case (1,1,2):
+        case (1,VehicleType.TRUCK.value,Model.PID_BIDIRECTIONAL.value):
             p = PlatoonBidirectionalPidS1(num_vehicles, truck, period)
             suffix = "bidirectional-pid-model-s1-truck"
-        case (2,1,2):
+        case (2,VehicleType.TRUCK.value,Model.PID_BIDIRECTIONAL.value):
             p = PlatoonBidirectionalPidS2(num_vehicles, truck, period)
             suffix = "bidirectional-pid-model-s2-truck"
-        case (3,1,2):
+        case (3,VehicleType.TRUCK.value,Model.PID_BIDIRECTIONAL.value):
             p = PlatoonBidirectionalPidS3(num_vehicles, truck, period)
             suffix = "bidirectional-pid-model-s3-truck"
-        case (1,1,3):
+        case (1,VehicleType.TRUCK.value,Model.SS_BIDIRECTIONAL.value):
             p = PlatoonBidirectionalStateSpaceS1(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-model-s1-truck"
-        case (2,1,3):
+        case (2,VehicleType.TRUCK.value,Model.SS_BIDIRECTIONAL.value):
             p = PlatoonBidirectionalStateSpaceS2(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-model-s2-truck"
-        case (3,1,3):
+        case (3,VehicleType.TRUCK.value,Model.SS_BIDIRECTIONAL.value):
             p = PlatoonBidirectionalStateSpaceS3(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-model-s3-truck"
-        case (1,3,3):
+        case (1,VehicleType.RC_VEHICLE.value,Model.SS_BIDIRECTIONAL.value):
             p = PlatoonBidirectionalStateSpaceS1(num_vehicles, rc_car, period)
             suffix = "bidirectional-state-space-model-s1-rc-vehicle"
-        case (2,3,3):
+        case (2,VehicleType.RC_VEHICLE.value,Model.SS_BIDIRECTIONAL.value):
             p = PlatoonBidirectionalStateSpaceS2(num_vehicles, rc_car, period)
             suffix = "bidirectional-state-space-model-s2-rc-vehicle"
-        case (3,3,3):
+        case (3,VehicleType.RC_VEHICLE.value,Model.SS_BIDIRECTIONAL.value):
             p = PlatoonBidirectionalStateSpaceS3(num_vehicles, rc_car, period)
             suffix = "bidirectional-state-space-model-s3-rc-vehicle"
-        case (4,1,3):
+        case (4,VehicleType.TRUCK.value,Model.SS_BIDIRECTIONAL.value):
             p = PlatoonBidirectionalStateSpaceS4(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-model-s4-truck"
-        case (1,1,4):
+        case (1,VehicleType.TRUCK.value,Model.SS_BIDIRECTIONAL_PID_VELOCITY_INCREASE.value):
             p = PlatoonBidirectionalStateSpaceWithPidS1(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-with-pid-model-s1-truck"
-        case (2,1,4):
+        case (2,VehicleType.TRUCK.value,Model.SS_BIDIRECTIONAL_PID_VELOCITY_INCREASE.value):
             p = PlatoonBidirectionalStateSpaceWithPidS2(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-with-pid-model-s2-truck"
-        case (3,1,4):
+        case (3,VehicleType.TRUCK.value,Model.SS_BIDIRECTIONAL_PID_VELOCITY_INCREASE.value):
             p = PlatoonBidirectionalStateSpaceWithPidS3(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-with-pid-model-s3-truck"
-        case (4,1,4):
+        case (4,VehicleType.TRUCK.value,Model.SS_BIDIRECTIONAL_PID_VELOCITY_INCREASE.value):
             p = PlatoonBidirectionalStateSpaceWithPidS4(num_vehicles, truck, period)
             suffix = "bidirectional-state-space-with-pid-model-s4-truck"
-        case (1,1,5):
+        case (1,VehicleType.TRUCK.value,Model.PID_VELOCITY_INCREASE.value):
             p = PlatoonPidIncreaseDistanceS1(num_vehicles, truck, period)
             suffix = "distance-pid-increase-model-s1-truck"
-        case (2,1,5):
+        case (2,VehicleType.TRUCK.value,Model.PID_VELOCITY_INCREASE.value):
             p = PlatoonPidIncreaseDistanceS2(num_vehicles, truck, period)
             suffix = "distance-pid-increase-model-s2-truck"
-        case (3,1,5):
+        case (3,VehicleType.TRUCK.value,Model.PID_VELOCITY_INCREASE.value):
             p = PlatoonPidIncreaseDistanceS3(num_vehicles, truck, period)
             suffix = "distance-pid-increase-model-s3-truck"
-        case (4,1,5):
+        case (4,VehicleType.TRUCK.value,Model.PID_VELOCITY_INCREASE.value):
             p = PlatoonPidIncreaseDistanceS4(num_vehicles, truck, period)
             suffix = "distance-pid-increase-model-s4-truck"
         case (_,_,_):

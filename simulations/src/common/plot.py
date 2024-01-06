@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot(data, num_vehicles, x, linestyle):
+def plot(data, num_vehicles, x, linestyle, alpha=1):
     for i in range(num_vehicles):
         # Extract the values from each sub-array
         y = np.array([sub_array[i] for sub_array in data])
 
         # Create a bar plot
-        plt.plot(x, y, linestyle=linestyle)
+        plt.plot(x, y, linestyle=linestyle, alpha=alpha)
 
 
 def make_plot(data, num_vehicles, x_label_text, y_label_text, title_text, download_path):
@@ -42,9 +42,7 @@ def plot_distances(data, num_vehicles, download_path):
     title_text = 'Distance to vehicle in front'
     distances, references = data
     mean_references = np.mean(references, axis=1)
-    print(mean_references)
     mean_references_reshape = mean_references.reshape(-1, 1)
-    print(mean_references_reshape)
     mean_references = mean_references_reshape
 
     plt.clf()
@@ -52,8 +50,8 @@ def plot_distances(data, num_vehicles, download_path):
     x1 = np.arange(len(distances))
     x2 = np.arange(len(mean_references))
 
-    plot(distances, num_vehicles, x1, "-")
-    plot(mean_references, 1, x2, "dotted")
+    plot(distances, num_vehicles, x1, linestyle="-")
+    plot(mean_references, 1, x2, linestyle="-", alpha=0.4)
 
     plt.xlabel(x_label_text)
     plt.ylabel(y_label_text)

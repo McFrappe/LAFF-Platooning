@@ -1,6 +1,6 @@
 
 class PID:
-    def __init__(self, kp, ki, kd, dt: int, pid_min: float, pid_max: float,  pid_increase_min: float, pid_increase_max: float):
+    def __init__(self, kp, ki, kd, dt: int, pid_min: float, pid_max: float,  pid_increase_min: float, pid_increase_max: float, init_pid_output: float):
         self.error = 0
         self.error_integral = 0
         self.error_derivative = 0 
@@ -15,7 +15,7 @@ class PID:
         self.pid_increase_min = pid_increase_min
         self.pid_increase_max = pid_increase_max
 
-        self.u = 0
+        self.u = init_pid_output
 
     def update(self, error: float):
         error_prev = self.error

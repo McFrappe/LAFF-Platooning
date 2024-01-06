@@ -51,7 +51,7 @@ class Vehicle:
 
     def update_min_distance(self):
         speed_in_m_per_s = self.speed/3.6
-        margin_in_m = 0.2 # TODO: should depend on speed and vehicle?
+        margin_in_m = 0.6 # TODO: should depend on speed and vehicle?
         self.min_distance = speed_in_m_per_s * tick_in_s *2 + margin_in_m 
 
         return self.min_distance

@@ -23,7 +23,7 @@ class VehiclePidDistance(Vehicle):
 
 
 
-        self.pid = PID(kp, ki, kd, tick_in_s, min_speed, max_speed, -max_deceleration, max_acceleration)
+        self.pid = PID(kp, ki, kd, tick_in_s, min_speed, max_speed, -max_deceleration, max_acceleration, init_speed)
 
     # This should be called each tick
     def update_speed(self, tick):

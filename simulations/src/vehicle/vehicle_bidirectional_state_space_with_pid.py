@@ -40,4 +40,5 @@ class VehicleBidirectionalStateSpaceWithPid(VehicleBidirectionalStateSpace):
         speed_in_m_per_s = self.speed/3.6
         margin_in_m = 1 # TODO: should depend on speed and vehicle?
         self.min_distance = speed_in_m_per_s * self.period + margin_in_m 
+
         return self.min_distance

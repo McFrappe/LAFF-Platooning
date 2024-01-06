@@ -3,11 +3,11 @@ import numpy as np
 
 
 class StateSpaceDiscrete():
-    def __init__(self, A_continuous, B_continuous, C_continuous, D_continuous, update_period: float, ss_period: float, min_increase: float, max_increase: float, min_output: float, max_output: float):
+    def __init__(self, A_continuous, B_continuous, C_continuous, D_continuous, update_period: float, ss_period: float, min_increase: float, max_increase: float, min_output: float, max_output: float, init_output: float):
         self.update_period = update_period
         self.ticks_per_period = ss_period/update_period
         self.increase_per_tick = 0
-        self.output = 0 
+        self.output = init_output 
         self.min_increase = min_increase
         self.max_increase = max_increase
         self.min_output = min_output
